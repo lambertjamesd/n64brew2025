@@ -1,0 +1,146 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "Schema for an N64 material",
+    "definitions": {
+        "combineMode": {
+            "type": "object",
+            "properties": {
+                "color": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "enum": [
+                                "COMBINED",
+                                "TEX0",
+                                "TEX1",
+                                "PRIM",
+                                "SHADE",
+                                "ENV",
+                                "NOISE",
+                                "1",
+                                "0"
+                            ]
+                        },
+                        {
+                            "enum": [
+                                "COMBINED",
+                                "TEX0",
+                                "TEX1",
+                                "PRIM",
+                                "SHADE",
+                                "ENV",
+                                "CENTER",
+                                "K4",
+                                "0"
+                            ]
+                        },
+                        {
+                            "enum": [
+                                "COMBINED",
+                                "TEX0",
+                                "TEX1",
+                                "PRIM",
+                                "SHADE",
+                                "ENV",
+                                "SCALE",
+                                "COMBINED_ALPHA",
+                                "TEX0_ALPHA",
+                                "TEX1_ALPHA",
+                                "PRIM_ALPHA",
+                                "SHADE_ALPHA",
+                                "ENV_ALPHA",
+                                "LOD_FRACTION",
+                                "PRIM_LOD_FRAC",
+                                "K5",
+                                "0"
+                            ]
+                        },
+                        {
+                            "enum": [
+                                "COMBINED",
+                                "TEX0",
+                                "TEX1",
+                                "PRIM",
+                                "SHADE",
+                                "ENV",
+                                "1",
+                                "0"
+                            ]
+                        }
+                    ]
+                },
+                "alpha": {
+                    "type": "array",
+                    "items": [
+                        {
+                            "enum": [
+                                "COMBINED",
+                                "TEX0",
+                                "TEX1",
+                                "PRIM",
+                                "SHADE",
+                                "ENV",
+                                "1",
+                                "0"
+                            ]
+                        },
+                        {
+                            "enum": [
+                                "COMBINED",
+                                "TEX0",
+                                "TEX1",
+                                "PRIM",
+                                "SHADE",
+                                "ENV",
+                                "1",
+                                "0"
+                            ]
+                        },
+                        {
+                            "enum": [
+                                "TEX0",
+                                "TEX1",
+                                "PRIM",
+                                "SHADE",
+                                "ENV",
+                                "LOD_FRACTION",
+                                "PRIM_LOD_FRAC",
+                                "0"
+                            ]
+                        },
+                        {
+                            "enum": [
+                                "COMBINED",
+                                "TEX0",
+                                "TEX1",
+                                "PRIM",
+                                "SHADE",
+                                "ENV",
+                                "1",
+                                "0"
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "type": "object",
+    "properties": {
+        "combineMode": {
+            "anyOf": [
+                {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/combineMode"
+                    },
+                    "maxLength": 2,
+                    "minLength": 2
+                },
+                {
+                    "$ref": "#/definitions/combineMode"
+                }
+            ]
+        }
+    }
+}

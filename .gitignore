@@ -1,0 +1,28 @@
+
+.vscode/
+build/
+libdragon/
+.libdragon/
+
+filesystem/
+
+**/__pycache__/**
+
+*.blend1
+
+*.z64
+
+tools/mesh_export.zip
+
+asset_builder/asset_builder
+
+out.txt
+
+# generated file
+src/player/inventory_mapping.c
+64drive_usb.exe
+build clean.bat
+build_load.bat
+load.bat
+load.bat
+build clean.bat
