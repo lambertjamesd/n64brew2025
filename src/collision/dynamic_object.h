@@ -49,6 +49,7 @@ struct dynamic_object_type {
     // or 1 - cos(slope angle)
     float max_stable_slope;
     uint16_t surface_type;
+    struct Vector3 center;
 };
 
 typedef struct dynamic_object_type dynamic_object_type_t;
@@ -87,7 +88,6 @@ struct dynamic_object {
     struct Vector2* rotation;
     struct Vector2* pitch;
     float scale;
-    struct Vector3 center;
     struct Vector3 velocity;
     struct Box3D bounding_box;
     float time_scalar;

@@ -156,7 +156,7 @@ void scene_update(void* data) {
     struct scene* scene = (struct scene*)data;
 
     struct Vector3 player_center = scene->player.cutscene_actor.transform.position;
-    player_center.y += scene->player.cutscene_actor.collider.center.y;
+    player_center.y += scene->player.cutscene_actor.collider.type->center.y;
 
     for (int i = 0; i < scene->loading_zone_count; i += 1) {
         if (box3DContainsPoint(&scene->loading_zones[i].bounding_box, &player_center)) {

@@ -33,7 +33,6 @@ struct cutscene_actor_def {
     float run_threshold;
     float rotate_speed;
     struct dynamic_object_type collider;
-    float half_height;
     uint16_t collision_layers;
     uint16_t collision_group;
 };

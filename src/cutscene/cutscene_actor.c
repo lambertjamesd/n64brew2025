@@ -72,7 +72,6 @@ void cutscene_actor_init(
         &actor->transform.rotation
     );
 
-    actor->collider.center.y += def->half_height;
     actor->collider.collision_group = def->collision_group;
     actor->last_animator_events.all = 0;
 

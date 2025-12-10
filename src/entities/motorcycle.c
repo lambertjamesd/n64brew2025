@@ -24,6 +24,7 @@ static dynamic_object_type_t collider_type = {
     .surface_type = SURFACE_TYPE_DEFAULT,
     .friction = 0.4f,
     .bounce = 0.1f,
+    .center = {0.0f, 0.35f, 0.0f},
 };
 
 static vector3_t local_cast_points[] = {
@@ -84,7 +85,6 @@ void motorcycle_init(motorcycle_t* motorcycle, struct motorcycle_definition* def
     transformSaInit(&motorcycle->transform, &definition->position, &definition->rotation, 1.0f);
     render_scene_init_add_renderable(&motorcycle->renderable, &motorcycle->transform, assets.mesh, 2.0f);
     dynamic_object_init(entity_id, &motorcycle->collider, &collider_type, COLLISION_LAYER_TANGIBLE, &motorcycle->transform.position, &motorcycle->transform.rotation);
-    motorcycle->collider.center.y = 0.35f;
     motorcycle->has_rider = false;
     collision_scene_add(&motorcycle->collider);
     update_add(motorcycle, motorcycle_update, UPDATE_PRIORITY_PHYICS, UPDATE_LAYER_WORLD);

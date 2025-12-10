@@ -20,7 +20,6 @@ void dynamic_object_init(
     object->rotation = rotation;
     object->pitch = 0;
     object->velocity = gZeroVec;
-    object->center = gZeroVec;
     object->time_scalar = 1.0f;
     object->has_gravity = 1;
     object->trigger_type = TRIGGER_TYPE_NONE;
@@ -96,7 +95,7 @@ void dynamic_object_minkowski_sum(void* data, struct Vector3* direction, struct 
     if (!object->rotation && !object->pitch) {
         object->type->minkowsi_sum(&object->type->data, direction, output);
         vector3Add(output, object->position, output);
-        vector3Add(output, &object->center, output);
+        vector3Add(output, &object->type->center, output);
         return;
     }
 
@@ -116,7 +115,7 @@ void dynamic_object_minkowski_sum(void* data, struct Vector3* direction, struct 
     struct Vector3 unrotated_out;
     
     object->type->minkowsi_sum(&object->type->data, &rotated_dir, &unrotated_out);
-    vector3Add(&unrotated_out, &object->center, &unrotated_out);
+    vector3Add(&unrotated_out, &object->type->center, &unrotated_out);
 
     struct Vector3 unpitched_out;
     vector3RotateWith2(&unrotated_out, object->rotation, &unpitched_out);
@@ -142,9 +141,9 @@ void dynamic_object_recalc_bb(struct dynamic_object* object) {
     if (object->scale != 1.0f) {
         vector3Scale(&object->bounding_box.min, &object->bounding_box.min, object->scale);
         vector3Scale(&object->bounding_box.max, &object->bounding_box.max, object->scale);
-        vector3Scale(&object->center, &offset, object->scale);
+        vector3Scale(&object->type->center, &offset, object->scale);
     } else {
-        offset = object->center;
+        offset = object->type->center;
     }
 
     struct Vector3 rotatedOffset;
