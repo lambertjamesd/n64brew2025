@@ -31,6 +31,7 @@
 void setup() {
     debug_init_isviewer();
     init_engine();
+    interactable_reset();
     savefile_new();
 
 

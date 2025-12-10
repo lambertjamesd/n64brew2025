@@ -508,7 +508,7 @@ void collision_scene_collide() {
             curr->normal = shadow.normal;
             curr->surface_type = shadow.surface_type;
         } else {
-            curr->y = 0.0f;
+            curr->y = -1000000.0f;
             curr->normal = gZeroVec;
             curr->surface_type = SURFACE_TYPE_NONE;
         }
@@ -643,16 +643,16 @@ struct collision_scene_element* collision_scene_get_element(int index) {
 }
 
 void collision_scene_add_cast_point(struct cast_point* cast_point, vector3_t* pos) {
-    if (g_scene.count == g_scene.capacity) {
-        int prev = g_scene.capacity;
+    if (g_scene.cast_point_count == g_scene.cast_point_capacity) {
+        int prev = g_scene.cast_point_capacity;
 
-        if (g_scene.capacity == 0) {
-            g_scene.capacity = 4;
+        if (g_scene.cast_point_capacity == 0) {
+            g_scene.cast_point_capacity = 4;
         } else {
-            g_scene.capacity *= 2;
+            g_scene.cast_point_capacity *= 2;
         }
 
-        cast_point_t** next = malloc(sizeof(cast_point_t*) * g_scene.capacity);
+        cast_point_t** next = malloc(sizeof(cast_point_t*) * g_scene.cast_point_capacity);
 
         if (prev) {
             memcpy(next, g_scene.cast_points, sizeof(cast_point_t*) * prev);
@@ -667,8 +667,8 @@ void collision_scene_add_cast_point(struct cast_point* cast_point, vector3_t* po
     cast_point->y = 0.0f;
     cast_point->normal = gZeroVec;
 
-    g_scene.cast_points[g_scene.count] = cast_point;
-    ++g_scene.count;
+    g_scene.cast_points[g_scene.cast_point_count] = cast_point;
+    ++g_scene.cast_point_count;
 }
 
 void collision_scene_remove_cast_point(struct cast_point* cast_point) {

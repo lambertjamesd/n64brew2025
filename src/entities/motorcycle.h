@@ -9,7 +9,7 @@
 #include "../entity/interactable.h"
 #include "../collision/cast_point.h"
 
-#define MAX_CAST_POINTS 2
+#define CAST_POINT_COUNT 2
 
 struct motorcycle {
     transform_sa_t transform;
@@ -17,7 +17,9 @@ struct motorcycle {
     dynamic_object_t collider;
     interactable_t interactable; 
 
-    cast_point_t cast_points[MAX_CAST_POINTS];
+    cast_point_t cast_points[CAST_POINT_COUNT];
+
+    bool has_rider: 1;
 };
 
 typedef struct motorcycle motorcycle_t;
