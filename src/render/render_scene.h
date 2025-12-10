@@ -37,6 +37,9 @@ void render_scene_add(struct Vector3* center, float radius, render_scene_callbac
 void render_scene_add_renderable(struct renderable* renderable, float radius);
 void render_scene_remove(void* data);
 
+void render_scene_init_add_renderable(struct renderable* renderable, transform_sa_t* transform, struct tmesh* mesh, float radius);
+void render_scene_remove_renderable(struct renderable* renderable);
+
 void render_scene_add_step(render_step_callback callback, void* data);
 void render_scene_remove_step(void* data);
 

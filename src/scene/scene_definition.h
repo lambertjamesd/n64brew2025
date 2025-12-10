@@ -11,6 +11,7 @@
 enum entity_type_id {
     ENTITY_TYPE_empty,
     ENTITY_TYPE_trigger_cube,
+    ENTITY_TYPE_motorcycle,
     
     ENTITY_TYPE_count,
 };
@@ -23,6 +24,11 @@ enum fixed_entity_ids {
 };
 
 struct empty_definition {
+    struct Vector3 position;
+    struct Vector2 rotation;
+};
+
+struct motorcycle_definition {
     struct Vector3 position;
     struct Vector2 rotation;
 };

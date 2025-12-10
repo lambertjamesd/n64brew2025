@@ -1,5 +1,10 @@
 {
     "objects": [
-        
+        {
+            "name": "vehicles_bike",
+            "description": "",
+            "mesh": "meshes/vehicles/bike.blend#Motorcycle",
+            "type": "motorcycle"
+        }
     ]
 }

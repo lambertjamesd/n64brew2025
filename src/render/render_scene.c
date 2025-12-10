@@ -103,6 +103,16 @@ void render_scene_remove(void* data) {
     callback_list_remove(&r_scene_3d.callbacks, (callback_id)data);
 }
 
+void render_scene_init_add_renderable(struct renderable* renderable, transform_sa_t* transform, struct tmesh* mesh, float radius) {
+    renderable_single_axis_init_direct(renderable, transform, mesh);
+    render_scene_add_renderable(renderable, radius);
+}
+
+void render_scene_remove_renderable(struct renderable* renderable) {
+    renderable_destroy_direct(renderable);
+    render_scene_remove(renderable);
+}
+
 void render_scene_add_step(render_step_callback callback, void* data) {
     struct render_scene_step step = {data};
     callback_list_insert_with_id(&r_scene_3d.step_callbacks, callback, &step, (callback_id)data);
