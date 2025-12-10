@@ -56,6 +56,7 @@ struct player {
     struct renderable renderable;
     struct Transform* camera_transform;
     struct health health;
+    spatial_trigger_t vision;
     
     animation_clip_t* animations[PLAYER_ANIMATION_COUNT];
     struct animation_clip* last_spell_animation;

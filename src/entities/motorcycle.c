@@ -42,6 +42,8 @@ void motorcycle_common_destroy() {
 
 void motorcycle_ride(struct interactable* interactable, entity_id from) {
     motorcycle_t* motorcycle = (motorcycle_t*)interactable->data;
+
+    debugf("here!\n");
 }
 
 float motorcycle_hover_height(motorcycle_t* motorcycle) {

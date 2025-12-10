@@ -39,7 +39,7 @@
 static struct Vector2 player_max_rotation;
 static struct Vector2 z_target_rotation;
 
-static struct spatial_trigger_type player_z_trigger_shape = {
+static struct spatial_trigger_type player_vision_shape = {
     SPATIAL_TRIGGER_WEDGE(15.0f, 7.0f, 0.707f, 0.707f),
 };
 
@@ -299,12 +299,62 @@ void player_handle_air_movement(struct player* player, contact_t* ground_contact
     player->cutscene_actor.collider.velocity.y = prev_y;
 }
 
+interactable_t* player_find_interactable(struct player* player) {
+    interactable_t* result = NULL;
+    float distance = player_vision_shape.data.wedge.radius * player_vision_shape.data.wedge.radius;
+
+    vector3_t* pos = cutscene_actor_get_pos(&player->cutscene_actor);
+
+    for (contact_t* contact = player->vision.active_contacts;
+        contact;
+        contact = contact->next) {
+        dynamic_object_t* obj = collision_scene_find_object(contact->other_object);
+
+        if (!obj) {
+            continue;
+        }
+
+        struct Vector3 offset;
+        vector3Sub(pos, obj->position, &offset);
+        float distanceCheck = vector3MagSqrd2D(&offset);
+
+        if (distanceCheck >= distance) {
+            continue;
+        }
+
+        interactable_t* interactable = interactable_get(contact->other_object);
+
+        if (!interactable || !interactable_is_in_range(interactable, distanceCheck)) {
+            continue;
+        }
+
+        result = interactable;
+        distance = distanceCheck;
+    }
+
+    return result;
+}
+
+void player_interact(struct player* player) {
+    interactable_t* interactable = player_find_interactable(player);
+
+    if (!interactable) {
+        return;
+    }
+
+    interactable->callback(interactable, ENTITY_ID_PLAYER);
+}
+
 void player_update_grounded(struct player* player, struct contact* ground_contact) {
     joypad_buttons_t pressed = joypad_get_buttons_pressed(0);
     struct dynamic_object* collider = &player->cutscene_actor.collider;
 
     if (ground_contact && dynamic_object_should_slide(MAX_SLIDING_SLOPE, ground_contact->normal.y, SURFACE_TYPE_DEFAULT)) {
         return;
+    }
+
+    if (pressed.a) {
+        player_interact(player);
     }
  
     struct Vector3 target_direction;
@@ -416,6 +466,9 @@ void player_init(struct player* player, struct player_definition* definition, st
     player->last_spell_animation = NULL;
 
     player->state = PLAYER_GROUNDED;
+
+    spatial_trigger_init(&player->vision, &player->cutscene_actor.transform, &player_vision_shape, COLLISION_LAYER_TANGIBLE, ENTITY_ID_PLAYER);
+    collision_scene_add_trigger(&player->vision);
 }
 
 void player_destroy(struct player* player) {
@@ -425,6 +478,7 @@ void player_destroy(struct player* player) {
     render_scene_remove(&player->renderable);
     update_remove(player);
     cutscene_actor_destroy(&player->cutscene_actor);
+    collision_scene_remove_trigger(&player->vision);
 
     player_unload_sound(player);
 }
