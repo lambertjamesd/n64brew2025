@@ -12,7 +12,7 @@ enum __attribute__ ((__packed__)) interact_type {
     INTERACT_TYPE_PICKUP,
     INTERACT_TYPE_DROP,
     INTERACT_TYPE_OPEN,
-    INTERACT_TYPE_CAST,
+    INTERACT_TYPE_RIDE,
 };
 
 #define MAX_INTERACT_RANGE  2.0f

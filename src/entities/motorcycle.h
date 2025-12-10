@@ -6,11 +6,18 @@
 #include "../scene/scene_definition.h"
 #include "../entity/entity_id.h"
 #include "../collision/dynamic_object.h"
+#include "../entity/interactable.h"
+#include "../collision/cast_point.h"
+
+#define MAX_CAST_POINTS 2
 
 struct motorcycle {
     transform_sa_t transform;
     renderable_t renderable;
     dynamic_object_t collider;
+    interactable_t interactable; 
+
+    cast_point_t cast_points[MAX_CAST_POINTS];
 };
 
 typedef struct motorcycle motorcycle_t;

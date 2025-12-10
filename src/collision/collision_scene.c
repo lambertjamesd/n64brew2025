@@ -37,6 +37,7 @@ struct Box3D* collision_scene_element_bounding_box(struct collision_scene_elemen
 void collision_scene_reset() {
     free(g_scene.elements);
     free(g_scene.all_contacts);
+    free(g_scene.cast_points);
     hash_map_destroy(&g_scene.entity_mapping);
     hash_map_destroy(&g_scene.trigger_mapping);
     memset(&g_scene, 0, sizeof(g_scene));
@@ -50,6 +51,9 @@ void collision_scene_reset() {
     g_scene.all_contacts = malloc(sizeof(struct contact) * MAX_ACTIVE_CONTACTS);
     g_scene.next_free_contact = &g_scene.all_contacts[0];
     g_scene.kill_plane = KILL_PLANE;
+    g_scene.cast_points = NULL;
+    g_scene.cast_point_capacity = 0;
+    g_scene.cast_point_count = 0;
 
     for (int i = 0; i + 1 < MAX_ACTIVE_CONTACTS; ++i) {
         g_scene.all_contacts[i].next = &g_scene.all_contacts[i + 1];
@@ -492,6 +496,24 @@ void collision_scene_collide() {
         }
     }
 
+    cast_point_t** last = g_scene.cast_points + g_scene.cast_point_count;
+    for (cast_point_t** cast_point = g_scene.cast_points; 
+        cast_point != last; 
+        ++cast_point) {
+         
+        cast_point_t* curr = *cast_point;
+        struct mesh_shadow_cast_result shadow;
+        if (collision_scene_shadow_cast(&curr->pos, &shadow)) {
+            curr->y = shadow.y;
+            curr->normal = shadow.normal;
+            curr->surface_type = shadow.surface_type;
+        } else {
+            curr->y = 0.0f;
+            curr->normal = gZeroVec;
+            curr->surface_type = SURFACE_TYPE_NONE;
+        }
+    }
+
     // kill the entity outide the loop since despawing an entity
     // could mess with the element list
     if (kill_entity) {
@@ -618,4 +640,47 @@ int collision_scene_get_count() {
 
 struct collision_scene_element* collision_scene_get_element(int index) {
     return &g_scene.elements[index];
+}
+
+void collision_scene_add_cast_point(struct cast_point* cast_point, vector3_t* pos) {
+    if (g_scene.count == g_scene.capacity) {
+        int prev = g_scene.capacity;
+
+        if (g_scene.capacity == 0) {
+            g_scene.capacity = 4;
+        } else {
+            g_scene.capacity *= 2;
+        }
+
+        cast_point_t** next = malloc(sizeof(cast_point_t*) * g_scene.capacity);
+
+        if (prev) {
+            memcpy(next, g_scene.cast_points, sizeof(cast_point_t*) * prev);
+            free(g_scene.cast_points);
+        }
+
+        g_scene.cast_points = next;
+    }
+
+    cast_point->pos = *pos;
+    cast_point->surface_type = SURFACE_TYPE_NONE;
+    cast_point->y = 0.0f;
+    cast_point->normal = gZeroVec;
+
+    g_scene.cast_points[g_scene.count] = cast_point;
+    ++g_scene.count;
+}
+
+void collision_scene_remove_cast_point(struct cast_point* cast_point) {
+    cast_point_t** end = g_scene.cast_points + g_scene.cast_point_count;
+
+    for (cast_point_t** curr = g_scene.cast_points;
+        curr != end;
+        ++curr) {
+        if (*curr == cast_point) {
+            *curr = *(end - 1);
+            --g_scene.count;
+            break;
+        }
+    }
 }

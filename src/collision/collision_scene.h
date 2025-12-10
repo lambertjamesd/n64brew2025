@@ -6,6 +6,7 @@
 #include "../collision/mesh_collider.h"
 #include "../util/hash_map.h"
 #include "contact.h"
+#include "cast_point.h"
 
 typedef int collision_id;
 
@@ -28,6 +29,7 @@ struct Box3D* collision_scene_element_bounding_box(struct collision_scene_elemen
 
 struct collision_scene {
     struct collision_scene_element* elements;
+    cast_point_t** cast_points;
     struct contact* next_free_contact;
     struct contact* all_contacts;
     struct hash_map entity_mapping;
@@ -35,6 +37,8 @@ struct collision_scene {
     uint16_t count;
     uint16_t capacity;
     uint16_t mesh_collider_count;
+    uint16_t cast_point_count;
+    uint16_t cast_point_capacity;
 
     float kill_plane;
 
@@ -69,5 +73,8 @@ int collision_scene_get_count();
 struct collision_scene_element* collision_scene_get_element(int index);
 
 void collision_scene_return_contacts(struct contact* active_contacts);
+
+void collision_scene_add_cast_point(struct cast_point* cast_point, vector3_t* pos);
+void collision_scene_remove_cast_point(struct cast_point* cast_point);
 
 #endif

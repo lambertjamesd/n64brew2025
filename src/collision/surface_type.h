@@ -9,6 +9,9 @@ enum surface_type {
     SURFACE_TYPE_COYOTE,
 
     SURFACE_TYPE_COUNT,
+    SURFACE_TYPE_NONE,
 };
+
+typedef enum surface_type surface_type_t;
 
 #endif
