@@ -14,6 +14,7 @@
 #include "../debug/debug_colliders.h"
 #include "../render/defs.h"
 #include "../audio/audio.h"
+#include "../entities/vehicle.h"
 
 #include "../effects/fade_effect.h"
 
@@ -33,6 +34,8 @@
 
 #define INTERACT_Y_LOWER        -0.75f
 #define INTERACT_Y_UPEER        1.25f
+
+#define PLAYER_LAYERS   (COLLISION_LAYER_TANGIBLE | COLLISION_LAYER_LIGHTING_TANGIBLE | COLLISION_LAYER_DAMAGE_PLAYER)
 
 
 #define MAX_ROTATION_RATE       5.0f
@@ -87,7 +90,7 @@ static struct cutscene_actor_def player_actor_def = {
     .run_speed = PLAYER_RUN_ANIM_SPEED,
     .run_threshold = PLAYER_RUN_THRESHOLD,
     .rotate_speed = 2.0f,
-    .collision_layers = COLLISION_LAYER_TANGIBLE | COLLISION_LAYER_LIGHTING_TANGIBLE | COLLISION_LAYER_DAMAGE_PLAYER,
+    .collision_layers = PLAYER_LAYERS,
     .collision_group = COLLISION_GROUP_PLAYER,
     .collider = {
         .minkowsi_sum = capsule_minkowski_sum,
@@ -202,6 +205,35 @@ void player_handle_look(struct player* player, struct Vector3* look_direction) {
 void player_enter_grounded_state(struct player* player) {
     player->coyote_time = 0.0f;
     player->state = PLAYER_GROUNDED;
+}
+
+void player_enter_vehicle(struct player* player, entity_id vehicle_id) {
+    vehicle_t* vehicle = vehicle_get(vehicle_id);
+
+    if (!vehicle) {
+        return;
+    }
+
+    player->state_data.in_vehicle.target = vehicle_id;
+    player->state = PLAYER_IN_VEHICLE;
+    vehicle_enter(vehicle, ENTITY_ID_PLAYER);
+    player->cutscene_actor.collider.collision_layers = 0;
+}
+
+void player_exit_vehicle(struct player* player) {
+    if (player->state != PLAYER_IN_VEHICLE) {
+        return;
+    }
+
+    vehicle_t* vehicle = vehicle_get(player->state_data.in_vehicle.target);
+    player->cutscene_actor.collider.collision_layers = PLAYER_LAYERS;
+
+    player_enter_grounded_state(player);
+    vehicle_apply_exit_transform(vehicle, &player->cutscene_actor.transform);
+
+    if (vehicle) {
+        vehicle_exit(vehicle);
+    }
 }
 
 bool player_handle_ground_movement(struct player* player, struct contact* ground_contact, struct Vector3* target_direction, float* speed) {
@@ -343,6 +375,10 @@ void player_interact(struct player* player) {
     }
 
     interactable->callback(interactable, ENTITY_ID_PLAYER);
+
+    if (interactable->interact_type == INTERACT_TYPE_RIDE) {
+        player_enter_vehicle(player, interactable->id);
+    }
 }
 
 void player_update_grounded(struct player* player, struct contact* ground_contact) {
@@ -367,10 +403,33 @@ void player_update_grounded(struct player* player, struct contact* ground_contac
 
 }
 
+void player_update_in_vehicle(struct player* player, struct contact* ground_contact) {
+    vehicle_t* vehicle = vehicle_get(player->state_data.in_vehicle.target);
+
+    if (!vehicle) {
+        player_exit_vehicle(player);
+        return;
+    }
+
+    struct Vector3 target_direction;
+    player_get_input_direction(player, &target_direction);
+    vehicle_steer(vehicle, &target_direction);
+    vehicle_apply_driver_transform(vehicle, &player->cutscene_actor.transform);
+
+    joypad_buttons_t pressed = joypad_get_buttons_pressed(0);
+
+    if (pressed.b && vehicle->is_stopped) {
+        player_exit_vehicle(player);
+    }
+}
+
 void player_update_state(struct player* player, struct contact* ground_contact) {
     switch (player->state) {
          case PLAYER_GROUNDED:
             player_update_grounded(player, ground_contact);
+            break;
+        case PLAYER_IN_VEHICLE:
+            player_update_in_vehicle(player, ground_contact);
             break;
         default:
             break;
@@ -472,6 +531,8 @@ void player_init(struct player* player, struct player_definition* definition, st
 }
 
 void player_destroy(struct player* player) {
+    player_exit_vehicle(player);
+
     renderable_destroy(&player->renderable);
     health_destroy(&player->health);
 

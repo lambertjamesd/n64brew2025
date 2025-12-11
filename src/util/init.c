@@ -10,12 +10,14 @@
 #include "../cutscene/cutscene_runner.h"
 #include "../cutscene/cutscene_actor.h"
 #include "../audio/audio.h"
+#include "../entities/vehicle.h"
 
 void init_engine() {
     render_scene_reset();
     update_reset();
     collision_scene_reset();
     health_reset();
+    vehicle_global_reset();
     menu_reset();
     cutscene_runner_init();
     cutscene_actor_reset();

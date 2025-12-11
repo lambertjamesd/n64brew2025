@@ -6,9 +6,14 @@
 #include "../collision/shapes/box.h"
 #include "../collision/collision_scene.h"
 #include "../time/time.h"
+#include "../math/mathf.h"
 
 #define HOVER_SAG_AMOUNT        0.5f
 #define HOVER_SPRING_STRENGTH   (-GRAVITY_CONSTANT / (CAST_POINT_COUNT * HOVER_SAG_AMOUNT))
+
+#define ACCEL_RATE              20.0f
+#define MAX_SPEED               30.0f
+#define MAX_TURN_RATE           1.0f
 
 struct motorcyle_assets {
     tmesh_t* mesh;
@@ -27,6 +32,15 @@ static dynamic_object_type_t collider_type = {
     .center = {0.0f, 0.35f, 0.0f},
 };
 
+static vehicle_definiton_t vehicle_def = {
+    .local_player_position = {
+        .x = 0.0f,
+        .y = 0.5f,
+        .z = 0.5f,
+    },
+    .exit_position = {-1.0f, 0.0f, 0.0f},
+};
+
 static vector3_t local_cast_points[] = {
     {0.0f, 0.0f, 1.5f},
     {0.0f, 0.0f, -1.5f},
@@ -42,9 +56,7 @@ void motorcycle_common_destroy() {
 }
 
 void motorcycle_ride(struct interactable* interactable, entity_id from) {
-    motorcycle_t* motorcycle = (motorcycle_t*)interactable->data;
 
-    debugf("here!\n");
 }
 
 float motorcycle_hover_height(motorcycle_t* motorcycle) {
@@ -59,6 +71,38 @@ void motorcycle_update(void* data) {
 
     bool needs_damping = true;
 
+    vector3_t forward;
+
+    vector2ToLookDir(&motorcycle->transform.rotation, &forward);
+
+    float target_speed = 0.0f;
+
+    if (motorcycle->vehicle.driver) {
+        joypad_inputs_t input = joypad_get_inputs(0);
+        if (input.btn.a) {
+            target_speed = MAX_SPEED;
+        } else if (input.btn.b) {
+            target_speed = 0.0f;
+        } else {
+            target_speed = 0.99f * sqrtf(vector3MagSqrd2D(&motorcycle->collider.velocity));
+        }
+
+        vector2_t new_rot;
+        vector2_t rotation_amount;
+        vector2ComplexFromAngle(fixed_time_step * MAX_TURN_RATE * input.stick_x * (1.0f / 80.0f), &rotation_amount);
+        vector2ComplexMul(&motorcycle->transform.rotation, &rotation_amount, &new_rot);
+        
+        vector2ToLookDir(&new_rot, &forward);
+        motorcycle->transform.rotation = new_rot;
+    } else {
+        target_speed = 0.0f;
+    }
+
+    vector3_t target_vel;
+    vector3Scale(&forward, &target_vel, target_speed);
+
+    motorcycle->vehicle.is_stopped = vector3MagSqrd2D(&motorcycle->collider.velocity) < 0.01f;
+
     for (int i = 0; i < CAST_POINT_COUNT; i += 1) {
         cast_point_t* cast_point = &motorcycle->cast_points[i];
 
@@ -67,7 +111,11 @@ void motorcycle_update(void* data) {
 
             if (actual_height < target_height) {
                 if (needs_damping) {
-                    motorcycle->collider.velocity.y *= 0.8f;
+                    float y_vel = motorcycle->collider.velocity.y * 0.8f;
+                    motorcycle->collider.velocity.y = 0.0f;
+                    vector3MoveTowards(&motorcycle->collider.velocity, &target_vel, fixed_time_step * ACCEL_RATE, &motorcycle->collider.velocity);
+                    motorcycle->collider.velocity.y = y_vel;
+
                     needs_damping = false;
                 }
 
@@ -85,11 +133,11 @@ void motorcycle_init(motorcycle_t* motorcycle, struct motorcycle_definition* def
     transformSaInit(&motorcycle->transform, &definition->position, &definition->rotation, 1.0f);
     render_scene_init_add_renderable(&motorcycle->renderable, &motorcycle->transform, assets.mesh, 2.0f);
     dynamic_object_init(entity_id, &motorcycle->collider, &collider_type, COLLISION_LAYER_TANGIBLE, &motorcycle->transform.position, &motorcycle->transform.rotation);
-    motorcycle->has_rider = false;
+    vehicle_init(&motorcycle->vehicle, &motorcycle->transform, &vehicle_def, entity_id);
     collision_scene_add(&motorcycle->collider);
     update_add(motorcycle, motorcycle_update, UPDATE_PRIORITY_PHYICS, UPDATE_LAYER_WORLD);
 
-    interactable_init(&motorcycle->interactable, entity_id, INTERACT_TYPE_TALK, motorcycle_ride, motorcycle);
+    interactable_init(&motorcycle->interactable, entity_id, INTERACT_TYPE_RIDE, motorcycle_ride, motorcycle);
 
     for (int i = 0; i < CAST_POINT_COUNT; i += 1) {
         vector3_t cast_point;
@@ -103,4 +151,5 @@ void motorcycle_destroy(motorcycle_t* motorcycle) {
     collision_scene_remove(&motorcycle->collider);
     interactable_destroy(&motorcycle->interactable);
     update_remove(motorcycle);
+    vehicle_destroy(&motorcycle->vehicle);
 }

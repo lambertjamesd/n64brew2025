@@ -19,6 +19,7 @@
 
 enum player_state {
     PLAYER_GROUNDED,
+    PLAYER_IN_VEHICLE,
 };
 
 enum player_animation {
@@ -36,17 +37,8 @@ struct player_definition {
 
 union state_data {
     struct {
-        float timer;
-        float y_velocity;
-        struct Vector3 start_pos;
-        struct Vector2 target_rotation;
-        uint8_t climb_up_index;
-    } climbing_up;
-    struct {
-        entity_id carrying;
-        float carry_offset;
-        bool should_carry;
-    } carrying;
+        entity_id target;
+    } in_vehicle;
 };
 
 typedef union state_data state_data_t;

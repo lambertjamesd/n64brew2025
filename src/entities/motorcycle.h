@@ -8,6 +8,7 @@
 #include "../collision/dynamic_object.h"
 #include "../entity/interactable.h"
 #include "../collision/cast_point.h"
+#include "vehicle.h"
 
 #define CAST_POINT_COUNT 2
 
@@ -16,10 +17,9 @@ struct motorcycle {
     renderable_t renderable;
     dynamic_object_t collider;
     interactable_t interactable; 
+    vehicle_t vehicle;
 
     cast_point_t cast_points[CAST_POINT_COUNT];
-
-    bool has_rider: 1;
 };
 
 typedef struct motorcycle motorcycle_t;
