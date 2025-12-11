@@ -25,6 +25,8 @@ struct armature {
     color_t env_color;
 };
 
+typedef struct armature armature_t;
+
 void armature_definition_init(struct armature_definition* definition, int boune_count);
 void armature_definition_destroy(struct armature_definition* definition);
 
@@ -37,5 +39,7 @@ void armature_def_apply(struct armature_definition* definition, T3DMat4FP* pose)
 T3DMat4* armature_build_pose(struct armature* armature, struct frame_memory_pool* pool);
 
 void armature_bone_transform(struct armature* armature, int bone_index, struct Transform* result);
+
+void armature_unpack_transform(struct armature_packed_transform* packed, struct Transform* result);
 
 #endif

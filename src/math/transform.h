@@ -10,6 +10,8 @@ struct Transform {
     struct Vector3 scale;
 };
 
+typedef struct Transform transform_t;
+
 void transformInitIdentity(struct Transform* in);
 void transformToMatrix(struct Transform* in, float mtx[4][4]);
 void transformToWorldMatrix(struct Transform* in, float mtx[4][4]);

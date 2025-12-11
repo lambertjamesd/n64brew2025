@@ -24,6 +24,7 @@ void quatRotatedBoundingBoxSize(struct Quaternion* q, struct Vector3* halfBoxSiz
 void quatMultiply(struct Quaternion* a, struct Quaternion* b, struct Quaternion* out);
 void quatAdd(struct Quaternion* a, struct Quaternion* b, struct Quaternion* out);
 void quatToMatrix(struct Quaternion* q, float out[4][4]);
+void quatScale(struct Quaternion* q, float scale, struct Quaternion* out);
 void quatNormalize(struct Quaternion* q, struct Quaternion* out);
 void quatRandom(struct Quaternion* q);
 void quatLook(struct Vector3* lookDir, struct Vector3* up, struct Quaternion* out);

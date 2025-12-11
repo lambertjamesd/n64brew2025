@@ -165,6 +165,13 @@ void quatToMatrix(struct Quaternion* q, float out[4][4]) {
     out[3][3] = 1.0f;
 }
 
+void quatScale(struct Quaternion* q, float scale, struct Quaternion* out) {
+    out->x = q->x * scale;
+    out->y = q->y * scale;
+    out->z = q->z * scale;
+    out->w = q->w * scale;
+}
+
 void quatNormalize(struct Quaternion* q, struct Quaternion* out) {
     float magSqr = q->x * q->x + q->y * q->y + q->z * q->z + q->w * q->w;
 

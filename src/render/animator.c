@@ -303,6 +303,13 @@ void animator_step(struct animator* animator, float delta_time) {
     }
 }
 
+void animator_copy_attributes(struct animator* animator, struct armature* armature) {
+    armature->image_frame_0 = animator->image_frame_0;
+    armature->image_frame_1 = animator->image_frame_1;
+    armature->prim_color = animator->prim_color;
+    armature->env_color = animator->env_color;
+}
+
 void animator_update(struct animator* animator, struct armature* armature, float delta_time) {
     struct animation_clip* current_clip = animator->current_clip;
 
@@ -318,10 +325,7 @@ void animator_update(struct animator* animator, struct armature* armature, float
     }
 
     animator_step(animator, delta_time);
-    armature->image_frame_0 = animator->image_frame_0;
-    armature->image_frame_1 = animator->image_frame_1;
-    armature->prim_color = animator->prim_color;
-    armature->env_color = animator->env_color;
+    animator_copy_attributes(animator, armature);
 }
 
 void animator_run_clip(struct animator* animator, struct animation_clip* clip, float start_time, bool loop) {
@@ -358,4 +362,73 @@ bool animator_is_running_clip(struct animator* animator, struct animation_clip* 
 
 float animator_get_time(struct animator* animator) {
     return animator->current_time;
+}
+
+void animation_blender_init(animation_blender_t* blender, armature_t* armature, float* bone_weights) {
+    blender->armature = armature;
+    blender->bone_weights = bone_weights;
+
+    for (int i = 0; i < armature->bone_count; i += 1) {
+        bone_weights[i] = 0.0f;
+        armature->pose[i] = (transform_t){};
+    }
+}
+
+void animation_blender_apply_weights(animation_blender_t* blender, struct animation_used_attributes* used_attributes, float weight) {
+    for (int i = 0; i < blender->armature->bone_count; ++i) {
+        if (used_attributes->has_pos || used_attributes->has_rot || used_attributes->has_scale) {
+            blender->bone_weights[i] += weight;
+        }
+
+        used_attributes += 1;
+    }
+}
+
+void animation_blender_blend(animation_blender_t* blender, animator_t* animator, float delta_time, float weight) {
+    struct animation_clip* current_clip = animator->current_clip;
+
+    if (!current_clip) {
+        return;
+    }
+
+    if (animator->next_frame_state_index != -1) {
+        animator->events.all = 0;
+        animator_read_transform_with_weight(animator, blender->armature->pose, weight);
+    }
+
+    if (animator->done) {
+        animator->current_clip = NULL;
+        return;
+    }
+
+    animator_step(animator, delta_time);
+    animator_copy_attributes(animator, blender->armature);
+}
+
+void animation_blender_finish(animation_blender_t* blender) {
+    transform_t* pose = blender->armature->pose;
+
+    struct armature_packed_transform* default_pose = blender->armature->definition->default_pose;
+
+    for (int i = 0; i < blender->armature->bone_count; ++i, ++pose) {
+        float weight = blender->bone_weights[i];
+
+        if (weight < 0.001f) {
+            armature_unpack_transform(
+                &default_pose[i], 
+                pose
+            );
+            continue;
+        }
+
+        if (weight < 0.99f || weight > 1.01f) {
+            weight = 1.0f / weight;
+            vector3Scale(&pose->position, &pose->position, weight);
+            vector3Scale(&pose->scale, &pose->scale, weight);
+            quatScale(&pose->rotation, weight, &pose->rotation);
+        }
+
+        
+        quatNormalize(&pose->rotation, &pose->rotation);
+    }
 }
