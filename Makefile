@@ -62,12 +62,12 @@ TMESHES := $(MESH_SOURCES:assets/meshes/%.blend=filesystem/meshes/%.tmesh)
 filesystem/meshes/%.tmesh filesystem/meshes/%.anim: assets/meshes/%.blend $(EXPORT_SOURCE)
 	@mkdir -p $(dir $@)
 	@mkdir -p $(dir $(@:filesystem/meshes/%.tmesh=build/assets/meshes/%.tmesh))
-	$(BLENDER_4) $< --background --python-exit-code 1 --python tools/mesh_export/t3d_mesh.py -- $(@:filesystem/meshes/%.tmesh=build/assets/meshes/%.tmesh)
+	$(BLENDER_4) $< --background --factory-startup --python-exit-code 1 --python tools/mesh_export/t3d_mesh.py -- $(@:filesystem/meshes/%.tmesh=build/assets/meshes/%.tmesh)
 	$(MK_ASSET) -o $(dir $@) -w 256 $(@:filesystem/meshes/%.tmesh=build/assets/meshes/%.tmesh)
 	-cp $(@:filesystem/meshes/%.tmesh=build/assets/meshes/%.anim) $(@:%.tmesh=%.anim)
 
 assets/game_objects.json: tools/mesh_export/rebuild_prefabs.py $(MESH_SOURCES)
-	$(BLENDER_4) --background --python-exit-code 1 --python tools/mesh_export/rebuild_prefabs.py -- assets/game_objects.json
+	$(BLENDER_4) --background --factory-startup --python-exit-code 1 --python tools/mesh_export/rebuild_prefabs.py -- assets/game_objects.json
 
 ###
 # materials
@@ -86,7 +86,7 @@ filesystem/%.mat: assets/%.mat.json $(EXPORT_SOURCE)
 
 filesystem/%.mat: assets/%.mat.blend $(EXPORT_SOURCE)
 	@mkdir -p $(dir $@)
-	$(BLENDER_4) $< --background --python-exit-code 1 --python tools/mesh_export/material_fast64.py -- $@
+	$(BLENDER_4) $< --background --factory-startup --python-exit-code 1 --python tools/mesh_export/material_fast64.py -- $@
 
 list_materials: $(MATERIALS)
 	echo $(MATERIALS)
@@ -109,7 +109,7 @@ filesystem/%.wav64: assets/%.wav
 ###
 
 assets/materials/materials.blend: tools/mesh_export/material_generator.py $(MATERIAL_SOURCES)
-	$(BLENDER_4) --background --python-exit-code 1 --python tools/mesh_export/material_generator.py -- $@ $(MATERIAL_SOURCES)
+	$(BLENDER_4) --background --factory-startup --python-exit-code 1 --python tools/mesh_export/material_generator.py -- $@ $(MATERIAL_SOURCES)
 
 ###
 # cutscenes
@@ -151,7 +151,7 @@ filesystem/scenes/%.scene: assets/scenes/%.blend $$(wildcard assets/scenes/%.scr
 	@mkdir -p $(dir $@)
 	@mkdir -p $(dir $(@:filesystem/scenes/%.scene=build/assets/scenes/%.scene))
 	echo $@ $<
-	$(BLENDER_4) $< --background --python-exit-code 1 --python tools/mesh_export/scene.py -- $(@:filesystem/scenes/%.scene=build/assets/scenes/%.scene) $(@:%.scene=%.overworld)
+	$(BLENDER_4) $< --background --factory-startup --python-exit-code 1 --python tools/mesh_export/scene.py -- $(@:filesystem/scenes/%.scene=build/assets/scenes/%.scene) $(@:%.scene=%.overworld)
 	$(MK_ASSET) -o $(dir $@) -w 256 $(@:filesystem/scenes/%.scene=build/assets/scenes/%.scene)
 	-cp $(@:filesystem/scenes/%.scene=build/assets/scenes/%.sanim) $(@:%.scene=%.sanim)
 
@@ -168,7 +168,7 @@ build/test_result.txt: $(EXPORT_SOURCE)
 
 build/blender_results.txt: $(EXPORT_SOURCE)
 	@mkdir -p $(dir $@)
-	$(BLENDER_4) --background --python-exit-code 1 --python tools/mesh_export/tests.py
+	$(BLENDER_4) --background --factory-startup --python-exit-code 1 --python tools/mesh_export/tests.py
 	echo "success" > $@
 
 ###
