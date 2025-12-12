@@ -16,6 +16,7 @@ enum camera_controller_state {
     CAMERA_STATE_RETURN_TO_PLAYER,
     CAMERA_STATE_FIXED,
     CAMERA_STATE_MOVE_TO,
+    CAMERA_FOLLOW_VEHICLE,
 };
 
 struct camera_cached_calcuations {
@@ -34,6 +35,10 @@ union camera_controller_state_data {
         bool moving_position;
         bool moving_look_at;
     } move_to;
+    struct {
+        vector3_t last_vehicle_pos;
+        uint8_t shake_timer;
+    } follow_vehicle;
 };
 
 struct camera_controller {
@@ -61,6 +66,7 @@ void camera_controller_destroy(struct camera_controller* controller);
 void camera_look_at(struct camera_controller* controller, struct Vector3* target);
 void camera_follow_player(struct camera_controller* controller);
 void camera_return(struct camera_controller* controller);
+void camera_follow_vehicle(struct camera_controller* controller);
 void camera_play_animation(struct camera_controller* controller, struct camera_animation* animation);
 void camera_move_to(struct camera_controller* controller, struct Vector3* position, bool instant, bool move_target);
 void camera_set_fixed(struct camera_controller* controller, struct Vector3* position, struct Quaternion* rotation, float fov);

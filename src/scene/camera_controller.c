@@ -7,16 +7,21 @@
 #include "../math/constants.h"
 #include "../render/defs.h"
 #include "../entity/interactable.h"
+#include "../entities/vehicle.h"
+#include "../render/defs.h"
 #include <math.h>
 
 static struct move_towards_parameters camera_move_parameters = {
-    .max_speed = 40.0f,
-    .max_accel = 30.0f,
+    .max_speed = 20.0f,
+    .max_accel = 10.0f,
 };
 
 #define ASPECT_RATIO            (4.0f/3.0f)
 #define OVER_SHOULDER_DISTANCE  1.1f
 #define EXTEND_SPEED            2.0f
+
+#define BOOST_FOV               90.0f
+#define FOV_CHANGE_TIME         0.25f
 
 #define MIN_TWO_TARGET_DISTANCE 
 
@@ -277,11 +282,66 @@ void camera_controller_determine_near_plane(struct camera_controller* controller
     camera_set_near(controller->camera, clampf(target_near_plane, MIN_NEAR_PLANE, MAX_NEAR_PLANE));
 }
 
+void camera_follow_vehicle_update(struct camera_controller* controller) {
+    if (controller->player->state != PLAYER_IN_VEHICLE) {
+        camera_follow_player(controller);
+        return;
+    }
+
+    vehicle_t* vehicle = vehicle_get(controller->player->state_data.in_vehicle.target);
+
+    if (!vehicle) {
+        camera_follow_player(controller);
+        return;
+    }
+
+    vector3_t offset;
+    vector3Sub(
+        &vehicle->transform->position, 
+        &controller->state_data.follow_vehicle.last_vehicle_pos, 
+        &offset
+    );
+    controller->state_data.follow_vehicle.last_vehicle_pos = vehicle->transform->position;
+
+    vehicle_camera_target_t camera_target;
+    vehicle_get_camera_target(vehicle, joypad_get_buttons_held(0), &camera_target);
+
+    controller->target = camera_target.position;
+    vector3Add(&controller->looking_at, &offset, &controller->looking_at);
+    vector3Add(&controller->stable_position, &offset, &controller->stable_position);
+    
+    move_towards(&controller->looking_at, &controller->looking_at_speed, &camera_target.look_at, &camera_move_parameters);
+    move_towards(&controller->stable_position, &controller->speed, &controller->target, &camera_move_parameters);
+
+    camera_controller_update_position(controller, &controller->player->cutscene_actor.transform);
+
+    controller->camera->fov = mathfMoveTowards(
+        controller->camera->fov,
+        vehicle->is_boosting ? BOOST_FOV : DEFAULT_CAMERA_FOV,
+        fixed_time_step * (BOOST_FOV - DEFAULT_CAMERA_FOV) * (1.0f / FOV_CHANGE_TIME)
+    );
+    
+    if (vehicle->is_boosting) {
+        if (controller->state_data.follow_vehicle.shake_timer == 0) {
+            camera_shake(controller, randomInRangef(0.05f, 0.1f));
+            controller->state_data.follow_vehicle.shake_timer = randomInRange(4, 8);
+        } else {
+            --controller->state_data.follow_vehicle.shake_timer;
+        }
+    } else {
+        controller->state_data.follow_vehicle.shake_timer = 0;
+    }
+}
+
 void camera_controller_update(struct camera_controller* controller) {
     switch (controller->state) {
         case CAMERA_STATE_FOLLOW: {
-            camera_controller_determine_player_move_target(controller, &controller->target, joypad_get_buttons_held(0).z);
+            camera_controller_determine_player_move_target(controller, &controller->target, 0);
             camera_controller_update_position(controller, &controller->player->cutscene_actor.transform);
+
+            if (controller->player->state == PLAYER_IN_VEHICLE) {
+                camera_follow_vehicle(controller);
+            }
             break;
         }
         case CAMERA_STATE_LOOK_AT_WITH_PLAYER:
@@ -299,6 +359,9 @@ void camera_controller_update(struct camera_controller* controller) {
             break;
         case CAMERA_STATE_MOVE_TO:
             camera_controller_move_to(controller);
+            break;
+        case CAMERA_FOLLOW_VEHICLE:
+            camera_follow_vehicle_update(controller);
             break;
     }
 
@@ -350,12 +413,28 @@ void camera_controller_destroy(struct camera_controller* controller) {
 void camera_look_at(struct camera_controller* controller, struct Vector3* target) {
     controller->look_target = *target;
     controller->state = CAMERA_STATE_LOOK_AT_WITH_PLAYER;
-    controller->camera->fov = 70.0f;
+    controller->camera->fov = DEFAULT_CAMERA_FOV;
 }
 
 void camera_follow_player(struct camera_controller* controller) {
     controller->state = CAMERA_STATE_FOLLOW;
-    controller->camera->fov = 70.0f;
+    controller->camera->fov = DEFAULT_CAMERA_FOV;
+}
+
+void camera_follow_vehicle(struct camera_controller* controller) {
+    vehicle_t* vehicle = vehicle_get(controller->player->state_data.in_vehicle.target);
+
+    if (!vehicle) {
+        return;
+    }
+    
+    controller->state_data = (union camera_controller_state_data){
+        .follow_vehicle = {
+            .last_vehicle_pos = vehicle->transform->position,
+            .shake_timer = 0,
+        },
+    };
+    controller->state = CAMERA_FOLLOW_VEHICLE;
 }
 
 void camera_return(struct camera_controller* controller) {

@@ -12,7 +12,9 @@
 #define HOVER_SPRING_STRENGTH   (-GRAVITY_CONSTANT / (CAST_POINT_COUNT * HOVER_SAG_AMOUNT))
 
 #define ACCEL_RATE              20.0f
+#define BACKUP_SPEED            -5.0f
 #define MAX_SPEED               30.0f
+#define BOOST_SPEED             40.0f
 #define MAX_TURN_RATE           1.0f
 
 struct motorcyle_assets {
@@ -32,6 +34,45 @@ static dynamic_object_type_t collider_type = {
     .center = {0.0f, 0.35f, 0.0f},
 };
 
+static vehicle_camera_target_t boost_positions[VEHICLE_CAM_COUNT] = {
+    {
+        .position = {0.0f, 1.75f, -3.0f},
+        .look_at = {0.0f, 1.75f, 2.0f},
+    },
+    {
+        .position = {0.0f, 6.5f, -5.0f},
+        .look_at = {0.0f, 1.5f, 8.0f},
+    },
+    {
+        .position = {0.0f, 1.5f, -4.0f},
+        .look_at = {0.0f, 1.5f, 16.0f},
+    },
+    {
+        .position = {0.0f, 1.5f, -4.0f},
+        .look_at = {0.0f, 1.5f, 16.0f},
+    },
+    {
+        .position = {0.0f, 1.5f, -4.0f},
+        .look_at = {0.0f, 1.5f, 16.0f},
+    },
+    {
+        .position = {0.0f, 1.5f, -4.0f},
+        .look_at = {0.0f, 1.5f, 16.0f},
+    },
+    {
+        .position = {0.0f, 1.5f, -4.0f},
+        .look_at = {0.0f, 1.5f, 16.0f},
+    },
+    {
+        .position = {0.0f, 1.5f, -4.0f},
+        .look_at = {0.0f, 1.5f, 16.0f},
+    },
+    {
+        .position = {0.0f, 1.5f, -4.0f},
+        .look_at = {0.0f, 1.5f, 16.0f},
+    },
+};
+
 static vehicle_definiton_t vehicle_def = {
     .local_player_position = {
         .x = 0.0f,
@@ -39,6 +80,45 @@ static vehicle_definiton_t vehicle_def = {
         .z = 0.5f,
     },
     .exit_position = {-1.0f, 0.0f, 0.0f},
+    .camera_positions = {
+        {
+            .position = {0.0f, 2.0f, -6.0f},
+            .look_at = {0.0f, 2.0f, 2.0f},
+        },
+        {
+            .position = {0.0f, 15.5f, -8.0f},
+            .look_at = {0.0f, 1.5f, 2.0f},
+        },
+        {
+            .position = {0.0f, 1.5f, -4.0f},
+            .look_at = {0.0f, 1.5f, 16.0f},
+        },
+        {
+            .position = {0.0f, 1.5f, -4.0f},
+            .look_at = {0.0f, 1.5f, 16.0f},
+        },
+        {
+            .position = {0.0f, 1.5f, -4.0f},
+            .look_at = {0.0f, 1.5f, 16.0f},
+        },
+        {
+            .position = {0.0f, 1.5f, -4.0f},
+            .look_at = {0.0f, 1.5f, 16.0f},
+        },
+        {
+            .position = {0.0f, 1.5f, -4.0f},
+            .look_at = {0.0f, 1.5f, 16.0f},
+        },
+        {
+            .position = {0.0f, 1.5f, -4.0f},
+            .look_at = {0.0f, 1.5f, 16.0f},
+        },
+        {
+            .position = {0.0f, 1.5f, -4.0f},
+            .look_at = {0.0f, 1.5f, 16.0f},
+        },
+    },
+    .boost_camera_positions = boost_positions,
 };
 
 static vector3_t local_cast_points[] = {
@@ -76,13 +156,16 @@ void motorcycle_update(void* data) {
     vector2ToLookDir(&motorcycle->transform.rotation, &forward);
 
     float target_speed = 0.0f;
+    joypad_inputs_t input = joypad_get_inputs(0);
+    motorcycle->vehicle.is_boosting = input.btn.z && input.btn.a;
 
     if (motorcycle->vehicle.driver) {
-        joypad_inputs_t input = joypad_get_inputs(0);
-        if (input.btn.a) {
+        if (motorcycle->vehicle.is_boosting) {
+            target_speed = BOOST_SPEED;
+        } else if (input.btn.a) {
             target_speed = MAX_SPEED;
         } else if (input.btn.b) {
-            target_speed = 0.0f;
+            target_speed = input.stick_y > -20 ? 0.0f : BACKUP_SPEED;
         } else {
             target_speed = 0.99f * sqrtf(vector3MagSqrd2D(&motorcycle->collider.velocity));
         }
@@ -101,7 +184,7 @@ void motorcycle_update(void* data) {
     vector3_t target_vel;
     vector3Scale(&forward, &target_vel, target_speed);
 
-    motorcycle->vehicle.is_stopped = vector3MagSqrd2D(&motorcycle->collider.velocity) < 0.01f;
+    motorcycle->vehicle.is_stopped = vector3MagSqrd2D(&motorcycle->collider.velocity) < 0.01f && input.stick_y > -20;
 
     for (int i = 0; i < CAST_POINT_COUNT; i += 1) {
         cast_point_t* cast_point = &motorcycle->cast_points[i];
