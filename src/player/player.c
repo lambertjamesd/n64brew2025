@@ -415,7 +415,6 @@ void player_update_in_vehicle(struct player* player, struct contact* ground_cont
     player_get_input_direction(player, &target_direction);
     vehicle_steer(vehicle, &target_direction);
     vehicle_apply_driver_transform(vehicle, &player->cutscene_actor.transform);
-    *cutscene_actor_get_vel(&player->cutscene_actor) = gZeroVec;
 
     joypad_buttons_t pressed = joypad_get_buttons_pressed(0);
 
@@ -484,7 +483,7 @@ void player_unload_sound(struct player* player) {
 
 void player_init(struct player* player, struct player_definition* definition, struct Transform* camera_transform) {
     transformSaInitIdentity(&player->cutscene_actor.transform);
-    renderable_single_axis_init(&player->renderable, &player->cutscene_actor.transform, "rom:/meshes/player_test.tmesh");
+    renderable_single_axis_init(&player->renderable, &player->cutscene_actor.transform, "rom:/meshes/female_jam_t3d.tmesh");
 
     player->camera_transform = camera_transform;
 
@@ -511,7 +510,7 @@ void player_init(struct player* player, struct player_definition* definition, st
         ENTITY_ID_PLAYER,
         &transform,
         &player->renderable.armature,
-        "rom:/meshes/player_test.anim"
+        "rom:/meshes/female_jam_t3d.anim"
     );
 
     player->cutscene_actor.collider.density_class = DYNAMIC_DENSITY_MEDIUM;
