@@ -15,6 +15,7 @@ void vehicle_init(vehicle_t* vehicle, transform_sa_t* transform, vehicle_definit
     vehicle->last_input_direction = gZeroVec;
     vehicle->is_stopped = true;
     vehicle->is_boosting = false;
+    vehicle->driver = 0;
 
     hash_map_set(&entity_mapping, id, vehicle);
 }

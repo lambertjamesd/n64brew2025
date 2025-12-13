@@ -1,6 +1,7 @@
 import bpy
 import os.path
 import sys
+import math
 
 from . import material
 from . import serialize
@@ -44,7 +45,7 @@ def find_node_of_type(tree_nodes: bpy.types.Nodes, type_name: str):
     return None
 
 def color_float_to_int(value):
-    result = round(value * 255)
+    result = math.floor(value * 255 + 0.5)
 
     if result > 255:
         result = 255

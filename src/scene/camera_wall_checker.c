@@ -28,6 +28,7 @@ void camera_wall_checker_init(camera_wall_checker_t* checker) {
         &checker->position,
         NULL
     );
+    checker->collider.collision_group = ENTITY_ID_PLAYER;
     collision_scene_add(&checker->collider);
 }
 

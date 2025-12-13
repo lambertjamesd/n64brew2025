@@ -113,7 +113,7 @@ class Particles:
         file.write(struct.pack('>HHHH', final_count, self.particle_size, self.particle_scale_width, self.particle_scale_height))
 
 def convert_channel(value):
-    return round(255 * value)
+    return math.floor(255 * value + 0.5)
 
 def pack_color(col):
     return struct.pack(
@@ -233,14 +233,14 @@ def build_particles(obj: bpy.types.Object, base_transform: mathutils.Matrix) -> 
 
         particle_data.write(struct.pack(
             '>bbbb', 
-            int(posA.x), int(posA.y), int(posA.z), round(127 * size_a)
+            int(posA.x), int(posA.y), int(posA.z), math.floor(127 * size_a + 0.5)
         ))
 
         size_b = next_vertex.groups[size.index].weight if next_vertex and size else 1
 
         particle_data.write(struct.pack(
             '>bbbb', 
-            int(posB.x), int(posB.y), int(posB.z), round(127 * size_b)
+            int(posB.x), int(posB.y), int(posB.z), math.floor(127 * size_b + 0.5)
         ))
 
         if color and color.domain == 'POINT':

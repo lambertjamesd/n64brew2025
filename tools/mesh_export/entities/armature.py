@@ -434,10 +434,10 @@ def get_channels(group: bpy.types.ActionGroup, suffix: str) -> list[bpy.types.FC
     return result
 
 def _pack_position(input: float) -> int:
-    return round(input * 8)
+    return math.floor(input * 8 + 0.5)
 
 def _pack_scale(input: float) -> int:
-    return round(input * 256)
+    return math.floor(input * 256 + 0.5)
 
 def pack_quaternion(input: mathutils.Quaternion):
     if input.w < 0:
@@ -446,9 +446,9 @@ def pack_quaternion(input: mathutils.Quaternion):
         final_input = input
 
     return [
-        round(32767 * final_input.x),
-        round(32767 * final_input.y),
-        round(32767 * final_input.z)
+        math.floor(32767 * final_input.x + 0.5),
+        math.floor(32767 * final_input.y + 0.5),
+        math.floor(32767 * final_input.z + 0.5)
     ]
 
 def write_armature(file, arm: ArmatureData | None, settings: export_settings.ExportSettings):

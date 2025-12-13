@@ -1,4 +1,5 @@
 import struct
+import math
 
 import mathutils
 from . import mesh
@@ -324,16 +325,16 @@ def _pack_rotation(rot):
     final_rot = rot if rot.w >= 0 else -rot
     return struct.pack(
         '>hhh', 
-        round(32767 * final_rot.x),
-        round(32767 * final_rot.y),
-        round(32767 * final_rot.z)
+        math.floor(32767 * final_rot.x + 0.5),
+        math.floor(32767 * final_rot.y + 0.5),
+        math.floor(32767 * final_rot.z + 0.5)
     )
 
 def _pack_normal(normal: mathutils.Vector):
   normalized = normal.normalized()
-  x_int = int(round(normalized[0] * 15.5))
-  y_int = int(round(normalized[1] * 31.5))
-  z_int = int(round(normalized[2] * 15.5))
+  x_int = int(math.floor(normalized[0] * 15.5 + 0.5))
+  y_int = int(math.floor(normalized[1] * 31.5 + 0.5))
+  z_int = int(math.floor(normalized[2] * 15.5 + 0.5))
   x_int = min(max(x_int, -16), 15)
   y_int = min(max(y_int, -32), 31)
   z_int = min(max(z_int, -16), 15)
@@ -354,8 +355,8 @@ def _pack_uv(uv, materail: material.Material):
 
     return struct.pack(
         '>HH',
-        round(uv[0] * w * 32) & 65535,
-        round((1 - uv[1]) * h * 32) & 65535
+        math.floor(uv[0] * w * 32 + 0.5) & 65535,
+        math.floor((1 - uv[1]) * h * 32 + 0.5) & 65535
     )
 
 TMESH_COMMAND_VERTICES = 0

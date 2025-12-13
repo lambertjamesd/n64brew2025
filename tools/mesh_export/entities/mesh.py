@@ -235,7 +235,7 @@ class mesh_data():
 
     
 def convert_vertex_channel(input, gamma):
-    result = round(255 * math.pow(input, gamma))
+    result = math.floor(255 * math.pow(input, gamma) + 0.5)
 
     if result > 255:
         return 255
@@ -247,16 +247,16 @@ def convert_vertex_channel(input, gamma):
 def pack_vertex(vertex, uv, color, normal, bone_index, gamma = 1):
     result = struct.pack(
         ">hhh", 
-        round(vertex[0] * 64), 
-        round(vertex[1] * 64), 
-        round(vertex[2] * 64)
+        math.floor(vertex[0] * 64 + 0.5), 
+        math.floor(vertex[1] * 64 + 0.5), 
+        math.floor(vertex[2] * 64 + 0.5)
     )
 
     if uv:
         result = result + struct.pack(
             ">hh",
-            round(uv[0] * 256) % 32768,
-            round((1 - uv[1]) * 256) % 32768
+            math.floor(uv[0] * 256 + 0.5) % 32768,
+            math.floor((1 - uv[1]) * 256 + 0.5) % 32768
         )
 
     if color:
@@ -272,9 +272,9 @@ def pack_vertex(vertex, uv, color, normal, bone_index, gamma = 1):
         normal = normal.normalized()
         result = result + struct.pack(
             ">bbb", 
-            round(normal[0] * 127), 
-            round(normal[1] * 127), 
-            round(normal[2] * 127)
+            math.floor(normal[0] * 127 + 0.5), 
+            math.floor(normal[1] * 127 + 0.5), 
+            math.floor(normal[2] * 127 + 0.5)
         )
 
     if bone_index != None:
