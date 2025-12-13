@@ -153,25 +153,28 @@ void camera_controller_watch_target(struct camera_controller* controller, struct
     move_towards(&controller->looking_at, &controller->looking_at_speed, &looking_at, &camera_move_parameters);
 }
 
-void camera_controller_determine_player_move_target(struct camera_controller* controller, struct Vector3* result, bool behind_player) {
-    struct Vector3 offset;
+/**
+ * figure out where the camera should be positioned
+ */
+void camera_controller_determine_player_move_target(struct camera_controller* controller, struct Vector3* result) {
     struct Vector3* player_pos = player_get_position(controller->player);
+    
+    // deterine direction from camera's current position to the player
+    struct Vector3 offset;
+    vector3Sub(player_pos, &controller->stable_position, &offset);
 
-    if (behind_player) {
-        struct Quaternion quat;
-        quatAxisComplex(&gUp, &controller->player->cutscene_actor.transform.rotation, &quat);
-        quatMultVector(&quat, &gForward, &offset);
-    } else {
-        vector3Sub(player_pos, &controller->stable_position, &offset);
+    // convert that direction to a unit vector in the x/z plane
+    offset.y = 0.0f;
+    vector3Normalize(&offset, &offset);
 
-        offset.y = 0.0f;
-        vector3Normalize(&offset, &offset);
-
-        if (vector3MagSqrd(&offset) < 0.1f) {
-            offset = gForward;
-        }
+    // if the normalize step failed (becuase the player and camera are the same point)
+    // just pick any direction to use
+    if (vector3MagSqrd(&offset) < 0.1f) {
+        offset = gForward;
     }
 
+    // determine how far the camera should be the wall checker will determine if the camera 
+    // should move closer to avoid obstacles
     float clamped_distance = controller->wall_checker.actual_distance + EXTEND_SPEED * fixed_time_step;
 
     if (clamped_distance < CAMERA_FOLLOW_DISTANCE) {
@@ -180,9 +183,13 @@ void camera_controller_determine_player_move_target(struct camera_controller* co
         vector3AddScaled(player_pos, &offset, -CAMERA_FOLLOW_DISTANCE, result);
     }
 
+    // move the player up to compensate for the player's height
     result->y += CAMERA_FOLLOW_HEIGHT;
+    // look at the player
     struct Vector3 looking_at = *player_pos;
     looking_at.y += CAMERA_FOLLOW_HEIGHT;
+
+    // slowly move the looking_at towards the look target to prevent a jarring motion
     move_towards(&controller->looking_at, &controller->looking_at_speed, &looking_at, &camera_move_parameters);
 }
 
@@ -336,7 +343,7 @@ void camera_follow_vehicle_update(struct camera_controller* controller) {
 void camera_controller_update(struct camera_controller* controller) {
     switch (controller->state) {
         case CAMERA_STATE_FOLLOW: {
-            camera_controller_determine_player_move_target(controller, &controller->target, 0);
+            camera_controller_determine_player_move_target(controller, &controller->target);
             camera_controller_update_position(controller, &controller->player->cutscene_actor.transform);
 
             if (controller->player->state == PLAYER_IN_VEHICLE) {
@@ -386,7 +393,7 @@ void camera_controller_init(struct camera_controller* controller, struct Camera*
     controller->looking_at = player->cutscene_actor.transform.position;
     controller->looking_at_speed = 0.0f;
     controller->look_target = gZeroVec;
-    camera_controller_determine_player_move_target(controller, &controller->target, true);
+    camera_controller_determine_player_move_target(controller, &controller->target);
     controller->follow_distace = 3.0f;
     controller->shake_offset = gZeroVec;
     controller->shake_velocity = gZeroVec;

@@ -26,6 +26,13 @@ struct camera_cached_calcuations {
     float sin_1_3_fov_horz;
 };
 
+/**
+ * stores variables only needed for a single state
+ * the data will be lost when changing states so
+ * if you need some data to persist after changing
+ * states just store it directly on the camera_controller
+ * struct
+ */
 union camera_controller_state_data {
     struct {
         struct camera_animation* animation;
@@ -41,6 +48,29 @@ union camera_controller_state_data {
     } follow_vehicle;
 };
 
+/**
+ * The camera controller can be in a few different states
+ * based on the enum camera_controller_state. Each state
+ * will give different camera behavior.
+ * 
+ * The state is responsible for setting the the following
+ * variables as part of controlling the camera
+ * stable_position - set the position of the camera pre camera shake
+ * camera->transform.rotation - sets the rotation of the camera
+ * camera->fov - sets the field of view of the camera
+ * 
+ * The common code in the update function will automatically apply
+ * camera shake based on the stable position
+ * 
+ * there are some variables that may be useful
+ * target - used to store where the camera wants to move towards
+ * looking_at - used to indicate what the camera will look at
+ * looking_at_target - used to indicate where the camera wants to look at
+ * speed - how fast the camera is currently moving towards target
+ * 
+ * calling camera_controller_update_position will move the camera position
+ * towards target and rotate the camera to look directly at looking_at
+ */
 struct camera_controller {
     struct Camera* camera;
     struct Vector3 stable_position;
@@ -54,6 +84,7 @@ struct camera_controller {
     struct Vector3 look_target;
     struct Vector3 shake_offset;
     struct Vector3 shake_velocity;
+    // checks if something is between the player and the camera
     camera_wall_checker_t wall_checker;
     enum camera_controller_state state;
     union camera_controller_state_data state_data;
