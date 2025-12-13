@@ -14,6 +14,8 @@ struct mesh_collider {
     kd_tree_t index;
 };
 
+typedef struct mesh_collider mesh_collider_t;
+
 struct mesh_triangle {
     struct Vector3* vertices;
     struct mesh_triangle_indices triangle;
