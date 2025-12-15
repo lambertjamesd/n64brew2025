@@ -10,7 +10,7 @@
 #include "../collision/cast_point.h"
 #include "vehicle.h"
 
-#define CAST_POINT_COUNT 2
+#define CAST_POINT_COUNT 4
 
 struct motorcycle {
     transform_sa_t transform;
