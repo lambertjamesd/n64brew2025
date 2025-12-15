@@ -34,7 +34,7 @@ void setup() {
     interactable_reset();
     savefile_new();
 
-
+    fade_effect_init();
     fade_effect_set((color_t){0, 0, 0, 255}, 0.0f);
     fade_effect_set((color_t){0, 0, 0, 0}, 3.0f);
 

@@ -13,8 +13,8 @@
 
 #define ACCEL_RATE              20.0f
 #define BACKUP_SPEED            -5.0f
-#define MAX_SPEED               30.0f
-#define BOOST_SPEED             40.0f
+#define DRIVE_SPEED               50.0f
+#define BOOST_SPEED             80.0f
 #define MAX_TURN_RATE           1.0f
 
 struct motorcyle_assets {
@@ -163,7 +163,7 @@ void motorcycle_update(void* data) {
         if (motorcycle->vehicle.is_boosting) {
             target_speed = BOOST_SPEED;
         } else if (input.btn.a) {
-            target_speed = MAX_SPEED;
+            target_speed = DRIVE_SPEED;
         } else if (input.btn.b) {
             target_speed = input.stick_y > -20 ? 0.0f : BACKUP_SPEED;
         } else {
