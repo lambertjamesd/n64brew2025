@@ -38,7 +38,8 @@ void setup() {
     fade_effect_set((color_t){0, 0, 0, 255}, 0.0f);
     fade_effect_set((color_t){0, 0, 0, 0}, 3.0f);
 
-    scene_queue_next("rom:/scenes/overworld_accuracy_test.scene");
+    // scene_queue_next("rom:/scenes/overworld_accuracy_test.scene");
+    scene_queue_next("rom:/scenes/overworld.scene");
 
     current_scene = scene_load(scene_get_next());
 
@@ -58,7 +59,7 @@ void render_3d() {
 
     t3d_frame_start();
 
-	t3d_screen_clear_color(RGBA32(100, 0, 100, 0));
+	t3d_screen_clear_color(RGBA32(180, 220, 255, 0));
     t3d_screen_clear_depth();
 
     t3d_light_set_ambient(colorAmbient); // one global ambient light, always active
