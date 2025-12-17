@@ -8,7 +8,7 @@
 #include "../time/time.h"
 #include "../math/mathf.h"
 
-#define HOVER_SAG_AMOUNT        0.5f
+#define HOVER_SAG_AMOUNT        0.25f
 #define HOVER_SPRING_STRENGTH   (-GRAVITY_CONSTANT / (CAST_POINT_COUNT * HOVER_SAG_AMOUNT))
 
 #define ACCEL_RATE              20.0f

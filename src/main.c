@@ -21,11 +21,22 @@
 #include "effects/area_title.h"
 #include "effects/fade_effect.h"
 #include "audio/audio.h"
+#include "repair/repair_scene.h"
 
 #include <libdragon.h>
 #include <n64sys.h>
 
 #define RDPQ_VALIDATE_DETACH_ADDR    0x00800000
+
+void load_scene_or_repair(const char* filename) {
+    if (strncmp("rom:/scenes/", filename, strlen("rom:/scenes/")) == 0) {
+        current_scene = scene_load(filename);
+    } else if (strncmp("rom:/repair/", filename, strlen("rom:/repair/")) == 0) {
+        current_repair_scene = repair_scene_load(filename);
+    } else {
+        debugf("invalid scene %s", filename);
+    }
+}
 
 
 void setup() {
@@ -40,8 +51,9 @@ void setup() {
 
     // scene_queue_next("rom:/scenes/overworld_accuracy_test.scene");
     scene_queue_next("rom:/scenes/overworld.scene");
+    // scene_queue_next("rom:/repair/motorycle_engine.repair");
 
-    current_scene = scene_load(scene_get_next());
+    load_scene_or_repair(scene_get_next());
 
     scene_clear_next();
     screen_debug_init();
@@ -71,7 +83,11 @@ void render_3d() {
     T3DViewport* viewport = frame_malloc(pool, sizeof(T3DViewport));
     *viewport = t3d_viewport_create();
 
-    render_scene_render(&current_scene->camera, viewport, &frame_memory_pools[next_frame_memory_pool]);
+    if (current_scene) {
+        render_scene_render(&current_scene->camera, viewport, &frame_memory_pools[next_frame_memory_pool]);
+    } else if (current_repair_scene) {
+        repair_scene_render(current_repair_scene, viewport, pool);
+    }
     
     next_frame_memory_pool ^= 1;
 }
@@ -125,9 +141,16 @@ bool check_scene_load() {
         return true;
     }
 
-    scene_release(current_scene);
+    if (current_scene) {
+        scene_release(current_scene);
+        current_scene = NULL;
+    }
+    if (current_repair_scene) {
+        repair_scene_destroy(current_repair_scene);
+        current_repair_scene = NULL;
+    }
     reset();
-    current_scene = scene_load(scene_get_next());
+    load_scene_or_repair(scene_get_next());
     scene_clear_next();
 
     return false;
@@ -219,8 +242,12 @@ int main(void)
 
         joypad_poll();
         struct Vector3 right;
-        quatMultVector(&current_scene->camera.transform.rotation, &gRight, &right);
-        audio_update_listener(&current_scene->camera.transform.position, &right, &gZeroVec);
+        if (current_scene) {
+            quatMultVector(&current_scene->camera.transform.rotation, &gRight, &right);
+            audio_update_listener(&current_scene->camera.transform.position, &right, &gZeroVec);
+        } else {
+            audio_update_listener(&gZeroVec, &gRight, &gZeroVec);
+        }
         audio_player_update();
         if (update_has_layer(UPDATE_LAYER_WORLD | UPDATE_LAYER_CUTSCENE)) {
             // uint64_t start_time = get_ticks_us();

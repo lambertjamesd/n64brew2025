@@ -158,6 +158,21 @@ filesystem/scenes/%.scene: assets/scenes/%.blend $$(wildcard assets/scenes/%.scr
 filesystem/scenes/%.overworld build/assets/scenes/%.json: filesystem/scenes/%.scene;
 
 ###
+# repair
+###
+
+REPAIR_SOURCES := $(shell find assets/repair -type f -name '*.blend' | sort)
+
+REPAIRS := $(REPAIR_SOURCES:assets/repair/%.blend=filesystem/repair/%.repair)
+
+filesystem/repair/%.repair: assets/repair/%.blend build/assets/scripts/globals.json $(EXPORT_SOURCE)
+	@mkdir -p $(dir $@)
+	@mkdir -p $(dir $(@:filesystem/repair/%.repair=build/assets/repair/%.repair))
+	echo $@ $<
+	$(BLENDER_4) $< --background --factory-startup --python-exit-code 1 --python tools/mesh_export/repair.py -- $(@:filesystem/repair/%.repair=build/assets/repair/%.repair)
+	$(MK_ASSET) -o $(dir $@) -w 256 $(@:filesystem/repair/%.repair=build/assets/repair/%.repair)
+
+###
 # tests
 ###
 
@@ -183,9 +198,9 @@ TEST_SOURCES := $(shell find src/ -type f -name '*_test.c' | sort)
 TEST_SOURCE_OBJS := $(TEST_SOURCES:src/%.c=$(BUILD_DIR)/%.o)
 TEST_OBJS := $(SOURCE_OBJS) $(TEST_SOURCE_OBJS)
 
-filesystem/: $(SPRITES) $(TMESHES) $(MATERIALS) $(SCENES) $(FONTS) $(SCRIPTS_COMPILED) $(SOUND_EFFECTS) filesystem/scripts/globals.dat
+filesystem/: $(SPRITES) $(TMESHES) $(MATERIALS) $(SCENES) $(REPAIRS) $(FONTS) $(SCRIPTS_COMPILED) $(SOUND_EFFECTS) filesystem/scripts/globals.dat
 
-$(BUILD_DIR)/spellcraft.dfs: filesystem/ $(SPRITES) $(TMESHES) $(MATERIALS) $(SCENES) $(FONTS) $(SCRIPTS_COMPILED) $(SOUND_EFFECTS) filesystem/scripts/globals.dat
+$(BUILD_DIR)/spellcraft.dfs: filesystem/ $(SPRITES) $(TMESHES) $(MATERIALS) $(SCENES) $(REPAIRS) $(FONTS) $(SCRIPTS_COMPILED) $(SOUND_EFFECTS) filesystem/scripts/globals.dat
 $(BUILD_DIR)/spellcraft.elf: $(OBJS)
 $(BUILD_DIR)/spellcraft_test.elf: $(TEST_OBJS)
 
