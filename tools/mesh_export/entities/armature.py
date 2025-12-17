@@ -339,7 +339,9 @@ class ArmatureData:
         self._ordered_bones = sorted(list(self._filtered_bones.values()), key = lambda x: x.index)
 
     def find_bone_data(self, bone_name: str):
-        return self._filtered_bones[bone_name]
+        if bone_name in self._filtered_bones:
+            return self._filtered_bones[bone_name]
+        return self._ordered_bones[0]
     
     def find_bone_linkage(self, obj: bpy.types.Object) -> BoneLinkage:
 
