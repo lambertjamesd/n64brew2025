@@ -11,6 +11,7 @@
 #include "../cutscene/cutscene_actor.h"
 #include "../audio/audio.h"
 #include "../entities/vehicle.h"
+#include "../menu/menu_common.h"
 
 void init_engine() {
     render_scene_reset();
@@ -22,4 +23,5 @@ void init_engine() {
     cutscene_runner_init();
     cutscene_actor_reset();
     audio_player_init();
+    menu_common_init();
 }

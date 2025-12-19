@@ -5,7 +5,6 @@
 #include "../cutscene/cutscene_runner.h"
 #include "../render/coloru8.h"
 #include "../resource/material_cache.h"
-#include "../resource/font_cache.h"
 #include "../time/time.h"
 
 void hud_render(void *data) {

@@ -1,0 +1,20 @@
+{
+    "tex0": {
+        "filename": "../../images/menu/menu_corner.png",
+        "s": {
+            "repeats": 2,
+            "mirror": true
+        },
+        "t": {
+            "repeats": 2,
+            "mirror": true
+        }
+    },
+    "combineMode": [{
+        "color": ["PRIM", "ENV", "TEX0", "ENV"],
+        "alpha": ["0", "0", "0", "1"]
+    }],
+    "primColor": [12, 24, 80, 255],
+    "envColor": [8, 15, 52, 255],
+    "blendMode": "OPAQUE"
+}

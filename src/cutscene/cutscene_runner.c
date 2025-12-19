@@ -310,7 +310,15 @@ bool cutscene_runner_update_step(struct cutscene_active_entry* cutscene, struct 
     switch (step->type)
     {
         case CUTSCENE_STEP_DIALOG:
-            return true;
+            if (!cutscene_runner.active_step_data.dialog.has_shown && !dialog_box_is_active()) {
+                int args[step->data.dialog.message.nargs];
+                evaluation_context_popn(&cutscene->context, args, step->data.dialog.message.nargs);
+                dialog_box_show(step->data.dialog.message.template, args, NULL, NULL);
+                cutscene_runner.active_step_data.dialog.has_shown = true;
+            } else if (cutscene_runner.active_step_data.dialog.has_shown) {
+                return !dialog_box_is_active();
+            }
+            return false;
         case CUTSCENE_STEP_SHOW_ITEM:
             return true;
         case CUTSCENE_STEP_JUMP_IF_NOT:

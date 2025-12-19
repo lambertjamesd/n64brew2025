@@ -4,6 +4,7 @@
 #include "../render/tmesh.h"
 #include "../math/transform.h"
 #include "../collision/mesh_collider.h"
+#include "../render/frame_alloc.h"
 #include <stdio.h>
 
 struct repair_part {
@@ -19,5 +20,7 @@ typedef struct repair_part repair_part_t;
 
 void repair_part_load(repair_part_t* part, FILE* file);
 void repair_part_destroy(repair_part_t* part);
+
+void repair_part_render(repair_part_t* part, struct frame_memory_pool* pool);
 
 #endif

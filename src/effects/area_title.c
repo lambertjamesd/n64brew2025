@@ -1,7 +1,7 @@
 #include "area_title.h"
 
 #include <libdragon.h>
-#include "../resource/font_cache.h"
+#include "../fonts/fonts.h"
 #include "../time/time.h"
 #include "../menu/menu_rendering.h"
 
@@ -10,9 +10,9 @@
 #define TITLE_FADE_TIME 1.0f
 
 struct area_title {
-    rdpq_font_t* font;
     char message[16];
     float time_left;
+    bool visible;
 };
 
 static struct area_title g_title;
@@ -24,7 +24,7 @@ int area_title_measure() {
 
     while (*curr) {
         rdpq_font_gmetrics_t metrics;
-        bool was_found = rdpq_font_get_glyph_metrics(g_title.font, *curr, &metrics);
+        bool was_found = rdpq_font_get_glyph_metrics(font_get(FONT_DIALOG), *curr, &metrics);
         ++curr;
 
         if (was_found) {
@@ -46,7 +46,7 @@ void area_title_render(void* data) {
         alpha = (TITLE_SHOW_TIME - g_title.time_left) * (1.0f / TITLE_FADE_TIME);
     }
 
-    rdpq_font_style(g_title.font, 0, &(rdpq_fontstyle_t) {
+    rdpq_font_style(font_get(FONT_DIALOG), 0, &(rdpq_fontstyle_t) {
         .color = {255, 255, 255, (uint8_t)(alpha * 255.0f)},
         .custom = NULL,
         .custom_arg = NULL,
@@ -88,12 +88,12 @@ void area_title_show(const char* title) {
     g_title.message[MAX_TITLE_LEN - 1] = '\0';
     g_title.time_left = TITLE_SHOW_TIME;
 
-    if (g_title.font) {
+    if (g_title.visible) {
         return;
     }
 
-    g_title.font = font_cache_load("rom:/fonts/HeavyEquipment.font64");
-    rdpq_text_register_font(2, g_title.font);
+    g_title.visible = true;
+    font_type_use(FONT_DIALOG);
     menu_add_callback(area_title_render, &g_title, MENU_PRIORITY_TITLE);
     update_add(&g_title, area_title_update, UPDATE_PRIORITY_EFFECTS, UPDATE_LAYER_CUTSCENE);
 }
@@ -101,10 +101,12 @@ void area_title_show(const char* title) {
 void area_title_hide() {
     g_title.time_left = 0;
 
-    if (g_title.font) {
-        rspq_call_deferred((void (*)(void*))font_cache_release, g_title.font);
-        g_title.font = NULL;
-        menu_remove_callback(&g_title);
-        update_remove(&g_title);
+    if (!g_title.visible) {
+        return;
     }
+
+    rspq_call_deferred((void (*)(void*))font_type_release, (void*)FONT_DIALOG);
+    g_title.visible = false;
+    menu_remove_callback(&g_title);
+    update_remove(&g_title);
 }

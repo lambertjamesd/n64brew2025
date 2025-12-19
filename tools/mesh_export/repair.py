@@ -49,7 +49,7 @@ def write_parts(parts: dict, part_starts: dict, settings: entities.export_settin
         file.write(struct.pack('>fff', loc.x, loc.y, loc.z))
         file.write(struct.pack('>ffff', rot.x, rot.y, rot.z, rot.w))
 
-        mesh_list: entities.mesh.mesh_list = entities.mesh.mesh_list(base_transform)
+        mesh_list: entities.mesh.mesh_list = entities.mesh.mesh_list(base_transform @ obj.matrix_world.inverted())
         mesh_list.append(obj)
         mesh_data = mesh_list.determine_mesh_data()
         entities.tiny3d_mesh_writer.write_mesh(mesh_data, None, [], settings, file)

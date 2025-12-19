@@ -1,0 +1,19 @@
+{
+    "tex0": {
+        "filename": "../../images/menu/menu_icons.png",
+        "s": {
+            "repeats": 0,
+            "mirror": false
+        },
+        "t": {
+            "repeats": 0,
+            "mirror": false
+        }
+    },
+    "combineMode": [{
+        "color": ["0", "0", "0", "PRIM"],
+        "alpha": ["TEX0", "0", "PRIM", "0"]
+    }],
+    "blendMode": "ALPHA_CLIP",
+    "primColor": [255, 255, 255, 255]
+}

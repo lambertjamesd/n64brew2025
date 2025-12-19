@@ -26,12 +26,12 @@ typedef struct motorcyle_assets motorcyle_assets_t;
 static motorcyle_assets_t assets;
 
 static dynamic_object_type_t collider_type = {
-    BOX_COLLIDER(0.311f, 0.41f, 1.9f),
+    BOX_COLLIDER(0.3f, 0.4f, 0.8f),
     .max_stable_slope = 0.5f,
     .surface_type = SURFACE_TYPE_DEFAULT,
-    .friction = 0.4f,
+    .friction = 0.0f,
     .bounce = 0.1f,
-    .center = {0.0f, 0.35f, 0.0f},
+    .center = {0.0f, 0.6f, 0.0f},
 };
 
 static vehicle_camera_target_t boost_positions[VEHICLE_CAM_COUNT] = {
@@ -122,10 +122,10 @@ static vehicle_definiton_t vehicle_def = {
 };
 
 static vector3_t local_cast_points[] = {
-    {0.31f, 0.0f, 1.5f},
-    {0.31f, 0.0f, -1.5f},
-    {-0.31f, 0.0f, 1.5f},
-    {-0.31f, 0.0f, -1.5f},
+    {0.31f, 0.1f, 1.5f},
+    {0.31f, 0.01, -1.5f},
+    {-0.31f, 0.1f, 1.5f},
+    {-0.31f, 0.1f, -1.5f},
 };
 
 void motorcycle_common_init() {

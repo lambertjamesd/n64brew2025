@@ -1,0 +1,8 @@
+{
+    "combineMode": [{
+        "color": ["0", "0", "0", "TEX0"],
+        "alpha": ["TEX0", "0", "PRIM", "0"]
+    }],
+    "blendMode": "TRANSPARENT",
+    "primColor": [255, 255, 255, 255]
+}

@@ -1,0 +1,18 @@
+{
+    "tex0": {
+        "filename": "../../images/menu/menu_border.png",
+        "s": {
+            "repeats": 0,
+            "mirror": false
+        },
+        "t": {
+            "repeats": 0,
+            "mirror": false
+        }
+    },
+    "combineMode": [{
+        "color": ["0", "0", "0", "TEX0"],
+        "alpha": ["0", "0", "0", "TEX0"]
+    }],
+    "blendMode": "ALPHA_CLIP"
+}
