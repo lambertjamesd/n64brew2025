@@ -3,6 +3,9 @@
 
 #include "../math/vector3.h"
 
+#define SCREEN_WD   320
+#define SCREEN_HT   240
+
 #define MODEL_SCALE     128
 #define STATIC_SCALE    64
 #define WORLD_SCALE     32

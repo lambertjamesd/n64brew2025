@@ -5,12 +5,21 @@
 #include "../math/transform.h"
 #include "../collision/mesh_collider.h"
 #include "../render/frame_alloc.h"
+#include "../math/ray.h"
 #include <stdio.h>
+
+struct repair_collider {
+    vector3_t* vertices;
+    uint16_t* indices;
+    uint16_t triangle_count;
+};
+
+typedef struct repair_collider repair_collider_t;
 
 struct repair_part {
     transform_t transform;
     tmesh_t mesh;
-    mesh_collider_t collider;
+    repair_collider_t collider;
 
     vector3_t end_position;
     quaternion_t end_rotation;
@@ -22,5 +31,6 @@ void repair_part_load(repair_part_t* part, FILE* file);
 void repair_part_destroy(repair_part_t* part);
 
 void repair_part_render(repair_part_t* part, struct frame_memory_pool* pool);
+bool repair_part_raycast(repair_part_t* part, ray_t* ray, float* distance);
 
 #endif

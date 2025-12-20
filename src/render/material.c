@@ -378,6 +378,12 @@ void material_load(struct material* into, FILE* material_file) {
     into->block = rspq_block_end();
 }
 
+void material_load_file(struct material* into, const char* filename) {
+    FILE* material_file = asset_fopen(filename, NULL);
+    material_load(into, material_file);
+    fclose(material_file);
+}
+
 void material_release(struct material* material) {
     material_destroy(material);
 }

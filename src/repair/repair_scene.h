@@ -7,6 +7,14 @@
 #include "../math/transform.h"
 #include "repair_part.h"
 #include "../render/frame_alloc.h"
+#include "../math/vector2.h"
+#include "../render/material.h"
+
+struct repar_scene_assets {
+    material_t cursor_material;
+};
+
+typedef struct repar_scene_assets repar_scene_assets_t;
 
 struct repair_scene {
     tmesh_t static_meshes;
@@ -15,6 +23,10 @@ struct repair_scene {
 
     transform_t camera_transform;
     float camera_fov;
+
+    vector2_t screen_cursor;
+
+    repar_scene_assets_t assets;
 };
 
 typedef struct repair_scene repair_scene_t;

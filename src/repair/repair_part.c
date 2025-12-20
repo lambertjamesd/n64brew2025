@@ -1,5 +1,9 @@
 #include "repair_part.h"
 
+#include "../collision/raycast.h"
+
+#define REALLY_FAR  10000000.0f
+
 void repair_part_load(repair_part_t* part, FILE* file) {
     vector3_t pos;
     quaternion_t rot;
@@ -13,6 +17,16 @@ void repair_part_load(repair_part_t* part, FILE* file) {
     fread(&part->end_rotation, sizeof(rot), 1, file);
 
     tmesh_load(&part->mesh, file);
+
+    uint16_t vertex_count;
+    fread(&vertex_count, sizeof(vertex_count), 1, file);
+    fread(&part->collider.triangle_count, sizeof(uint16_t), 1, file);
+
+    part->collider.vertices = malloc(sizeof(vector3_t) * vertex_count);
+    part->collider.indices = malloc(sizeof(uint16_t) * 3 * part->collider.triangle_count);
+
+    fread(part->collider.vertices, sizeof(vector3_t), vertex_count, file);
+    fread(part->collider.indices, sizeof(int16_t), 3 * part->collider.triangle_count, file);
 }
 
 void repair_part_destroy(repair_part_t* part) {
@@ -27,4 +41,22 @@ void repair_part_render(repair_part_t* part, struct frame_memory_pool* pool) {
     t3d_matrix_push(mtx_fp);
     rspq_block_run(part->mesh.block);
     t3d_matrix_pop(1);  
+}
+
+bool repair_part_raycast(repair_part_t* part, ray_t* ray, float* distance) {
+    transform_t inv;
+    transformInvert(&part->transform, &inv);
+    ray_t local_ray;
+    rayTransform(&inv, ray, &local_ray);
+
+    uint16_t* indices = part->collider.indices;
+
+    float start_distance = *distance;
+
+    for (int i = 0; i < part->collider.triangle_count; i += 1) {
+        triangle_raycast(&local_ray, part->collider.vertices, indices, distance);
+        indices += 3;
+    }
+
+    return *distance != start_distance;
 }

@@ -3,14 +3,7 @@
 
 #include <stdbool.h>
 #include "../math/ray.h"
-#include "../entity/entity_id.h"
 
-struct RaycastHit {
-    struct Vector3 at;
-    struct Vector3 normal;
-    entity_id entity_id;
-};
-
-bool collision_raycast(struct Ray* ray, int collision_layers, struct RaycastHit* hit);
+bool triangle_raycast(struct Ray* ray, vector3_t* vertices, uint16_t* indices, float* distance);
 
 #endif

@@ -5,6 +5,7 @@ import io
 import os
 import math
 import struct
+import bmesh
 
 sys.path.append(os.path.dirname(__file__))
 
@@ -29,6 +30,23 @@ def write_static(static_entities: list, settings: entities.export_settings.Expor
     
     mesh_data = mesh_list.determine_mesh_data()
     entities.tiny3d_mesh_writer.write_mesh(mesh_data, None, [], settings, file)
+
+def write_raycast_mesh(mesh: bpy.types.Mesh, file: io.BufferedWriter):
+    bm = bmesh.new()
+    bm.from_mesh(mesh)
+    bmesh.ops.triangulate(bm, faces=bm.faces[:])
+
+    file.write(struct.pack('>HH', len(bm.verts), len(bm.faces)))
+
+    for vert in bm.verts:
+        rotated = base_transform @ vert.co
+        file.write(struct.pack('>fff', rotated.x, rotated.y, rotated.z))
+
+    for face in bm.faces:
+        file.write(struct.pack('>HHH', face.verts[0].index, face.verts[1].index, face.verts[2].index))
+
+    bm.free()
+
     
 def write_parts(parts: dict, part_starts: dict, settings: entities.export_settings.ExportSettings, file: io.BufferedWriter):
     file.write(len(parts).to_bytes(2, 'big'))
@@ -53,6 +71,8 @@ def write_parts(parts: dict, part_starts: dict, settings: entities.export_settin
         mesh_list.append(obj)
         mesh_data = mesh_list.determine_mesh_data()
         entities.tiny3d_mesh_writer.write_mesh(mesh_data, None, [], settings, file)
+
+        write_raycast_mesh(obj.data, file)
 
 def write_camera(camera, file: io.BufferedWriter):
     camera_transform = base_transform @ camera.matrix_world

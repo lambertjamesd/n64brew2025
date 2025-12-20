@@ -1,0 +1,18 @@
+{
+    "tex0": {
+        "filename": "../../images/repair/cursor.png",
+        "s": {
+            "repeats": 0,
+            "mirror": false
+        },
+        "t": {
+            "repeats": 0,
+            "mirror": false
+        }
+    },
+    "combineMode": [{
+        "color": ["PRIM", "0", "TEX0", "0"],
+        "alpha": ["0", "0", "0", "TEX0"]
+    }],
+    "blendMode": "ALPHA_CLIP"
+}
