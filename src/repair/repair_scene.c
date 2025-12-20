@@ -4,6 +4,7 @@
 #include "../time/time.h"
 #include <malloc.h>
 #include "../math/mathf.h"
+#include "../render/screen_coords.h"
 
 // WRLD
 #define EXPECTED_HEADER 0x57524C44
@@ -18,13 +19,15 @@ static color_t hover_color = {20, 200, 255, 255};
 #define REALLY_FAR  10000000.0f
 
 void repair_scene_render_cursor(repair_scene_t* scene) {
-    rspq_block_run(scene->assets.cursor_material.block);
-
-    int x = (int)scene->screen_cursor.x - CURSOR_SIZE/2;
-    int y = (int)scene->screen_cursor.y - CURSOR_SIZE/2;
-
-    rdpq_set_prim_color(hover_color);
-    rdpq_texture_rectangle(TILE0, x, y, x + CURSOR_SIZE, y + CURSOR_SIZE, 0, 0);
+    if (!scene->grabbed_part) {
+        rspq_block_run(scene->assets.cursor_material.block);
+    
+        int x = (int)scene->screen_cursor.x - CURSOR_SIZE/2;
+        int y = (int)scene->screen_cursor.y - CURSOR_SIZE/2;
+    
+        rdpq_set_prim_color(scene->hovered_part ? hover_color : basic_color);
+        rdpq_texture_rectangle(TILE0, x, y, x + CURSOR_SIZE, y + CURSOR_SIZE, 0, 0);
+    }
 }
 
 void repair_scene_render(repair_scene_t* scene, T3DViewport* viewport, struct frame_memory_pool* pool) {
@@ -82,24 +85,13 @@ void repair_scene_render(repair_scene_t* scene, T3DViewport* viewport, struct fr
 
 repair_part_t* repair_find_part(repair_scene_t* scene) {
     ray_t ray;
-    float tan_fov = tanf(scene->camera_fov * 0.5f);
-    
-    vector3_t local_direction = {
-        tan_fov * (2.0f * scene->screen_cursor.x - SCREEN_WD) * (1.0f / SCREEN_HT),
-        -tan_fov * (2.0f * scene->screen_cursor.y - SCREEN_HT) * (1.0f / SCREEN_HT), 
-        -1.0f,
-    };
-
-    vector3Normalize(&local_direction, &local_direction);
-
-    ray.origin = scene->camera_transform.position;
-    quatMultVector(&scene->camera_transform.rotation, &local_direction, &ray.dir);
+    screen_coords_to_ray(&scene->camera_transform, scene->camera_fov, &scene->screen_cursor, &ray);
 
     repair_part_t* result = NULL;
     float min_distance = REALLY_FAR;
 
     for (int i = 0; i < scene->repair_part_count; i += 1) {
-        if (repair_part_raycast(&scene->repair_parts[i], &ray, &min_distance)) {
+        if (!scene->repair_parts[i].is_connected && repair_part_raycast(&scene->repair_parts[i], &ray, &min_distance)) {
             result = &scene->repair_parts[i];
         }
     }
@@ -108,11 +100,94 @@ repair_part_t* repair_find_part(repair_scene_t* scene) {
 }
 
 #define CURSOR_SPEED    300.0f
+#define OBJECT_SPEED    5.0f
+
+static quaternion_t relative_rotations[4] = {
+    {-SQRT_1_2_F, 0.0f, 0.0f, SQRT_1_2_F},
+    {0.0f, 0.0f, -SQRT_1_2_F, SQRT_1_2_F},
+    {SQRT_1_2_F, 0.0f, 0.0f, SQRT_1_2_F},
+    {0.0f, 0.0f, SQRT_1_2_F, SQRT_1_2_F},
+};
+
+void repair_scene_handle_grabbed_part(repair_scene_t* scene, joypad_inputs_t input, joypad_buttons_t pressed) {
+    if (pressed.c_up) {
+        quaternion_t new_rotation;
+        quatMultiply(&relative_rotations[0], &scene->grabbed_part->target_rotation, &new_rotation);
+        scene->grabbed_part->target_rotation = new_rotation;
+    }
+    if (pressed.c_right) {
+        quaternion_t new_rotation;
+        quatMultiply(&relative_rotations[1], &scene->grabbed_part->target_rotation, &new_rotation);
+        scene->grabbed_part->target_rotation = new_rotation;
+    }
+    if (pressed.c_down) {
+        quaternion_t new_rotation;
+        quatMultiply(&relative_rotations[2], &scene->grabbed_part->target_rotation, &new_rotation);
+        scene->grabbed_part->target_rotation = new_rotation;
+    }
+    if (pressed.c_left) {
+        quaternion_t new_rotation;
+        quatMultiply(&relative_rotations[3], &scene->grabbed_part->target_rotation, &new_rotation);
+        scene->grabbed_part->target_rotation = new_rotation;
+    }
+
+    vector3_t up;
+    vector3_t right;
+    quatMultVector(&scene->camera_transform.rotation, &gUp, &up);
+    quatMultVector(&scene->camera_transform.rotation, &gRight, &right);
+
+    vector3AddScaled(
+        &scene->grabbed_part->transform.position, 
+        &right,
+        input.stick_x * OBJECT_SPEED * (1.0f / 80.0f) * fixed_time_step,
+        &scene->grabbed_part->transform.position
+    );
+    vector3AddScaled(
+        &scene->grabbed_part->transform.position, 
+        &up,
+        input.stick_y * OBJECT_SPEED * (1.0f / 80.0f) * fixed_time_step,
+        &scene->grabbed_part->transform.position
+    );
+}
+
+#define DROP_TOLERNACE  0.5f
+
+void repair_scene_check_drop(repair_scene_t* scene) {
+    repair_part_t* grabbed_part = scene->grabbed_part;
+
+    screen_coords_from_position(&scene->camera_transform, scene->camera_fov, &grabbed_part->transform.position, &scene->screen_cursor);
+
+    scene->grabbed_part = NULL;
+
+    if (fabsf(quatDot(&grabbed_part->transform.rotation, &grabbed_part->target_rotation)) < 0.9f) {
+        return;
+    }
+
+    ray_t ray_check;
+    ray_check.origin = scene->camera_transform.position;
+    vector3Sub(&grabbed_part->transform.position, &ray_check.origin, &ray_check.dir);
+    vector3Normalize(&ray_check.dir, &ray_check.dir);
+
+    float target_distance = rayDetermineDistance(&ray_check, &grabbed_part->end_position);
+    float actual_distnace = rayDetermineDistance(&ray_check, &grabbed_part->transform.position);
+
+    vector3_t pos_check;
+    vector3AddScaled(&grabbed_part->transform.position, &ray_check.dir, target_distance - actual_distnace, &pos_check);
+
+    if (vector3DistSqrd(&pos_check, &grabbed_part->end_position) > DROP_TOLERNACE * DROP_TOLERNACE) {
+        return;
+    }
+
+    grabbed_part->transform.position = grabbed_part->end_position;
+    grabbed_part->target_rotation = grabbed_part->end_rotation;
+    grabbed_part->is_connected = true;
+}
 
 void repair_scene_update(void* data) {
     repair_scene_t* scene = (repair_scene_t*)data;
 
     joypad_inputs_t input = joypad_get_inputs(0);
+    joypad_buttons_t pressed = joypad_get_buttons_pressed(0);
 
     scene->screen_cursor.x += input.stick_x * (CURSOR_SPEED / 80) * fixed_time_step;
     scene->screen_cursor.y -= input.stick_y * (CURSOR_SPEED / 80) * fixed_time_step;
@@ -120,9 +195,23 @@ void repair_scene_update(void* data) {
     scene->screen_cursor.x = clampf(scene->screen_cursor.x, 0.0f, 320.0f);
     scene->screen_cursor.y = clampf(scene->screen_cursor.y, 0.0f, 240.0f);
 
-    repair_part_t* hover_part =  repair_find_part(scene);
+    scene->hovered_part = repair_find_part(scene);
 
-    debugf("%08x\n", (int)hover_part);
+    if (pressed.a) {
+        if (scene->grabbed_part) {
+            repair_scene_check_drop(scene);
+        } else {
+            scene->grabbed_part = scene->hovered_part;
+        }
+    }
+
+    if (scene->grabbed_part) {
+        repair_scene_handle_grabbed_part(scene, input, pressed);
+    }
+    
+    for (int i = 0; i < scene->repair_part_count; i += 1) {
+        repair_part_update(&scene->repair_parts[i]);
+    }
 }
 
 repair_scene_t* repair_scene_load(const char* filename) {

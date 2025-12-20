@@ -4,7 +4,8 @@
 
 #define MAX_INT_VALUE   0x7fff
 
-#define PI_F    3.141592654f
+#define PI_F        3.141592654f
+#define SQRT_1_2_F  0.70710678118654752440084436210485f
 
 #define DEG_TO_RAD(angle)   ((angle) * (PI_F / 180.0f))
 

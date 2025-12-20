@@ -20,9 +20,12 @@ struct repair_part {
     transform_t transform;
     tmesh_t mesh;
     repair_collider_t collider;
+    quaternion_t target_rotation;
 
     vector3_t end_position;
     quaternion_t end_rotation;
+
+    bool is_connected: 1;
 };
 
 typedef struct repair_part repair_part_t;
@@ -32,5 +35,6 @@ void repair_part_destroy(repair_part_t* part);
 
 void repair_part_render(repair_part_t* part, struct frame_memory_pool* pool);
 bool repair_part_raycast(repair_part_t* part, ray_t* ray, float* distance);
+void repair_part_update(repair_part_t* part);
 
 #endif

@@ -25,6 +25,8 @@ struct repair_scene {
     float camera_fov;
 
     vector2_t screen_cursor;
+    repair_part_t* grabbed_part;
+    repair_part_t* hovered_part;
 
     repar_scene_assets_t assets;
 };
