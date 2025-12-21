@@ -99,6 +99,9 @@ def process_scene():
         if obj.type != 'MESH':
             continue
 
+        if 'type' in obj.data:
+            continue
+
         if not obj.name.startswith('part_'):
             static_entities.append(obj)
             continue

@@ -227,6 +227,7 @@ _enum_mapping = {
     'collectable_sub_type': NODE_OT_game_object_item_type.bl_idname,
     'enum inventory_item_type': NODE_OT_game_object_item_type.bl_idname,
     'script_location': NODE_OT_game_object_scripts.bl_idname,
+    'scene_entry_point': NODE_OT_game_object_entry_points.bl_idname,
     'room_id': NODE_OT_game_object_room_id.bl_idname,
     'boolean_variable': NODE_OT_game_object_boolean_variable.bl_idname,
     'integer_variable': NODE_OT_game_object_integer_variable.bl_idname,
@@ -291,7 +292,7 @@ def _init_default_properties(target):
             target[attr.name] = default_value
         elif attr.data_type == 'collectable_sub_type':
             target[attr.name] = 'ITEM_TYPE_NONE'
-        elif attr.data_type == 'script_location':
+        elif attr.data_type == 'script_location' or attr.data_type == "scene_entry_point":
             target[attr.name] = ''
         elif attr.data_type == 'room_id':
             target[attr.name] = 'room_default'

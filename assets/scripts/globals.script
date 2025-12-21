@@ -1,1 +1,3 @@
 
+global has_motor: bool;
+global has_repaired_motor: bool;

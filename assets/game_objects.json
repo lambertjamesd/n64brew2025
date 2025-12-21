@@ -1,6 +1,18 @@
 {
     "objects": [
         {
+            "name": "repair_part",
+            "description": "",
+            "mesh": "meshes/repair_part.blend#repair_part",
+            "type": "repair_part"
+        },
+        {
+            "name": "repair_scene",
+            "description": "",
+            "mesh": "meshes/repair_scene.blend#repair_scene",
+            "type": "repair_scene"
+        },
+        {
             "name": "vehicles_bike",
             "description": "",
             "mesh": "meshes/vehicles/bike.blend#Motorcycle",

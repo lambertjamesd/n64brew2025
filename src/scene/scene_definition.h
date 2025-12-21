@@ -56,6 +56,7 @@ typedef uint16_t boolean_variable;
 typedef uint16_t integer_variable;
 
 typedef char* script_location;
+typedef char* scene_entry_point;
 
 enum interaction_type {
     INTERACTION_NONE,
@@ -79,6 +80,15 @@ struct trigger_cube_definition {
     struct Vector3 position;
     struct Vector2 rotation;
     struct Vector3 scale;
+};
+
+struct repair_scene_definition {
+    boolean_variable puzzle_complete;
+    scene_entry_point exit_scene;
+};
+
+struct repair_part_definition {
+    boolean_variable has_part;
 };
 
 #endif
