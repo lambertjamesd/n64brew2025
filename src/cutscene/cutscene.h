@@ -37,6 +37,8 @@ enum cutscene_step_type {
     CUTSCENE_STEP_PRINT,
     CUTSCENE_STEP_SPAWN,
     CUTSCENE_STEP_CALLBACK,
+    CUTSCENE_STEP_SHOW_BOSS_HEALTH,
+    CUTSCENE_STEP_LOAD_SCENE,
 };
 
 typedef void (*cutscene_step_callback)(void* data);
@@ -144,6 +146,9 @@ union cutscene_step_data {
         cutscene_step_callback callback;
         void* data;
     } callback;
+    struct {
+        char* scene;
+    } load_scene;
 };
 
 struct cutscene_step {
@@ -162,6 +167,8 @@ struct cutscene_builder {
     struct cutscene_step steps[MAX_BUILDER_STEP_COUNT];
     uint16_t step_count;
 };
+
+typedef struct cutscene_builder cutscene_builder_t;
 
 struct cutscene* cutscene_load(char* filename);
 void cutscene_builder_init(struct cutscene_builder* builder);
@@ -193,8 +200,9 @@ void cutscene_builder_camera_return(struct cutscene_builder* builder);
 void cutscene_builder_camera_move_to(struct cutscene_builder* builder, struct Vector3* position, camera_move_to_args_t* args);
 void cutscene_builder_set_boolean(struct cutscene_builder* builder, boolean_variable variable, bool value);
 void cutscene_builder_callback(struct cutscene_builder* builder, cutscene_step_callback callback, void* data);
-
 void cutscene_builder_expression(struct cutscene_builder* builder, expression_builder_t* expression);
+void cutscene_builder_load_scene(struct cutscene_builder* builder, const char* scene);
+void cutscene_builder_fade(struct cutscene_builder* builder, enum fade_colors color, float duration);
 
 struct cutscene* cutscene_builder_finish(struct cutscene_builder* builder);
 

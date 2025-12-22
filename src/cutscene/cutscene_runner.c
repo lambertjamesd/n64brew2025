@@ -303,6 +303,12 @@ void cutscene_runner_init_step(struct cutscene_active_entry* cutscene, struct cu
             step->data.callback.callback(step->data.callback.data);
             break;
         }
+        case CUTSCENE_STEP_SHOW_BOSS_HEALTH:
+            break;
+        case CUTSCENE_STEP_LOAD_SCENE: {
+            scene_queue_next(step->data.load_scene.scene);
+            break;
+        }
     }
 }
 

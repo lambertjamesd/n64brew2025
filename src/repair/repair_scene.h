@@ -29,6 +29,11 @@ struct repair_scene {
     repair_part_t* hovered_part;
 
     repar_scene_assets_t assets;
+
+    boolean_variable puzzle_complete;
+    scene_entry_point exit_scene;
+
+    bool is_missing_parts: 1;
 };
 
 typedef struct repair_scene repair_scene_t;

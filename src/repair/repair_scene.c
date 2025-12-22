@@ -5,6 +5,10 @@
 #include <malloc.h>
 #include "../math/mathf.h"
 #include "../render/screen_coords.h"
+#include "../util/file.h"
+#include "../fonts/fonts.h"
+#include "../cutscene/cutscene.h"
+#include "../cutscene/cutscene_runner.h"
 
 // WRLD
 #define EXPECTED_HEADER 0x57524C44
@@ -229,6 +233,8 @@ repair_scene_t* repair_scene_load(const char* filename) {
     fread(&header, 1, 4, file);
     assert(header == EXPECTED_HEADER);
 
+    result->is_missing_parts = false;
+
     tmesh_load(&result->static_meshes, file);
     fread(&result->repair_part_count, sizeof(uint16_t), 1, file);
     result->repair_parts = malloc(sizeof(repair_part_t) * result->repair_part_count);
@@ -236,6 +242,10 @@ repair_scene_t* repair_scene_load(const char* filename) {
 
     for (int i = 0; i < result->repair_part_count; i += 1) {
         repair_part_load(&result->repair_parts[i], file);
+        
+        if (!result->repair_parts[i].is_present) {
+            result->is_missing_parts = true;
+        }
     }
 
     fread(&result->camera_transform.position, sizeof(vector3_t), 1, file);
@@ -243,6 +253,8 @@ repair_scene_t* repair_scene_load(const char* filename) {
     result->camera_transform.scale = gOneVec;
 
     fread(&result->camera_fov, sizeof(float), 1, file);
+    fread(&result->puzzle_complete, sizeof(boolean_variable), 1, file);
+    result->exit_scene = file_read_string(file);
 
     fclose(file);
 
@@ -250,10 +262,29 @@ repair_scene_t* repair_scene_load(const char* filename) {
 
     update_add(result, repair_scene_update, UPDATE_PRIORITY_PLAYER, UPDATE_LAYER_WORLD | UPDATE_LAYER_CUTSCENE);
 
+    font_type_use(FONT_DIALOG);
+
+    if (result->is_missing_parts) {
+        cutscene_builder_t builder;
+        cutscene_builder_init(&builder);
+
+        cutscene_builder_delay(&builder, 1.0f);
+        cutscene_builder_dialog(&builder, "You are missing some parts");
+        cutscene_builder_fade(&builder, FADE_COLOR_BLACK, 1.0f);
+        cutscene_builder_delay(&builder, 1.0f);
+        cutscene_builder_load_scene(&builder, result->exit_scene);
+        cutscene_builder_fade(&builder, FADE_COLOR_NONE, 1.0f);
+
+        cutscene_runner_run(cutscene_builder_finish(&builder), 0, cutscene_runner_free_on_finish(), NULL, 0);
+    }
+
     return result;
 }
 
 void repair_scene_destroy(repair_scene_t* scene) {
+    font_type_release(FONT_DIALOG);
+
+    free(scene->exit_scene);
     update_remove(scene);
 
     material_release(&scene->assets.cursor_material);

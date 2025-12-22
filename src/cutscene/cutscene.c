@@ -149,6 +149,9 @@ struct cutscene* cutscene_load(char* filename) {
             case CUTSCENE_STEP_PRINT:
                 cutscene_load_template_string(&step->data.print.message, file);
                 break;
+            case CUTSCENE_STEP_LOAD_SCENE:
+                step->data.load_scene.scene = string_load(file);
+                break;
         }
     }
     
@@ -204,6 +207,9 @@ void cutscene_destroy(struct cutscene* cutscene) {
                 break;
             case CUTSCENE_STEP_PRINT:
                 cutscene_destroy_template_string(&step->data.print.message);
+                break;
+            case CUTSCENE_STEP_LOAD_SCENE:
+                free(step->data.load_scene.scene);
                 break;
             default:
                 break;
@@ -473,6 +479,32 @@ void cutscene_builder_expression(struct cutscene_builder* builder, expression_bu
     expression_builder_finish(expression, &step->data.expression.expression);
 }
 
+void cutscene_builder_load_scene(struct cutscene_builder* builder, const char* scene) {
+    struct cutscene_step* step = cutscene_builder_next_step(builder);
+    int name_len = strlen(scene);   
+    char* copy = malloc(name_len + 1);
+    strcpy(copy, scene);
+
+    *step = (struct cutscene_step){
+        .type = CUTSCENE_STEP_LOAD_SCENE,
+        .data.load_scene = {
+            .scene = copy,
+        },
+    };
+}
+
+void cutscene_builder_fade(struct cutscene_builder* builder, enum fade_colors color, float duration) {
+    struct cutscene_step* step = cutscene_builder_next_step(builder);
+
+    *step = (struct cutscene_step){
+        .type = CUTSCENE_STEP_FADE,
+        .data.fade = {
+            .color = color,
+            .duration = duration,
+        },
+    };
+}
+
 // release with cutscene_free()
 struct cutscene* cutscene_builder_finish(struct cutscene_builder* builder) {
     // release with cutscene_free()
@@ -485,3 +517,4 @@ struct cutscene* cutscene_builder_finish(struct cutscene_builder* builder) {
     };
     return result;
 }
+

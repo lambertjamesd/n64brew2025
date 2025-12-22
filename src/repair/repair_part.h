@@ -6,6 +6,7 @@
 #include "../collision/mesh_collider.h"
 #include "../render/frame_alloc.h"
 #include "../math/ray.h"
+#include "../scene/scene_definition.h"
 #include <stdio.h>
 
 struct repair_collider {
@@ -25,7 +26,10 @@ struct repair_part {
     vector3_t end_position;
     quaternion_t end_rotation;
 
+    boolean_variable has_part;
+
     bool is_connected: 1;
+    bool is_present: 1;
 };
 
 typedef struct repair_part repair_part_t;

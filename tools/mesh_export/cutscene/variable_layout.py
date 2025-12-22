@@ -276,3 +276,42 @@ class VariableContext():
     
     def get_variable_type(self, name: str) -> str | None:
         return self.locals.get_variable_type(name) or self.scene_vars.get_variable_type(name) or self.globals.get_variable_type(name)
+    
+int_types = {'i8': 1, 'i16': 2, 'i32': 3}
+    
+TYPE_OFFSET = 13
+SCENE_FLAG = 0x8000
+
+def int_type_flag(name: str) -> int:
+    return int_types[name] << TYPE_OFFSET
+
+def build_variables(globals: VariableLayout, scene: VariableLayout) -> tuple[dict[str, int], dict[str, int], dict[str, int]]:
+    boolean_enum: dict[str, int] = {}
+    integer_enum: dict[str, int] = {}
+    entity_id_enum: dict[str, int] = {}
+
+    for entry in globals.get_all_entries():
+        var_name = f"global {entry.name}: {entry.type_name}"
+        
+        if entry.type_name == 'bool':
+            boolean_enum[var_name] = entry.offset
+        elif entry.type_name in int_types:
+            integer_enum[var_name] = entry.word_offset() | int_type_flag(entry.type_name)
+        elif entry.type_name == 'entity_id':
+            entity_id_enum[var_name] = entry.word_offset() | int_type_flag('i16')
+
+    for entry in scene.get_all_entries():
+        var_name = f"scene {entry.name}: {entry.type_name}"
+
+        if entry.type_name == 'bool':
+            boolean_enum[var_name] = entry.offset | SCENE_FLAG
+        elif entry.type_name in int_types:
+            integer_enum[var_name] = entry.word_offset() | SCENE_FLAG | int_type_flag(entry.type_name)
+        elif entry.type_name == 'entity_id':
+            entity_id_enum[var_name] = entry.word_offset() | SCENE_FLAG | int_type_flag('i16')
+
+    boolean_enum['disconnected'] = 0xFFFF
+    integer_enum['disconnected'] = 0xFFFF
+    entity_id_enum['disconnected'] = 0xFFFF
+
+    return boolean_enum, integer_enum, entity_id_enum

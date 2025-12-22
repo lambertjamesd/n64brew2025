@@ -36,6 +36,8 @@ CUTSCENE_STEP_NPC_ANIMATE = 25
 CUTSCENE_STEP_PRINT = 26
 CUTSCENE_STEP_SPAWN = 27
 CUTSCENE_STEP_CALLBACK = 28
+CUTSCENE_STEP_SHOW_BOSS_HEALTH = 29
+CUTSCENE_STEP_LOAD_SCENE = 30
 
 class ParameterType():
     def __init__(self, name: str, is_static: bool):
@@ -74,6 +76,7 @@ _step_args = {
     "npc_animate": [ParameterType("entity_id", False), ParameterType("str", True), ParameterType("bool", True)],
     "print": [ParameterType("tstr", True)],
     "spawn": [ParameterType("entity_spawner", False)],
+    "load_scene": [ParameterType("str", True)],
 }
 
 _step_ids = {
@@ -97,6 +100,7 @@ _step_ids = {
     "npc_animate": CUTSCENE_STEP_NPC_ANIMATE,
     "print": CUTSCENE_STEP_PRINT,
     "spawn": CUTSCENE_STEP_SPAWN,
+    "load_scene": CUTSCENE_STEP_LOAD_SCENE,
 }
 
 _steps_that_need_idle = {

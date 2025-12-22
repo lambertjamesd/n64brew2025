@@ -1,6 +1,7 @@
 #include "repair_part.h"
 
 #include "../collision/raycast.h"
+#include "../cutscene/expression_evaluate.h"
 
 #define REALLY_FAR  10000000.0f
 
@@ -28,8 +29,11 @@ void repair_part_load(repair_part_t* part, FILE* file) {
     fread(part->collider.vertices, sizeof(vector3_t), vertex_count, file);
     fread(part->collider.indices, sizeof(int16_t), 3 * part->collider.triangle_count, file);
 
+    fread(&part->has_part, sizeof(boolean_variable), 1, file);
+
     part->target_rotation = part->transform.rotation;
     part->is_connected = false;
+    part->is_present = expression_get_bool(part->has_part);
 }
 
 void repair_part_destroy(repair_part_t* part) {
@@ -37,6 +41,10 @@ void repair_part_destroy(repair_part_t* part) {
 }
 
 void repair_part_render(repair_part_t* part, struct frame_memory_pool* pool) {
+    if (!part->is_present) {
+        return;
+    }
+
     T3DMat4FP* mtx_fp = frame_pool_get_transformfp(pool);
     T3DMat4 mtx;
     transformToWorldMatrix(&part->transform, mtx.m);
@@ -47,6 +55,10 @@ void repair_part_render(repair_part_t* part, struct frame_memory_pool* pool) {
 }
 
 bool repair_part_raycast(repair_part_t* part, ray_t* ray, float* distance) {
+    if (!part->is_present) {
+        return false;
+    }
+
     transform_t inv;
     transformInvert(&part->transform, &inv);
     ray_t local_ray;
@@ -65,5 +77,9 @@ bool repair_part_raycast(repair_part_t* part, ray_t* ray, float* distance) {
 }
 
 void repair_part_update(repair_part_t* part) {
+    if (!part->is_present) {
+        return;
+    }
+
     quatLerp(&part->transform.rotation, &part->target_rotation, 0.3f, &part->transform.rotation);
 }
