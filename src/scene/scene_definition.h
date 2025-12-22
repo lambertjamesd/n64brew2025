@@ -91,4 +91,16 @@ struct repair_part_definition {
     boolean_variable has_part;
 };
 
+enum repair_type {
+    REPAIR_BIKE_MOTOR,
+    REPAIR_WELL,
+};
+
+struct repair_interaction_definition {
+    scene_entry_point repair_scene;
+    struct Vector3 position;
+    struct Vector2 rotation;
+    enum repair_type repair_type;
+};
+
 #endif
