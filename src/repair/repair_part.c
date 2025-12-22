@@ -83,3 +83,11 @@ void repair_part_update(repair_part_t* part) {
 
     quatLerp(&part->transform.rotation, &part->target_rotation, 0.3f, &part->transform.rotation);
 }
+
+void repair_part_set_complete(repair_part_t* part) {
+    part->is_present = true;
+    part->is_connected = true;
+    part->transform.position = part->end_position;
+    part->transform.rotation = part->end_rotation;
+    part->target_rotation = part->end_rotation;
+}

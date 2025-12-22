@@ -75,7 +75,6 @@ struct camera_controller {
     struct Camera* camera;
     struct Vector3 stable_position;
     struct player* player;
-    struct camera_cached_calcuations _cache_calcluations;
     float follow_distace;
     struct Vector3 target;
     float speed;

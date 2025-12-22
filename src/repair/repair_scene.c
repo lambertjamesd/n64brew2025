@@ -9,6 +9,7 @@
 #include "../fonts/fonts.h"
 #include "../cutscene/cutscene.h"
 #include "../cutscene/cutscene_runner.h"
+#include "../cutscene/expression_evaluate.h"
 
 // WRLD
 #define EXPECTED_HEADER 0x57524C44
@@ -187,6 +188,20 @@ void repair_scene_check_drop(repair_scene_t* scene) {
     grabbed_part->is_connected = true;
 }
 
+void repair_scene_exit_with_message(repair_scene_t* scene, const char* message) {
+    cutscene_builder_t builder;
+    cutscene_builder_init(&builder);
+
+    cutscene_builder_delay(&builder, 1.0f);
+    cutscene_builder_dialog(&builder, message);
+    cutscene_builder_fade(&builder, FADE_COLOR_BLACK, 1.0f);
+    cutscene_builder_delay(&builder, 1.0f);
+    cutscene_builder_load_scene(&builder, scene->exit_scene);
+    cutscene_builder_fade(&builder, FADE_COLOR_NONE, 1.0f);
+
+    cutscene_runner_run(cutscene_builder_finish(&builder), 0, cutscene_runner_free_on_finish(), NULL, 0);
+}
+
 void repair_scene_update(void* data) {
     repair_scene_t* scene = (repair_scene_t*)data;
 
@@ -212,9 +227,24 @@ void repair_scene_update(void* data) {
     if (scene->grabbed_part) {
         repair_scene_handle_grabbed_part(scene, input, pressed);
     }
+
+    bool is_complete = true;
     
     for (int i = 0; i < scene->repair_part_count; i += 1) {
         repair_part_update(&scene->repair_parts[i]);
+
+        if (!scene->repair_parts[i].is_connected) {
+            is_complete = false;
+        }
+    }
+
+    if (!scene->is_complete && is_complete) {
+        scene->is_complete = is_complete;
+        repair_scene_exit_with_message(scene, "Repair complete");
+        expression_set_bool(scene->is_complete, true);
+        for (int i = 0; i < scene->repair_part_count; i += 1) {
+            expression_set_bool(scene->repair_parts[i].has_part, false);
+        }
     }
 }
 
@@ -264,18 +294,16 @@ repair_scene_t* repair_scene_load(const char* filename) {
 
     font_type_use(FONT_DIALOG);
 
-    if (result->is_missing_parts) {
-        cutscene_builder_t builder;
-        cutscene_builder_init(&builder);
+    result->is_complete = expression_get_bool(result->puzzle_complete);
 
-        cutscene_builder_delay(&builder, 1.0f);
-        cutscene_builder_dialog(&builder, "You are missing some parts");
-        cutscene_builder_fade(&builder, FADE_COLOR_BLACK, 1.0f);
-        cutscene_builder_delay(&builder, 1.0f);
-        cutscene_builder_load_scene(&builder, result->exit_scene);
-        cutscene_builder_fade(&builder, FADE_COLOR_NONE, 1.0f);
+    if (result->is_complete) {
+        repair_scene_exit_with_message(result, "This has already been repaired");
 
-        cutscene_runner_run(cutscene_builder_finish(&builder), 0, cutscene_runner_free_on_finish(), NULL, 0);
+        for (int i = 0; i < result->repair_part_count; i += 1) {
+            repair_part_set_complete(&result->repair_parts[i]);
+        }
+    } else if (result->is_missing_parts) {
+        repair_scene_exit_with_message(result, "You are missing some parts");
     }
 
     return result;

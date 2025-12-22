@@ -34,6 +34,7 @@ struct repair_scene {
     scene_entry_point exit_scene;
 
     bool is_missing_parts: 1;
+    bool is_complete: 1;
 };
 
 typedef struct repair_scene repair_scene_t;

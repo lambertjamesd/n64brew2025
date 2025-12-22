@@ -387,29 +387,32 @@ void camera_controller_init(struct camera_controller* controller, struct Camera*
     controller->player = player;
     controller->state = CAMERA_STATE_FOLLOW;
 
+    vector3_t* player_pos = player_get_position(player);
+
     update_add(controller, (update_callback)camera_controller_update, UPDATE_PRIORITY_CAMERA, UPDATE_LAYER_WORLD | UPDATE_LAYER_CUTSCENE);
 
     controller->speed = 0.0f;
     controller->looking_at = player->cutscene_actor.transform.position;
     controller->looking_at_speed = 0.0f;
     controller->look_target = gZeroVec;
-    camera_controller_determine_player_move_target(controller, &controller->target);
     controller->follow_distace = 3.0f;
     controller->shake_offset = gZeroVec;
     controller->shake_velocity = gZeroVec;
-
-    controller->camera->transform.position = controller->target;
-    controller->stable_position = controller->target;
-    controller->camera->transform.scale = gOneVec;
-    controller->_cache_calcluations.fov = 0.0f;
-    quatAxisAngle(&gRight, 0.0f, &controller->camera->transform.rotation);
-
-    camera_controller_update_position(controller, &player->cutscene_actor.transform);
+    vector3Add(player_pos, &gRight, &controller->stable_position);
+    controller->target = controller->stable_position;
+    camera_wall_checker_init(&controller->wall_checker);
 
     controller->state_data.animate.animation = NULL;
     controller->state_data.animate.current_frame = 0;
 
-    camera_wall_checker_init(&controller->wall_checker);
+    camera_controller_determine_player_move_target(controller, &controller->target);
+
+    controller->camera->transform.position = controller->target;
+    controller->stable_position = controller->target;
+    controller->camera->transform.scale = gOneVec;
+    quatAxisAngle(&gRight, 0.0f, &controller->camera->transform.rotation);
+
+    camera_controller_update_position(controller, &player->cutscene_actor.transform);
 }
 
 void camera_controller_destroy(struct camera_controller* controller) {
