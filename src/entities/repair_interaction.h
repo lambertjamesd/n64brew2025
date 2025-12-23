@@ -7,11 +7,15 @@
 #include "../math/transform_single_axis.h"
 #include "../render/renderable.h"
 #include "../collision/dynamic_object.h"
+#include "../entity/interactable.h"
 
 struct repair_interaction {
     transform_sa_t transform;
     renderable_t renderable;
-    dynamic_object_t obj;
+    dynamic_object_t collider;
+    interactable_t interactable;
+    enum repair_type repair_type;
+    scene_entry_point repair_scene;
 };
 
 typedef struct repair_interaction repair_interaction_t;

@@ -295,6 +295,7 @@ repair_scene_t* repair_scene_load(const char* filename) {
     font_type_use(FONT_DIALOG);
 
     result->is_complete = expression_get_bool(result->puzzle_complete);
+    result->grabbed_part = NULL;
 
     if (result->is_complete) {
         repair_scene_exit_with_message(result, "This has already been repaired");

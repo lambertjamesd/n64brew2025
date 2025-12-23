@@ -383,6 +383,7 @@ void scene_release(struct scene* scene) {
 
     player_destroy(&scene->player);
     camera_controller_destroy(&scene->camera_controller);
+    hud_destroy(&scene->hud);
 
     cutscene_actor_common_destroy();
 

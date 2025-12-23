@@ -96,6 +96,7 @@ struct repair_part_definition {
 enum repair_type {
     REPAIR_BIKE_MOTOR,
     REPAIR_WELL,
+    REPAIR_COUNT,
 };
 
 struct repair_interaction_definition {

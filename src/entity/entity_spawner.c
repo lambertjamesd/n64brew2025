@@ -30,7 +30,7 @@ static struct entity_definition scene_entity_definitions[ENTITY_TYPE_count] = {
     ENTITY_DEFINITION(empty, fields_empty),
     ENTITY_DEFINITION(trigger_cube, fields_empty),
     ENTITY_DEFINITION(motorcycle, fields_empty),
-    ENTITY_DEFINITION(repair_interaction, fields_empty),
+    ENTITY_DEFINITION(repair_interaction, fidls_repair_interaction),
     ENTITY_DEFINITION(repair_part_pickup, fields_empty),
 };
 

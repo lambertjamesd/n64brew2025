@@ -1,7 +1,6 @@
 #include "repair_part_pickup.h"
 
 #include "../render/render_scene.h"
-#include "../resource/tmesh_cache.h"
 #include "../collision/shapes/box.h"
 #include "../collision/collision_scene.h"
 #include "../cutscene/expression_evaluate.h"
