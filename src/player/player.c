@@ -367,13 +367,7 @@ interactable_t* player_find_interactable(struct player* player) {
     return result;
 }
 
-void player_interact(struct player* player) {
-    interactable_t* interactable = player_find_interactable(player);
-
-    if (!interactable) {
-        return;
-    }
-
+void player_interact(struct player* player, interactable_t* interactable) {
     interactable->callback(interactable, ENTITY_ID_PLAYER);
 
     if (interactable->interact_type == INTERACT_TYPE_RIDE) {
@@ -388,9 +382,16 @@ void player_update_grounded(struct player* player, struct contact* ground_contac
     if (ground_contact && dynamic_object_should_slide(MAX_SLIDING_SLOPE, ground_contact->normal.y, SURFACE_TYPE_DEFAULT)) {
         return;
     }
+    
+    interactable_t* interactable = player_find_interactable(player);
 
-    if (pressed.a) {
-        player_interact(player);
+    if (interactable) {
+        if (pressed.a) {
+            player_interact(player, interactable);
+        }
+        player->hover_interaction = interactable->id;
+    } else {
+        player->hover_interaction = 0;
     }
  
     struct Vector3 target_direction;
@@ -526,7 +527,13 @@ void player_init(struct player* player, struct player_definition* definition, st
 
     player->state = PLAYER_GROUNDED;
 
-    spatial_trigger_init(&player->vision, &player->cutscene_actor.transform, &player_vision_shape, COLLISION_LAYER_TANGIBLE, ENTITY_ID_PLAYER);
+    spatial_trigger_init(
+        &player->vision,
+        &player->cutscene_actor.transform, 
+        &player_vision_shape, 
+        COLLISION_LAYER_TANGIBLE | COLLISION_LAYER_INTERACT_ONLY, 
+        ENTITY_ID_PLAYER
+    );
     collision_scene_add_trigger(&player->vision);
 }
 

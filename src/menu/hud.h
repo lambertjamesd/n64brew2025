@@ -4,13 +4,23 @@
 #include "../render/material.h"
 #include "../player/player.h"
 #include "../render/material.h"
+#include "../render/camera.h"
+
+struct hud_assets {
+    material_t* overlay_material;
+};
+
+typedef struct hud_assets hud_assets_t;
 
 struct hud {
     struct player* player;
-    rdpq_font_t* action_font;
+    camera_t* camera;
+    hud_assets_t assets;
 };
 
-void hud_init(struct hud* hud, struct player* player);
+typedef struct hud hud_t;
+
+void hud_init(struct hud* hud, struct player* player, camera_t* camera);
 void hud_destroy(struct hud* hud);
 
 #endif

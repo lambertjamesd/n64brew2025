@@ -12,6 +12,8 @@ enum entity_type_id {
     ENTITY_TYPE_empty,
     ENTITY_TYPE_trigger_cube,
     ENTITY_TYPE_motorcycle,
+    ENTITY_TYPE_repair_interaction,
+    ENTITY_TYPE_repair_part_pickup,
     
     ENTITY_TYPE_count,
 };
@@ -97,10 +99,22 @@ enum repair_type {
 };
 
 struct repair_interaction_definition {
-    scene_entry_point repair_scene;
     struct Vector3 position;
     struct Vector2 rotation;
     enum repair_type repair_type;
+    scene_entry_point repair_scene;
+};
+
+enum repair_part_type {
+    REPAIR_PART_MOTOR,
+    REPAIR_PART_COUNT,
+};
+
+struct repair_part_pickup_definition {
+    struct Vector3 position;
+    struct Vector2 rotation;
+    enum repair_part_type part_type;
+    boolean_variable has_part;
 };
 
 #endif

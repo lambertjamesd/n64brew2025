@@ -1,6 +1,12 @@
 {
     "objects": [
         {
+            "name": "parts_motor",
+            "description": "",
+            "mesh": "meshes/parts/motor.blend#hoverbike_motor",
+            "type": "repair_part_pickup"
+        },
+        {
             "name": "repair_part",
             "description": "",
             "mesh": "meshes/repair_part.blend#repair_part",
@@ -11,6 +17,12 @@
             "description": "",
             "mesh": "meshes/repair_scene.blend#repair_scene",
             "type": "repair_scene"
+        },
+        {
+            "name": "repairs_hoverbike_no_motor",
+            "description": "",
+            "mesh": "meshes/repairs/hoverbike_no_motor.blend#hoverbike_WOmotor",
+            "type": "repair_interaction"
         },
         {
             "name": "vehicles_bike",

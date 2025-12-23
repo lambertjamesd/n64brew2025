@@ -13,6 +13,7 @@ static float interaction_range[] = {
     [INTERACT_TYPE_DROP] = 0.0f,
     [INTERACT_TYPE_OPEN] = 0.85f,
     [INTERACT_TYPE_RIDE] = 2.0f,
+    [INTERACT_TYPE_TAKE] = 1.5f,
 };
 
 static const char* interaction_names[] = {
@@ -22,7 +23,8 @@ static const char* interaction_names[] = {
     [INTERACT_TYPE_PICKUP] = "Lift",
     [INTERACT_TYPE_DROP] = "Drop",
     [INTERACT_TYPE_OPEN] = "Open",
-    [INTERACT_TYPE_RIDE] = "Cast",
+    [INTERACT_TYPE_RIDE] = "Ride",
+    [INTERACT_TYPE_TAKE] = "Take",
 };
 
 void interactable_reset() {

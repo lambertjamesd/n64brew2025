@@ -13,6 +13,7 @@
 #include "../entity/entity_spawner.h"
 #include "../particles/static_particles.h"
 #include "../cutscene/cutscene.h"
+#include "../menu/hud.h"
 
 struct static_entity {
     struct tmesh tmesh;
@@ -98,6 +99,7 @@ struct scene {
     struct player player;
     struct Camera camera;
     struct camera_controller camera_controller;
+    hud_t hud;
     
     struct loading_zone* loading_zones;
     struct named_location* named_locations;

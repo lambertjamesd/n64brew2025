@@ -30,7 +30,7 @@ filesystem/%.font64: assets/%.ttf
 	@echo "    [FONT] $@"
 	@$(N64_MKFONT) $(MKFONT_FLAGS) -o $(dir $@) "$<"
 
-filesystem/fonts/DeltaBlock.font64: MKFONT_FLAGS=--monochrome -s 12
+filesystem/fonts/DeltaBlock.font64: MKFONT_FLAGS=--monochrome -s 10
 
 ###
 # images

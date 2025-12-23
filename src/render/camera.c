@@ -6,7 +6,9 @@
 #include <math.h>
 
 #include "../math/matrix.h"
+#include "../math/mathf.h"
 #include "defs.h"
+#include "screen_coords.h"
 
 void camera_init(struct Camera* camera, float fov, float near, float far) {
     transformInitIdentity(&camera->transform);
@@ -28,7 +30,7 @@ void camera_extract_clipping_plane(float viewPersp[4][4], struct Plane* output, 
 }
 
 void camera_apply(struct Camera* camera, T3DViewport* viewport, struct ClippingPlanes* clipping_planes, mat4x4 view_proj_matrix) {
-    float tan_fov = tanf(camera->fov * (0.5f * 3.14159f / 180.0f));
+    float tan_fov = tanf(camera->fov * DEG_TO_RAD(0.5f));
     float aspect_ratio = (float)viewport->size[0] / (float)viewport->size[1];
 
     float near = camera->near * WORLD_SCALE;
@@ -66,4 +68,12 @@ void camera_apply(struct Camera* camera, T3DViewport* viewport, struct ClippingP
     camera_extract_clipping_plane(view_proj_matrix, &clipping_planes->planes[2], 1, 1.0f);
     camera_extract_clipping_plane(view_proj_matrix, &clipping_planes->planes[3], 1, -1.0f);
     camera_extract_clipping_plane(view_proj_matrix, &clipping_planes->planes[4], 2, 1.0f);
+}
+
+void camera_screen_to_ray(camera_t* camera, vector2_t* screen_pos, ray_t* ray) {
+    screen_coords_to_ray(&camera->transform, DEG_TO_RAD(camera->fov), screen_pos, ray);
+}
+
+void camera_screen_from_position(camera_t* camera, vector3_t* pos, vector2_t* screen_pos) {
+    screen_coords_from_position(&camera->transform, DEG_TO_RAD(camera->fov), pos, screen_pos);
 }

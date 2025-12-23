@@ -51,7 +51,8 @@ void setup() {
 
     // scene_queue_next("rom:/scenes/overworld_accuracy_test.scene");
     // scene_queue_next("rom:/scenes/overworld.scene");
-    scene_queue_next("rom:/repair/motorycle_engine.repair");
+    // scene_queue_next("rom:/repair/motorycle_engine.repair");
+    scene_queue_next("rom:/scenes/garage.scene");
 
     load_scene_or_repair(scene_get_next());
 
@@ -156,7 +157,7 @@ bool check_scene_load() {
     return false;
 }
 
-#define DEBUG_CONNECT_DELAY     TICKS_FROM_MS(500)
+#define DEBUG_CONNECT_DELAY     TICKS_FROM_MS(1000)
 
 int main(void)
 {

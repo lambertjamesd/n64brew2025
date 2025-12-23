@@ -105,6 +105,7 @@ struct_format_defaults = {
 
 _string_aliases = {
     'script_location',
+    'scene_entry_point',
 }
 
 SENSOR_SIZE = 36

@@ -5,6 +5,8 @@
 #include "../objects/empty.h"
 #include "../objects/trigger_cube.h"
 #include "../entities/motorcycle.h"
+#include "../entities/repair_interaction.h"
+#include "../entities/repair_part_pickup.h"
 
 #define ENTITY_DEFINITION(name, fields) [ENTITY_TYPE_ ## name] = { \
     #name, \
@@ -20,10 +22,16 @@
 
 static struct entity_field_type_location fields_empty[] = {};
 
+static struct entity_field_type_location fidls_repair_interaction[] = {
+    { .offset = offsetof(struct repair_interaction_definition, repair_scene), .type = ENTITY_FIELD_TYPE_STRING },
+};
+
 static struct entity_definition scene_entity_definitions[ENTITY_TYPE_count] = {
     ENTITY_DEFINITION(empty, fields_empty),
     ENTITY_DEFINITION(trigger_cube, fields_empty),
     ENTITY_DEFINITION(motorcycle, fields_empty),
+    ENTITY_DEFINITION(repair_interaction, fields_empty),
+    ENTITY_DEFINITION(repair_part_pickup, fields_empty),
 };
 
 static uint16_t scene_entity_count[ENTITY_TYPE_count];

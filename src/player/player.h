@@ -10,6 +10,7 @@
 #include "../render/animation_clip.h"
 #include "../render/animator.h"
 #include "../cutscene/cutscene_actor.h"
+#include "../entity/interactable.h"
 
 #include "../entity/health.h"
 #include "../entity/interactable.h"
@@ -57,6 +58,8 @@ struct player {
     struct Vector3 last_good_footing;
     float slide_timer;
     float coyote_time;
+
+    entity_id hover_interaction;
 
     enum player_state state;
     union state_data state_data;
