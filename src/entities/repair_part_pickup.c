@@ -43,6 +43,7 @@ void repair_part_pickup_init(repair_part_pickup_t* part, struct repair_part_pick
         return;
     }
     part->is_active = true;
+    part->has_part = definition->has_part;
 
     repair_part_type_def_t* def = &types[definition->part_type];
 

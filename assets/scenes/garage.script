@@ -1,0 +1,14 @@
+
+global has_repaired_motor: bool;
+
+scene door_open: bool;
+scene garage_door: entity_id;
+
+func room_garage()
+    if has_repaired_motor and not door_open then
+        cam_look_npc garage_door;
+        delay 2;
+        door_open = true;
+        cam_return;
+    end
+end

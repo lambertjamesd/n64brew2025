@@ -7,6 +7,7 @@
 #include "../entities/motorcycle.h"
 #include "../entities/repair_interaction.h"
 #include "../entities/repair_part_pickup.h"
+#include "../entities/door.h"
 
 #define ENTITY_DEFINITION(name, fields) [ENTITY_TYPE_ ## name] = { \
     #name, \
@@ -32,6 +33,7 @@ static struct entity_definition scene_entity_definitions[ENTITY_TYPE_count] = {
     ENTITY_DEFINITION(motorcycle, fields_empty),
     ENTITY_DEFINITION(repair_interaction, fidls_repair_interaction),
     ENTITY_DEFINITION(repair_part_pickup, fields_empty),
+    ENTITY_DEFINITION(door, fields_empty),
 };
 
 static uint16_t scene_entity_count[ENTITY_TYPE_count];

@@ -216,6 +216,7 @@ void player_enter_vehicle(struct player* player, entity_id vehicle_id) {
 
     player->state_data.in_vehicle.target = vehicle_id;
     player->state = PLAYER_IN_VEHICLE;
+    player->hover_interaction = 0;
     vehicle_enter(vehicle, ENTITY_ID_PLAYER);
     player->cutscene_actor.collider.collision_layers = 0;
 }

@@ -1,6 +1,12 @@
 {
     "objects": [
         {
+            "name": "doors_garage_door",
+            "description": "",
+            "mesh": "meshes/doors/garage_door.blend#door",
+            "type": "door"
+        },
+        {
             "name": "parts_motor",
             "description": "",
             "mesh": "meshes/parts/motor.blend#hoverbike_motor",

@@ -157,7 +157,7 @@ bool check_scene_load() {
     return false;
 }
 
-#define DEBUG_CONNECT_DELAY     TICKS_FROM_MS(1000)
+#define DEBUG_CONNECT_DELAY     TICKS_FROM_MS(1500)
 
 int main(void)
 {

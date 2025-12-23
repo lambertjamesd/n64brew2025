@@ -17,6 +17,9 @@
 #define BOOST_SPEED             80.0f
 #define MAX_TURN_RATE           1.0f
 
+#define STILL_HOVER_HEIGHT      0.25f
+#define FAST_HOVER_HEIGHT       1.0f
+
 struct motorcyle_assets {
     tmesh_t* mesh;
 };
@@ -123,7 +126,7 @@ static vehicle_definiton_t vehicle_def = {
 
 static vector3_t local_cast_points[] = {
     {0.31f, 0.1f, 1.5f},
-    {0.31f, 0.01, -1.5f},
+    {0.31f, 0.1f, -1.5f},
     {-0.31f, 0.1f, 1.5f},
     {-0.31f, 0.1f, -1.5f},
 };
@@ -143,7 +146,7 @@ void motorcycle_ride(struct interactable* interactable, entity_id from) {
 
 float motorcycle_hover_height(motorcycle_t* motorcycle) {
     // this function will eventually do logic
-    return 1.0f;
+    return STILL_HOVER_HEIGHT;
 }
 
 void motorcycle_update(void* data) {

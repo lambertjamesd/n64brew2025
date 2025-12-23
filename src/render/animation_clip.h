@@ -37,6 +37,8 @@ struct animation_set {
     struct animation_clip* clips;
 };
 
+typedef struct animation_set animation_set_t;
+
 struct animation_set* animation_set_load(const char* filename);
 void annotation_clip_set_free(struct animation_set* animation_set);
 

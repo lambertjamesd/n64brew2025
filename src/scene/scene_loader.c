@@ -405,6 +405,7 @@ void scene_release(struct scene* scene) {
     camera_animation_list_destroy(&scene->camera_animations);
 
     if (scene->cutscene) {
+        cutscene_runner_cancel(scene->cutscene);
         cutscene_free(scene->cutscene);
     }
     free(scene->scene_vars);

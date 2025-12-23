@@ -334,6 +334,7 @@ def build_room_entity_block(objects: list[ObjectEntry], variable_context, contex
     entity_enum = enums['entity_id_variable']
 
     for object in objects:
+        print('object', object, object.name)
         object.write_condition(variable_context, block)
         on_despawn = enums['boolean_variable'].str_to_int(object.on_despawn or "disconnected")
 

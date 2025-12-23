@@ -14,6 +14,7 @@ enum entity_type_id {
     ENTITY_TYPE_motorcycle,
     ENTITY_TYPE_repair_interaction,
     ENTITY_TYPE_repair_part_pickup,
+    ENTITY_TYPE_door,
     
     ENTITY_TYPE_count,
 };
@@ -116,6 +117,21 @@ struct repair_part_pickup_definition {
     struct Vector2 rotation;
     enum repair_part_type part_type;
     boolean_variable has_part;
+};
+
+enum door_type {
+    DOOR_TYPE_GARAGE,
+    DOOR_TYPE_COUNT,
+};
+
+struct door_definition {
+    struct Vector3 position;
+    struct Vector2 rotation;
+    enum door_type door_type;
+    boolean_variable is_open;
+
+    room_id room_a;
+    room_id room_b;
 };
 
 #endif
