@@ -155,7 +155,7 @@ void repair_scene_handle_grabbed_part(repair_scene_t* scene, joypad_inputs_t inp
     );
 }
 
-#define DROP_TOLERNACE  0.5f
+#define DROP_TOLERNACE  1.0f
 
 void repair_scene_check_drop(repair_scene_t* scene) {
     repair_part_t* grabbed_part = scene->grabbed_part;

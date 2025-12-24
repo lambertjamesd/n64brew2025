@@ -492,6 +492,7 @@ void player_init(struct player* player, struct player_definition* definition, st
     player->cutscene_actor.transform.rotation = definition->rotation;
 
     player->last_good_footing = definition->location;
+    player->coyote_time = 0.0f;
 
     render_scene_add_renderable(&player->renderable, 2.0f);
     update_add(player, (update_callback)player_update, UPDATE_PRIORITY_PLAYER, UPDATE_LAYER_WORLD | UPDATE_LAYER_CUTSCENE);
