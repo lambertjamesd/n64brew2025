@@ -207,13 +207,22 @@ void cutscene_runner_init_step(struct cutscene_active_entry* cutscene, struct cu
             break;
         }
         case CUTSCENE_STEP_CAMERA_LOOK_AT_NPC: {
-            struct cutscene_actor* target = cutscene_runner_lookup_actor(cutscene, evaluation_context_pop(&cutscene->context));
-            if (!target) {
+            entity_id entity_id = evaluation_context_pop(&cutscene->context);
+
+            struct cutscene_actor* target = cutscene_runner_lookup_actor(cutscene, entity_id);
+            if (target) {
+                camera_look_at(&current_scene->camera_controller, &target->transform.position);
                 break;
             }
 
-            camera_look_at(&current_scene->camera_controller, &target->transform.position);
-            break;
+            dynamic_object_t* obj = collision_scene_find_object(entity_id);
+
+            if (obj) {
+                vector3_t center;
+                vector3Lerp(&obj->bounding_box.min, &obj->bounding_box.max, 0.5f, &center);
+                camera_look_at(&current_scene->camera_controller, &center);
+                break;
+            }
         }
         case CUTSCENE_STEP_CAMERA_FOLLOW: {
             camera_follow_player(&current_scene->camera_controller);
@@ -470,12 +479,7 @@ void cutscene_runner_init() {
     }
 }
 
-void cutscene_runner_run(struct cutscene* cutscene, int function_index, cutscene_finish_callback finish_callback, void* data, entity_id subject) {
-    if (cutscene_runner.current_cutscene == -1) {
-        cuscene_runner_start(cutscene, function_index, finish_callback, data, subject);
-        return;
-    }
-
+void cutscene_runner_enqueue(struct cutscene* cutscene, int function_index, cutscene_finish_callback finish_callback, void* data, entity_id subject) {
     int next_cutscene = cutscene_runner.last_cutscene;
 
     cutscene_runner.last_cutscene = cutscene_next_queue_index(cutscene_runner.last_cutscene);
@@ -489,6 +493,15 @@ void cutscene_runner_run(struct cutscene* cutscene, int function_index, cutscene
     queue_entry->finish_callback = finish_callback;
     queue_entry->data = data;
     queue_entry->subject = subject;
+}
+
+void cutscene_runner_run(struct cutscene* cutscene, int function_index, cutscene_finish_callback finish_callback, void* data, entity_id subject) {
+    if (cutscene_runner.current_cutscene == -1) {
+        cuscene_runner_start(cutscene, function_index, finish_callback, data, subject);
+        return;
+    }
+
+    cutscene_runner_enqueue(cutscene, function_index, finish_callback, data, subject);
 }
 
 bool cutscene_runner_is_running() {
@@ -505,21 +518,19 @@ void cutscene_runner_cancel(struct cutscene* cutscene) {
         return;
     }
 
-    bool is_running = false;
+    int next_cutscene = cutscene_runner.current_cutscene;
 
-    for (int i = cutscene_runner.current_cutscene; i >= 0; i -= 1) {
+    for (int i = 0; i <= cutscene_runner.current_cutscene; i += 1) {
         if (cutscene_runner.active_cutscenes[i].cutscene == cutscene) {
-            is_running = true;
+            next_cutscene = i - 1;
             break;
         }
     }
 
-    if (is_running) {
-        for (int i = cutscene_runner.current_cutscene; i >= 0; i -= 1) {
-            cutscene_cancel_active(&cutscene_runner.active_cutscenes[i]);
-        }
-        cutscene_runner.current_cutscene = -1;
+    for (int i = cutscene_runner.current_cutscene; i > next_cutscene; i -= 1) {
+        cutscene_cancel_active(&cutscene_runner.active_cutscenes[i]);
     }
+    cutscene_runner.current_cutscene = next_cutscene;
 
     int curr = cutscene_runner.next_cutscene;
     int write_index = curr;
@@ -539,8 +550,9 @@ void cutscene_runner_cancel(struct cutscene* cutscene) {
             if (curr == cutscene_runner.next_cutscene) {
                 cutscene_runner.next_cutscene = cutscene_next_queue_index(cutscene_runner.next_cutscene);
                 write_index = cutscene_runner.next_cutscene;
+            } else {
+                deletion_count += 1;
             }
-            deletion_count += 1;
         } else {
             write_index = cutscene_next_queue_index(write_index);
         }

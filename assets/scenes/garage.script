@@ -6,9 +6,12 @@ scene garage_door: entity_id;
 
 func room_garage()
     if has_repaired_motor and not door_open then
+        world_pause;
+        delay 1;
         cam_look_npc garage_door;
         delay 2;
         door_open = true;
         cam_return;
+        world_unpause;
     end
 end
