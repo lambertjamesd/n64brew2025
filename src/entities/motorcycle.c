@@ -125,10 +125,10 @@ static vehicle_definiton_t vehicle_def = {
 };
 
 static vector3_t local_cast_points[] = {
-    {0.31f, 0.1f, 1.5f},
-    {0.31f, 0.1f, -1.5f},
-    {-0.31f, 0.1f, 1.5f},
-    {-0.31f, 0.1f, -1.5f},
+    {0.31f, 0.3f, 1.5f},
+    {0.31f, 0.3f, -1.5f},
+    {-0.31f, 0.3f, 1.5f},
+    {-0.31f, 0.3f, -1.5f},
 };
 
 void motorcycle_common_init() {
