@@ -108,6 +108,12 @@ vector3_t* cutscene_runner_lookup_pos(struct cutscene_active_entry* cutscene, en
         return &empty->position;
     }
 
+    dynamic_object_t* obj = collision_scene_find_object(id);
+
+    if (obj) {
+        return obj->position;
+    }
+
     return NULL;
 }
 

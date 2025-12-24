@@ -230,9 +230,9 @@ void player_exit_vehicle(struct player* player) {
     player->cutscene_actor.collider.collision_layers = PLAYER_LAYERS;
 
     player_enter_grounded_state(player);
-    vehicle_apply_exit_transform(vehicle, &player->cutscene_actor.transform);
-
+    
     if (vehicle) {
+        vehicle_apply_exit_transform(vehicle, &player->cutscene_actor.transform);
         vehicle_exit(vehicle);
     }
 }
@@ -402,7 +402,6 @@ void player_update_grounded(struct player* player, struct contact* ground_contac
     if (!player_handle_ground_movement(player, ground_contact, &target_direction, &speed)) {
         return;
     }
-
 }
 
 void player_update_in_vehicle(struct player* player, struct contact* ground_contact) {

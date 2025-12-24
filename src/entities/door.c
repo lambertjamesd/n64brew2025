@@ -41,8 +41,10 @@ void door_update(void* data) {
 
     if (is_open & !door->was_open) {
         animator_run_clip(&door->animator, door->animations.open, 0.0f, false);
+        collision_scene_remove(&door->collider);
     } else if (!is_open && door->was_open) {
         animator_run_clip(&door->animator, door->animations.close, 0.0f, false);
+        collision_scene_add(&door->collider);
     }
 
     door->was_open = is_open;
@@ -81,7 +83,9 @@ void door_init(door_t* door, struct door_definition* definition, entity_id entit
 void door_destroy(door_t* door) {
     render_scene_remove(&door->renderable);
     renderable_destroy(&door->renderable);
-    collision_scene_remove(&door->collider);
+    if (!door->was_open) {
+        collision_scene_remove(&door->collider);
+    }
     animation_cache_release(door->animation_set);
     animator_destroy(&door->animator);
     update_remove(door);

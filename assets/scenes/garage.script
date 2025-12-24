@@ -8,6 +8,7 @@ func room_garage()
     if has_repaired_motor and not door_open then
         world_pause;
         delay 1;
+        interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, garage_door;
         cam_look_npc garage_door;
         delay 2;
         door_open = true;

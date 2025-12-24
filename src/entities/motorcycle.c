@@ -240,4 +240,8 @@ void motorcycle_destroy(motorcycle_t* motorcycle) {
     interactable_destroy(&motorcycle->interactable);
     update_remove(motorcycle);
     vehicle_destroy(&motorcycle->vehicle);
+    
+    for (int i = 0; i < CAST_POINT_COUNT; i += 1) {
+        collision_scene_remove_cast_point(&motorcycle->cast_points[i]);
+    }
 }

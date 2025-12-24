@@ -679,7 +679,7 @@ void collision_scene_remove_cast_point(struct cast_point* cast_point) {
         ++curr) {
         if (*curr == cast_point) {
             *curr = *(end - 1);
-            --g_scene.count;
+            --g_scene.cast_point_count;
             break;
         }
     }
