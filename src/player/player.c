@@ -416,6 +416,7 @@ void player_update_in_vehicle(struct player* player, struct contact* ground_cont
     player_get_input_direction(player, &target_direction);
     vehicle_steer(vehicle, &target_direction);
     vehicle_apply_driver_transform(vehicle, &player->cutscene_actor.transform);
+    player->cutscene_actor.collider.velocity = gZeroVec;
 
     joypad_buttons_t pressed = joypad_get_buttons_pressed(0);
 
