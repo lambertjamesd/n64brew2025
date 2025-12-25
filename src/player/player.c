@@ -387,10 +387,10 @@ void player_update_grounded(struct player* player, struct contact* ground_contac
     interactable_t* interactable = player_find_interactable(player);
 
     if (interactable) {
+        player->hover_interaction = interactable->id;
         if (pressed.a) {
             player_interact(player, interactable);
         }
-        player->hover_interaction = interactable->id;
     } else {
         player->hover_interaction = 0;
     }
