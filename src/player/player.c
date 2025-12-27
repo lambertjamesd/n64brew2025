@@ -531,7 +531,3 @@ void player_destroy(struct player* player) {
 
     player_unload_sound(player);
 }
-
-struct Vector3* player_get_position(struct player* player) {
-    return &player->cutscene_actor.transform.position;
-}

@@ -1,0 +1,20 @@
+{
+    "tex0": {
+        "filename": "../../images/menu/map_grid.png",
+        "s": {
+            "repeats": 2048,
+            "mirror": false
+        },
+        "t": {
+            "repeats": 2048,
+            "mirror": false
+        }
+    },
+    "combineMode": [{
+        "color": ["PRIM", "ENV", "TEX0", "ENV"],
+        "alpha": ["0", "0", "0", "TEX0"]
+    }],
+    "envColor": [10, 10, 32, 255],
+    "primColor": [20, 100, 140, 255],
+    "blendMode": "OPAQUE"
+}

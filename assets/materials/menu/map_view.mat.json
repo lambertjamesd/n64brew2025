@@ -1,0 +1,7 @@
+{
+    "combineMode": [{
+        "color": ["0", "0", "0", "SHADE"],
+        "alpha": ["0", "0", "0", "SHADE"]
+    }],
+    "blendMode": "TRANSPARENT"
+}
