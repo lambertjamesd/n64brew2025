@@ -18,6 +18,9 @@
 #define BOX_HEIGHT              10
 #define BOX_WIDTH               30
 
+static sprite_t* map_test;
+static material_t* map_render;
+
 void hud_render_interaction_preview(struct hud* hud) {
     if (!hud->player->hover_interaction) {
         return;
@@ -78,7 +81,6 @@ void hud_render_interaction_preview(struct hud* hud) {
         interaction_name,
         strlen(interaction_name)
     );
-
 }
 
 void hud_render(void *data) {

@@ -13,6 +13,8 @@ struct Vector2s16 {
     };
 };
 
+typedef struct Vector2s16 vector2s16_t;
+
 #define VECTOR2s16_AS_ARRAY(vector) ((s16*)(vector))
 
 void vector2s16Add(struct Vector2s16* a, struct Vector2s16* b, struct Vector2s16* output);

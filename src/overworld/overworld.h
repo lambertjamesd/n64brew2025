@@ -109,6 +109,8 @@ struct overworld {
     struct overworld_actor* next_active_actor;
 };
 
+typedef struct overworld overworld_t;
+
 struct overworld* overworld_load(const char* filename);
 void overworld_free(struct overworld* overworld);
 

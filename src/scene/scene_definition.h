@@ -22,6 +22,7 @@ enum entity_type_id {
 enum fixed_entity_ids {
     ENTITY_ID_PLAYER = 1,
     ENTITY_ID_SUBJECT = 2,
+    ENTITY_ID_MOTORCYLE = 3,
 
     ENTITY_ID_FIRST_DYNAMIC,
 };
@@ -32,6 +33,11 @@ struct empty_definition {
 };
 
 struct motorcycle_definition {
+    struct Vector3 position;
+    struct Vector2 rotation;
+};
+
+struct motorcycle_spawn_point_definition {
     struct Vector3 position;
     struct Vector2 rotation;
 };

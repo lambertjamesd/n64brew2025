@@ -7,6 +7,7 @@
 #include "../cutscene/evaluation_context.h"
 #include "../cutscene/expression_evaluate.h"
 #include "../cutscene/cutscene_runner.h"
+#include "../menu/map_menu.h"
 
 struct scene* current_scene;
 
@@ -171,6 +172,19 @@ void scene_update(void* data) {
 
     scene_check_despawns(scene);
     scene_check_cutscenes(scene);
+
+    joypad_buttons_t pressed = joypad_get_buttons_pressed(0);
+    joypad_inputs_t input = joypad_get_inputs(0);
+
+    if (!input.btn.start) {
+        scene->can_pause = true;
+    }
+
+    if (pressed.start && scene->can_pause) {
+        map_menu_show();
+        scene->can_pause = false;
+    }
+    
 }
 
 void scene_queue_next(char* scene_name) {

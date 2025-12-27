@@ -258,6 +258,7 @@ struct scene* scene_load(const char* filename) {
     scene->named_locations = named_locations;
     scene->named_location_count = location_count;
     scene->last_despawn_check = 0;
+    scene->can_pause = false;
 
     cutscene_actor_common_init();
     camera_init(&scene->camera, DEFAULT_CAMERA_FOV, 1.0f, 125.0f);

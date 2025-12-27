@@ -338,6 +338,10 @@ bool collision_scene_should_sweep(dynamic_object_t* object, struct Vector3* prev
 #define MAX_SWEPT_ITERATIONS    5
 
 void collision_scene_collide_single(struct dynamic_object* object, struct Vector3* prev_pos) {
+    if (!object->collision_layers) {
+        return;
+    }
+
     for (int i = 0; i < MAX_SWEPT_ITERATIONS; i += 1) {
         if (collision_scene_should_sweep(object, prev_pos)) {
             bool did_hit = collide_object_to_multiple_mesh_swept(object, g_scene.mesh_colliders, g_scene.mesh_collider_count, prev_pos);

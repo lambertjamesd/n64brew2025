@@ -9,4 +9,7 @@ enum game_mode {
 
 extern enum game_mode current_game_mode;
 
+void game_mode_enter_menu();
+void game_mode_exit_menu();
+
 #endif

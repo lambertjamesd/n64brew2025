@@ -12,6 +12,7 @@
 #include "../audio/audio.h"
 #include "../entities/vehicle.h"
 #include "../menu/menu_common.h"
+#include "../menu/map_menu.h"
 
 void init_engine() {
     render_scene_reset();
@@ -24,4 +25,5 @@ void init_engine() {
     cutscene_actor_reset();
     audio_player_init();
     menu_common_init();
+    map_menu_init();
 }

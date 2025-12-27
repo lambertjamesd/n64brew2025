@@ -15,6 +15,7 @@
 #include "../render/defs.h"
 #include "../audio/audio.h"
 #include "../entities/vehicle.h"
+#include "../menu/map_menu.h"
 
 #include "../effects/fade_effect.h"
 
@@ -54,27 +55,6 @@ struct climb_up_data {
 };
 
 typedef struct climb_up_data climb_up_data_t;
-
-static struct climb_up_data climb_up_data[CLIMB_UP_COUNT] = {
-    {
-        .max_climb_height = 0.8f,
-        .animation_height = 0.4f,
-        .start_jump_time = 14.0f / 30.0f,
-        .end_jump_time = 23.0f / 30.0f,
-    },
-    {
-        .max_climb_height = 1.2f,
-        .animation_height = 0.9f,
-        .start_jump_time = 6.0f / 30.0f,
-        .end_jump_time = 13.0f / 30.0f,
-    },
-    {
-        .max_climb_height = 2.1f,
-        .animation_height = 1.4f,
-        .start_jump_time = 6.0f / 30.0f,
-        .end_jump_time = 13.0f / 30.0f,
-    },
-};
 
 // about a 40 degree slope
 #define MAX_STABLE_SLOPE    0.219131191f
@@ -378,7 +358,6 @@ void player_interact(struct player* player, interactable_t* interactable) {
 
 void player_update_grounded(struct player* player, struct contact* ground_contact) {
     joypad_buttons_t pressed = joypad_get_buttons_pressed(0);
-    struct dynamic_object* collider = &player->cutscene_actor.collider;
 
     if (ground_contact && dynamic_object_should_slide(MAX_SLIDING_SLOPE, ground_contact->normal.y, SURFACE_TYPE_DEFAULT)) {
         return;
@@ -439,11 +418,11 @@ void player_update_state(struct player* player, struct contact* ground_contact) 
 }
 
 void player_update(struct player* player) {
-    joypad_inputs_t input = joypad_get_inputs(0);
-
     if (cutscene_actor_update(&player->cutscene_actor) || !update_has_layer(UPDATE_LAYER_WORLD)) {
         return;
     }
+
+    map_mark_revealed(player_get_position(player));
 
     struct contact* ground = dynamic_object_get_ground(&player->cutscene_actor.collider);
     

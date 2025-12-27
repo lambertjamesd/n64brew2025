@@ -9,7 +9,7 @@
 #include "../math/mathf.h"
 
 #define HOVER_SAG_AMOUNT        0.25f
-#define HOVER_SPRING_STRENGTH   (-GRAVITY_CONSTANT / (CAST_POINT_COUNT * HOVER_SAG_AMOUNT))
+#define HOVER_SPRING_STRENGTH   (-GRAVITY_CONSTANT / HOVER_SAG_AMOUNT)
 
 #define ACCEL_RATE              20.0f
 #define BACKUP_SPEED            -5.0f
@@ -18,6 +18,7 @@
 #define MAX_TURN_RATE           1.0f
 
 #define STILL_HOVER_HEIGHT      0.25f
+#define RIDE_HOVER_HEIGHT       0.5f
 #define FAST_HOVER_HEIGHT       1.0f
 
 struct motorcyle_assets {
@@ -144,17 +145,26 @@ void motorcycle_ride(struct interactable* interactable, entity_id from) {
 
 }
 
-float motorcycle_hover_height(motorcycle_t* motorcycle) {
-    // this function will eventually do logic
-    return STILL_HOVER_HEIGHT;
+float motorcycle_hover_height(motorcycle_t* motorcycle, float speed) {
+    if (!motorcycle->vehicle.driver) {
+        return STILL_HOVER_HEIGHT;
+    }
+    
+    float lerp = speed * (1.0f / DRIVE_SPEED);
+
+    if (lerp > 1.0f) {
+        return FAST_HOVER_HEIGHT;
+    }
+
+    return mathfLerp(RIDE_HOVER_HEIGHT, FAST_HOVER_HEIGHT, lerp);
 }
 
 void motorcycle_update(void* data) {
     motorcycle_t* motorcycle = (motorcycle_t*)data;
 
-    float target_height = motorcycle_hover_height(motorcycle) + HOVER_SAG_AMOUNT;
+    float current_speed = sqrtf(vector3MagSqrd(&motorcycle->collider.velocity));
 
-    bool needs_damping = true;
+    float target_height = motorcycle_hover_height(motorcycle, current_speed) + HOVER_SAG_AMOUNT;
 
     vector3_t forward;
 
@@ -186,10 +196,15 @@ void motorcycle_update(void* data) {
         target_speed = 0.0f;
     }
 
+    current_speed = mathfMoveTowards(current_speed, target_speed, fixed_time_step * ACCEL_RATE);
+
     vector3_t target_vel;
     vector3Scale(&forward, &target_vel, target_speed);
 
     motorcycle->vehicle.is_stopped = vector3MagSqrd2D(&motorcycle->collider.velocity) < 0.01f && input.stick_y > -20;
+
+    vector3_t ground_normal = (vector3_t){};
+    float min_height_offset = target_height;
 
     for (int i = 0; i < CAST_POINT_COUNT; i += 1) {
         cast_point_t* cast_point = &motorcycle->cast_points[i];
@@ -197,23 +212,30 @@ void motorcycle_update(void* data) {
         if (cast_point->surface_type != SURFACE_TYPE_NONE) {
             float actual_height = cast_point->pos.y - cast_point->y;
 
+            if (actual_height < min_height_offset) {
+                min_height_offset = actual_height;
+            }
+
             if (actual_height < target_height) {
-                if (needs_damping) {
-                    float y_vel = motorcycle->collider.velocity.y * 0.8f;
-                    motorcycle->collider.velocity.y = 0.0f;
-                    vector3MoveTowards(&motorcycle->collider.velocity, &target_vel, fixed_time_step * ACCEL_RATE, &motorcycle->collider.velocity);
-                    motorcycle->collider.velocity.y = y_vel;
-
-                    needs_damping = false;
-                }
-
-                motorcycle->collider.velocity.y += (target_height - actual_height) * fixed_time_step * HOVER_SPRING_STRENGTH;
+                vector3Add(&ground_normal, &cast_point->normal, &ground_normal);
             }
         }
 
         vector3_t pos;
         transformSaTransformPoint(&motorcycle->transform, &local_cast_points[i], &pos);
         cast_point_set_pos(cast_point, &pos);
+    }
+
+    debugf("min_height_offset = %f\n", min_height_offset);
+
+    if (min_height_offset < target_height) {
+        vector3_t* vel = &motorcycle->collider.velocity;
+        vector2ToLookDir(&motorcycle->transform.rotation, vel);
+        vector3Scale(vel, vel, current_speed);
+        vector3Normalize(&ground_normal, &ground_normal);
+        vector3ProjectPlane(vel, &ground_normal, vel);
+
+        vel->y = vel->y * 0.8 + (target_height - min_height_offset) * fixed_time_step * HOVER_SPRING_STRENGTH;
     }
 }
 

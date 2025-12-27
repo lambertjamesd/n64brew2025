@@ -6,6 +6,7 @@
 #include "gjk.h"
 #include "epa.h"
 #include <stdio.h>
+#include <libdragon.h>
 
 struct swept_dynamic_object {
     struct dynamic_object* object;
@@ -65,13 +66,6 @@ bool collide_object_swept_to_triangle(void* data, int triangle_index, int collis
         collide_data->object->position,
         &result
     )) {
-        if (!mesh_triangle_filter_edge_contacts(
-            &triangle.triangle, 
-            collide_data->mesh->index.vertices, 
-            &result.normal)) {
-            return false;
-        }
-
         collide_data->hit_result = result;
         collide_data->surface_type = triangle.triangle.surface_type;
         return true;
@@ -92,9 +86,15 @@ bool collide_object_swept_to_triangle(void* data, int triangle_index, int collis
             &triangle.triangle, 
             collide_data->mesh->index.vertices, 
             &result.normal)) {
+            *collide_data->object->position = final_pos;
             return false;
         }
         
+        // vector3_t offset;
+        // vector3Sub(&final_pos, collide_data->object->position, &offset);
+        // vector3ProjectPlane(&offset, &result.normal, &offset);
+        // vector3Add(collide_data->object->position, &offset, collide_data->object->position);
+
         collide_data->hit_result = result;
         collide_data->surface_type = triangle.triangle.surface_type;
         return true;
@@ -124,11 +124,15 @@ void collide_object_swept_bounce(
     struct Vector3 move_amount_tangent;
     vector3Sub(&move_amount, &move_amount_normal, &move_amount_tangent);
 
-    vector3Scale(&move_amount_normal, &move_amount_normal, -object->type->bounce);
+    // todo check bounce
+    if (vector3Dot(&move_amount, &collide_data->hit_result.normal) < 0.0f) {
+        vector3Scale(&move_amount_normal, &move_amount_normal, -object->type->bounce);
+    }
     
     vector3Add(object->position, &move_amount_normal, object->position);
     vector3Add(object->position, &move_amount_tangent, object->position);
     vector3AddScaled(object->position, &collide_data->hit_result.normal, -collide_data->hit_result.penetration + FACE_MARGIN, object->position);
+    vector3AddScaled(collide_data->prev_pos, &collide_data->hit_result.normal, -collide_data->hit_result.penetration + FACE_MARGIN, collide_data->prev_pos);
 
     // don't include friction on a bounce
     correct_velocity(&object->velocity, &collide_data->hit_result.normal, -1.0f, 0.0f, object->type->bounce);

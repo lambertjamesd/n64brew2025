@@ -124,6 +124,7 @@ struct scene {
     uint16_t* room_cutscene_functions;
     char* string_table;
     char* scene_vars;
+    bool can_pause;
 
     struct camera_animation_list camera_animations;
 };
