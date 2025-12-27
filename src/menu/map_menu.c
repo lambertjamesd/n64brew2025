@@ -73,7 +73,7 @@ void map_render(void* data) {
         MAP_X, MAP_Y,
         MAP_X + MAP_SIZE,
         MAP_Y + MAP_SIZE,
-        0, 0
+        13, 13
     );
 
     surface_t surf = sprite_get_pixels(assets.map);
