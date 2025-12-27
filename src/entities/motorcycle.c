@@ -226,8 +226,6 @@ void motorcycle_update(void* data) {
         cast_point_set_pos(cast_point, &pos);
     }
 
-    debugf("min_height_offset = %f\n", min_height_offset);
-
     if (min_height_offset < target_height) {
         vector3_t* vel = &motorcycle->collider.velocity;
         vector2ToLookDir(&motorcycle->transform.rotation, vel);

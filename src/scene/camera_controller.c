@@ -23,6 +23,9 @@ static struct move_towards_parameters camera_move_parameters = {
 #define BOOST_FOV               90.0f
 #define FOV_CHANGE_TIME         0.25f
 
+#define TURN_SPEED              13.0f
+#define TURN_ACCEL              32.0f
+
 #define MIN_TWO_TARGET_DISTANCE 
 
 void camera_cached_calcuations_check(struct camera_cached_calcuations* cache, struct Camera* camera) {
@@ -172,6 +175,38 @@ void camera_controller_determine_player_move_target(struct camera_controller* co
     if (vector3MagSqrd(&offset) < 0.1f) {
         offset = gForward;
     }
+    
+    joypad_buttons_t buttons = joypad_get_buttons(0);
+
+    float angle_delta = 0.0f;
+
+    if (buttons.c_right) {
+        angle_delta += TURN_SPEED;
+    }
+
+    if (buttons.c_left) {
+        angle_delta -= TURN_SPEED;
+    }
+
+    debugf("angle_delta %f\n", angle_delta);
+
+    float curr_vel = controller->state_data.follow.horizontal_velocity;
+    curr_vel = mathfMoveTowards(
+        curr_vel,
+        angle_delta,
+        fixed_time_step * TURN_ACCEL
+    );
+
+    if (curr_vel != 0.0f) {
+        vector2_t rotation;
+        vector2ComplexFromAngle(
+            curr_vel * fixed_time_step, 
+            &rotation
+        );
+        vector3RotateWith2(&offset, &rotation, &offset);
+    }
+
+    controller->state_data.follow.horizontal_velocity = curr_vel;
 
     // determine how far the camera should be the wall checker will determine if the camera 
     // should move closer to avoid obstacles
@@ -218,8 +253,7 @@ void camera_controller_return_target(struct camera_controller* controller, struc
     controller->camera->fov = mathfMoveTowards(controller->camera->fov, 70.0f, 20.0f * fixed_time_step);
 
     if (vector3DistSqrd(target, &controller->stable_position) < 0.0001f) {
-        controller->state = CAMERA_STATE_FOLLOW;
-        controller->camera->fov = 70.0f;
+        camera_follow_player(controller);
     }
 }
 
@@ -385,7 +419,7 @@ void camera_controller_update(struct camera_controller* controller) {
 void camera_controller_init(struct camera_controller* controller, struct Camera* camera, struct player* player) {
     controller->camera = camera;
     controller->player = player;
-    controller->state = CAMERA_STATE_FOLLOW;
+    camera_follow_player(controller);
 
     vector3_t* player_pos = player_get_position(player);
 
@@ -429,6 +463,13 @@ void camera_look_at(struct camera_controller* controller, struct Vector3* target
 void camera_follow_player(struct camera_controller* controller) {
     controller->state = CAMERA_STATE_FOLLOW;
     controller->camera->fov = DEFAULT_CAMERA_FOV;
+    controller->state_data = (union camera_controller_state_data){
+        .follow = {
+            .horizontal_velocity = 0.0f,
+            .vertical_angle = 0.0f,
+            .vertical_angle_vel = 0.0f,
+        },
+    };
 }
 
 void camera_follow_vehicle(struct camera_controller* controller) {

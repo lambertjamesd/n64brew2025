@@ -35,6 +35,11 @@ struct camera_cached_calcuations {
  */
 union camera_controller_state_data {
     struct {
+        float horizontal_velocity;
+        float vertical_angle;
+        float vertical_angle_vel;
+    } follow;
+    struct {
         struct camera_animation* animation;
         uint16_t current_frame;
     } animate;
