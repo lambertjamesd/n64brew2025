@@ -11,6 +11,7 @@
 enum light_source {
     LIGHT_SOURCE_NONE,
     LIGHT_SOURCE_CAMERA,
+    LIGHT_SOURCE_RIM,
 };
 
 struct armature_attatchment {

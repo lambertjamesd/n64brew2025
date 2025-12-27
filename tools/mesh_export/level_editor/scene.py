@@ -3,7 +3,8 @@ import bpy
 
 enumLightSource = [
     ("none", "None", ""),
-    ("from_camera", "From camera", "")
+    ("from_camera", "From camera", ""),
+    ("rim", "Rim light", ""),
 ]
 
 class SCENE_PT_spellcraft_settings(bpy.types.Panel):

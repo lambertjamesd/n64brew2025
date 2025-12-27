@@ -365,6 +365,17 @@ void render_batch_setup_light(struct render_batch* batch, enum light_source ligh
             t3d_light_set_count(1);
             break;
         }
+        case LIGHT_SOURCE_RIM: {
+            T3DVec3 dir = {{
+                .x = -batch->camera_matrix[2][0],
+                .y = -batch->camera_matrix[2][1],
+                .z = -batch->camera_matrix[2][2],
+            }};
+            t3d_light_set_ambient(black_color);
+            t3d_light_set_directional(0, white_color, &dir);
+            t3d_light_set_count(1);
+            break;
+        }
     }
 }
 

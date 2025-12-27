@@ -464,7 +464,7 @@ void player_unload_sound(struct player* player) {
 
 void player_init(struct player* player, struct player_definition* definition, struct Transform* camera_transform) {
     transformSaInitIdentity(&player->cutscene_actor.transform);
-    renderable_single_axis_init(&player->renderable, &player->cutscene_actor.transform, "rom:/meshes/female_jam_t3d.tmesh");
+    renderable_single_axis_init(&player->renderable, &player->cutscene_actor.transform, "rom:/meshes/characters/scrapper_kid.tmesh");
 
     player->camera_transform = camera_transform;
 
@@ -492,7 +492,7 @@ void player_init(struct player* player, struct player_definition* definition, st
         ENTITY_ID_PLAYER,
         &transform,
         &player->renderable.armature,
-        "rom:/meshes/female_jam_t3d.anim"
+        "rom:/meshes/characters/scrapper_kid.anim"
     );
 
     player->cutscene_actor.collider.density_class = DYNAMIC_DENSITY_MEDIUM;

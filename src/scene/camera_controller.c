@@ -188,8 +188,6 @@ void camera_controller_determine_player_move_target(struct camera_controller* co
         angle_delta -= TURN_SPEED;
     }
 
-    debugf("angle_delta %f\n", angle_delta);
-
     float curr_vel = controller->state_data.follow.horizontal_velocity;
     curr_vel = mathfMoveTowards(
         curr_vel,
