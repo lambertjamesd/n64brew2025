@@ -8,6 +8,7 @@
 #include "../entities/repair_interaction.h"
 #include "../entities/repair_part_pickup.h"
 #include "../entities/door.h"
+#include "../entities/npc.h"
 
 #define ENTITY_DEFINITION(name, fields) [ENTITY_TYPE_ ## name] = { \
     #name, \
@@ -23,17 +24,22 @@
 
 static struct entity_field_type_location fields_empty[] = {};
 
-static struct entity_field_type_location fidls_repair_interaction[] = {
+static struct entity_field_type_location fields_repair_interaction[] = {
     { .offset = offsetof(struct repair_interaction_definition, repair_scene), .type = ENTITY_FIELD_TYPE_STRING },
+};
+
+static struct entity_field_type_location fields_npc[] = {
+    { .offset = offsetof(struct npc_definition, dialog), .type = ENTITY_FIELD_TYPE_STRING },
 };
 
 static struct entity_definition scene_entity_definitions[ENTITY_TYPE_count] = {
     ENTITY_DEFINITION(empty, fields_empty),
     ENTITY_DEFINITION(trigger_cube, fields_empty),
     ENTITY_DEFINITION(motorcycle, fields_empty),
-    ENTITY_DEFINITION(repair_interaction, fidls_repair_interaction),
+    ENTITY_DEFINITION(repair_interaction, fields_repair_interaction),
     ENTITY_DEFINITION(repair_part_pickup, fields_empty),
     ENTITY_DEFINITION(door, fields_empty),
+    ENTITY_DEFINITION(npc, fields_npc),
 };
 
 static uint16_t scene_entity_count[ENTITY_TYPE_count];

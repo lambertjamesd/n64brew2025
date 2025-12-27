@@ -17,7 +17,7 @@ class Definitions:
         self.materials = []
         self.repo_path = None
         self.objects = None
-        self.scripts = []
+        self.scripts: list[str] = []
         self.entry_points = []
         self.boolean_variables = []
         self.integer_variables = []
@@ -46,7 +46,7 @@ class Definitions:
 
 
     def _search_scripts(self, start_path):
-        result = []
+        result: list[str] = []
 
         for dirpath, dirnames, filenames in os.walk(start_path):
             for filename in filenames:
@@ -106,6 +106,7 @@ class Definitions:
 
         booleans = ['disconnected']
         integer_variables = ['disconnected']
+        functions: list[str] = []
 
         try:
             with open(globals_location) as global_file:
@@ -129,11 +130,17 @@ class Definitions:
                             booleans.append(f"scene {var.name.value}: bool")
                         if var.type.name.value in int_types:
                             integer_variables.append(f"scene {var.name.value}: {var.type.name.value}")
+
+                    for fn in parse_tree.functions:
+                        if len(fn.args) == 0:
+                            functions.append(f"func:{fn.name.value}")
             except Exception as e:
                 print(f"failed to load scene script {e}")
 
         self.boolean_variables = booleans
         self.integer_variables = integer_variables
+
+        return functions
 
     def load(self):
         current_path = bpy.data.filepath
@@ -193,7 +200,8 @@ class Definitions:
         print("searching for entry points")
         self.entry_points = self._search_entry_points(os.path.join(repo_path, 'assets'))
         print("loading variables")
-        self._load_variables(repo_path)
+        fn_scripts = self._load_variables(repo_path)
+        self.scripts.extend(fn_scripts)
         print("finished")
         
 

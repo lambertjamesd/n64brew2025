@@ -16,6 +16,7 @@ struct repair_interaction {
     interactable_t interactable;
     enum repair_type repair_type;
     scene_entry_point repair_scene;
+    boolean_variable is_repaired;
 };
 
 typedef struct repair_interaction repair_interaction_t;

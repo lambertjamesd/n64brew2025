@@ -81,7 +81,7 @@ static inline int cutscene_prev_queue_index(int index) {
     return index - 1;
 }
 
-void cuscene_runner_start(struct cutscene* cutscene, int function_index, cutscene_finish_callback finish_callback, void* data, entity_id subject);
+void cutscene_runner_start(struct cutscene* cutscene, int function_index, cutscene_finish_callback finish_callback, void* data, entity_id subject);
 
 cutscene_actor_t* cutscene_runner_lookup_actor(struct cutscene_active_entry* cutscene, entity_id input) {
     if (input == ENTITY_ID_SUBJECT) {
@@ -390,7 +390,7 @@ void cutscene_runner_cancel_step(struct cutscene_active_entry* cutscene, struct 
     }
 }
 
-void cuscene_runner_start(struct cutscene* cutscene, int function_index, cutscene_finish_callback finish_callback, void* data, entity_id subject) {
+void cutscene_runner_start(struct cutscene* cutscene, int function_index, cutscene_finish_callback finish_callback, void* data, entity_id subject) {
     if (function_index < 0 || function_index >= cutscene->function_count) {
         finish_callback(cutscene, data);
         return;
@@ -427,7 +427,7 @@ void cutscene_runner_check_queue() {
 
     cutscene_runner.next_cutscene = cutscene_next_queue_index(cutscene_runner.next_cutscene);
 
-    cuscene_runner_start(queue_entry->cutscene, queue_entry->function_index, queue_entry->finish_callback, queue_entry->data, queue_entry->subject);
+    cutscene_runner_start(queue_entry->cutscene, queue_entry->function_index, queue_entry->finish_callback, queue_entry->data, queue_entry->subject);
     queue_entry->cutscene = NULL;
 }
 
@@ -503,7 +503,7 @@ void cutscene_runner_enqueue(struct cutscene* cutscene, int function_index, cuts
 
 void cutscene_runner_run(struct cutscene* cutscene, int function_index, cutscene_finish_callback finish_callback, void* data, entity_id subject) {
     if (cutscene_runner.current_cutscene == -1) {
-        cuscene_runner_start(cutscene, function_index, finish_callback, data, subject);
+        cutscene_runner_start(cutscene, function_index, finish_callback, data, subject);
         return;
     }
 

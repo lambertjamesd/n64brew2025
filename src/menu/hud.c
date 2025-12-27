@@ -22,7 +22,7 @@ static sprite_t* map_test;
 static material_t* map_render;
 
 void hud_render_interaction_preview(struct hud* hud) {
-    if (!hud->player->hover_interaction) {
+    if (!hud->player->hover_interaction || !update_has_layer(UPDATE_LAYER_WORLD)) {
         return;
     }
 

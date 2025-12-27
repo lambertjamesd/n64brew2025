@@ -15,6 +15,7 @@ enum entity_type_id {
     ENTITY_TYPE_repair_interaction,
     ENTITY_TYPE_repair_part_pickup,
     ENTITY_TYPE_door,
+    ENTITY_TYPE_npc,
     
     ENTITY_TYPE_count,
 };
@@ -138,6 +139,17 @@ struct door_definition {
 
     room_id room_a;
     room_id room_b;
+};
+
+enum npc_type {
+    NPC_TYPE_SCRAPBOT1,
+};
+
+struct npc_definition {
+    struct Vector3 position;
+    struct Vector2 rotation;
+    enum npc_type npc_type;
+    script_location dialog;
 };
 
 #endif

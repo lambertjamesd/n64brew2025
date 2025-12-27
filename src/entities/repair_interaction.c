@@ -21,6 +21,13 @@ static repair_interaction_type_def_t types[REPAIR_COUNT] = {
             .center = {0.0f, 0.3f, 0.0f},
         }
     },
+    [REPAIR_WELL] = {
+        .mesh_name = "rom:/meshes/repairs/water_pump_broken.tmesh",
+        .collider = {
+            BOX_COLLIDER(0.9f, 1.6f, 1.0f),
+            .center = {0.0f, 0.8f, 0.0f},
+        }
+    },
 };
 
 void repair_interaction_common_init() {
@@ -53,7 +60,8 @@ void repair_interaction_init(repair_interaction_t* repair, struct repair_interac
     render_scene_add_renderable(&repair->renderable, 2.0f);
 
     dynamic_object_init(entity_id, &repair->collider, &def->collider, COLLISION_LAYER_TANGIBLE, &repair->transform.position, &repair->transform.rotation);
-    repair->collider.weight_class = WEIGHT_CLASS_HEAVY;
+    repair->collider.weight_class = WEIGHT_CLASS_SUPER_HEAVY;
+    repair->collider.is_fixed = true;
     collision_scene_add(&repair->collider);
 
     interactable_init(&repair->interactable, entity_id, INTERACT_TYPE_REPAIR, repair_interact, repair);

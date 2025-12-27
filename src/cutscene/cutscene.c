@@ -56,7 +56,7 @@ char* string_load(FILE* file) {
 }
 
 // release with cutscene_free()
-struct cutscene* cutscene_load(char* filename) {
+struct cutscene* cutscene_load(const char* filename) {
     FILE* file = asset_fopen(filename, NULL);
 
     int header;
@@ -233,6 +233,17 @@ void cutscene_free(struct cutscene* cutscene) {
     }
     cutscene_destroy(cutscene);
     free(cutscene);
+}
+
+int cutscene_find_function_index(struct cutscene* cutscene, const char* name) {
+    for (int i = 0; i < cutscene->function_count; i += 1) {
+        const char* fn_name = cutscene->functions[i].name;
+        if ((!fn_name && !name) || (fn_name && strcmp(fn_name, name) == 0)) {
+            return i;
+        }
+    }
+
+    return -1;
 }
 
 void cutscene_builder_init(struct cutscene_builder* builder) {
