@@ -130,6 +130,9 @@ class ExpresionScriptLoad():
 
 class ExpresionScriptIntLiteral():
     def __init__(self, value: int):
+        if value == None:
+            raise Exception('liternal must be an int')
+
         self.command: int = EXPRESSION_TYPE_LOAD_LITERAL
         self.value: int = value
 

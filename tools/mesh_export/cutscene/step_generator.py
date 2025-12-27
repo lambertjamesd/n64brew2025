@@ -439,6 +439,8 @@ def _idle_effected_actors(cutscene: Cutscene, statements: list):
     _idle_find_effected_actors(statements, actors)
 
     for actor in actors:
+        if actor == None:
+            continue
         expression = expresion_generator.ExpressionScript([
             expresion_generator.ExpresionScriptIntLiteral(actor),
             expresion_generator.ExpressionCommand(expresion_generator.EXPRESSION_TYPE_END),

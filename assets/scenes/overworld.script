@@ -1,11 +1,50 @@
+global has_pump_gear: bool;
+global has_pump_arm: bool;
+global has_repaired_pump: bool;
 
+scene repairs_water_pump_broken: entity_id;
+scene towards_river: entity_id;
+scene water_pump_scrapbot: entity_id;
 
 func well_scrapbot()
     world_pause;
-    interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, ENTITY_ID_SUBJECT;
-    interact_with_npc INTERACTION_LOOK, ENTITY_ID_SUBJECT, ENTITY_ID_PLAYER;
-    cam_look_npc ENTITY_ID_SUBJECT;
-    say "Hello there";
+    interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, water_pump_scrapbot;
+    interact_with_npc INTERACTION_LOOK, water_pump_scrapbot, ENTITY_ID_PLAYER;
+    cam_look_npc water_pump_scrapbot;
+
+    if not has_pump_gear and not has_pump_arm then
+        say "Hello";
+        interact_with_npc INTERACTION_LOOK, water_pump_scrapbot, repairs_water_pump_broken;
+        npc_wait water_pump_scrapbot;
+        say "This well is in need of repairs";
+        interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, towards_river;
+        interact_with_npc INTERACTION_LOOK, water_pump_scrapbot, towards_river;
+        cam_look_npc towards_river;
+        say "You can scavange for parts from broken pumps near the river";
+    elif not has_pump_gear or not has_pump_arm then
+        say "You still lack parts to repair the well";
+    elif not has_repaired_pump then 
+        say "You have procured the parts";
+        interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, repairs_water_pump_broken;
+        interact_with_npc INTERACTION_LOOK, water_pump_scrapbot, repairs_water_pump_broken;
+        cam_look_npc repairs_water_pump_broken;
+        say "Now repair the well";
+    else
+        say "Hello there";
+    end
+
     world_unpause;
     cam_return;
+end
+
+func well_repair_exit()
+    world_pause;
+    
+    interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, water_pump_scrapbot;
+    interact_with_npc INTERACTION_LOOK, water_pump_scrapbot, ENTITY_ID_PLAYER;
+    cam_look_npc water_pump_scrapbot;
+
+    say "Hey!";
+    
+    world_unpause;
 end

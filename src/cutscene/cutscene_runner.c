@@ -31,6 +31,7 @@ extern struct scene* current_scene;
 union cutscene_runner_data {
     struct { bool has_shown; } dialog;
     struct { float time; } delay;
+    struct { entity_id target; } npc_wait;
 };
 
 struct cutscene_queue_entry {
@@ -286,6 +287,7 @@ void cutscene_runner_init_step(struct cutscene_active_entry* cutscene, struct cu
             break;
         }
         case CUTSCENE_STEP_NPC_WAIT: {
+            cutscene_runner.active_step_data.npc_wait.target = evaluation_context_pop(&cutscene->context);
             break;
         }
         case CUTSCENE_STEP_NPC_SET_SPEED: {
@@ -372,7 +374,7 @@ bool cutscene_runner_update_step(struct cutscene_active_entry* cutscene, struct 
         case CUTSCENE_STEP_CAMERA_WAIT:
             return !camera_is_animating(&current_scene->camera_controller);
         case CUTSCENE_STEP_NPC_WAIT: {
-            struct cutscene_actor* subject = cutscene_runner_lookup_actor(cutscene, evaluation_context_pop(&cutscene->context));
+            struct cutscene_actor* subject = cutscene_runner_lookup_actor(cutscene, cutscene_runner.active_step_data.npc_wait.target);
             return !subject || !cutscene_actor_is_moving(subject);
         }
         default:

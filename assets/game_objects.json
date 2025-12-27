@@ -13,6 +13,12 @@
             "type": "door"
         },
         {
+            "name": "empty",
+            "description": "",
+            "mesh": "meshes/empty.blend#empty",
+            "type": "empty"
+        },
+        {
             "name": "parts_motor",
             "description": "",
             "mesh": "meshes/parts/motor.blend#hoverbike_motor",
