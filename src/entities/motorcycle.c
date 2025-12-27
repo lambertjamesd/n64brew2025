@@ -80,8 +80,8 @@ static vehicle_camera_target_t boost_positions[VEHICLE_CAM_COUNT] = {
 static vehicle_definiton_t vehicle_def = {
     .local_player_position = {
         .x = 0.0f,
-        .y = 0.5f,
-        .z = 0.5f,
+        .y = 0.0f,
+        .z = 0.0f,
     },
     .exit_position = {-1.0f, 0.0f, 0.0f},
     .camera_positions = {

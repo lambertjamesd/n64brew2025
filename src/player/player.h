@@ -24,6 +24,8 @@ enum player_state {
 };
 
 enum player_animation {
+    PLAYER_ANIMATION_IDLE,
+    PLAYER_ANIMATION_RIDE_BIKE,
     PLAYER_ANIMATION_COUNT,
 };
 

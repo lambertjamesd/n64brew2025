@@ -185,6 +185,7 @@ void player_handle_look(struct player* player, struct Vector3* look_direction) {
 void player_enter_grounded_state(struct player* player) {
     player->coyote_time = 0.0f;
     player->state = PLAYER_GROUNDED;
+    player_loop_animation(player, PLAYER_ANIMATION_IDLE, 1.0f);
 }
 
 void player_enter_vehicle(struct player* player, entity_id vehicle_id) {
@@ -199,6 +200,7 @@ void player_enter_vehicle(struct player* player, entity_id vehicle_id) {
     player->hover_interaction = 0;
     vehicle_enter(vehicle, ENTITY_ID_PLAYER);
     player->cutscene_actor.collider.collision_layers = 0;
+    player_loop_animation(player, PLAYER_ANIMATION_RIDE_BIKE, 1.0f);
 }
 
 void player_exit_vehicle(struct player* player) {
@@ -440,6 +442,8 @@ float player_on_damage(void* data, struct damage_info* damage) {
 }
 
 static const char* animation_clip_names[PLAYER_ANIMATION_COUNT] = {
+    [PLAYER_ANIMATION_IDLE] = "idle",
+    [PLAYER_ANIMATION_RIDE_BIKE] = "ride_bike",
 };
 
 static const char* sound_names[PLAYER_SOUND_COUNT] = {};
@@ -516,6 +520,7 @@ void player_init(struct player* player, struct player_definition* definition, st
         ENTITY_ID_PLAYER
     );
     collision_scene_add_trigger(&player->vision);
+    player_loop_animation(player, PLAYER_ANIMATION_IDLE, 1.0f);
 }
 
 void player_destroy(struct player* player) {

@@ -32,7 +32,7 @@ def process_scene():
     arm: entities.armature.ArmatureData | None = None
 
     for obj in bpy.data.objects:
-        if obj.type != "MESH":
+        if obj.type != "MESH" or obj.hide_render:
             continue
 
         if not obj.name in bpy.context.view_layer.objects:
@@ -48,7 +48,7 @@ def process_scene():
 
 
     for obj in bpy.data.objects:
-        if obj.type != 'ARMATURE':
+        if obj.type != 'ARMATURE' or obj.hide_render:
             continue
 
         if not arm is None:
