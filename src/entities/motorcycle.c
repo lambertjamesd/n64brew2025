@@ -20,6 +20,8 @@
 #define STILL_HOVER_HEIGHT      0.25f
 #define RIDE_HOVER_HEIGHT       0.5f
 #define FAST_HOVER_HEIGHT       1.0f
+#define BOB_HEIGHT              0.1f
+#define BOB_TIME                3.0f
 
 struct motorcyle_assets {
     tmesh_t* mesh;
@@ -146,8 +148,10 @@ void motorcycle_ride(struct interactable* interactable, entity_id from) {
 }
 
 float motorcycle_hover_height(motorcycle_t* motorcycle, float speed) {
+    float bob_height = BOB_HEIGHT * cosf(game_time * 2.0f * PI_F * (1.0f / BOB_TIME));
+
     if (!motorcycle->vehicle.driver) {
-        return STILL_HOVER_HEIGHT;
+        return STILL_HOVER_HEIGHT + bob_height;
     }
     
     float lerp = speed * (1.0f / DRIVE_SPEED);
@@ -156,7 +160,7 @@ float motorcycle_hover_height(motorcycle_t* motorcycle, float speed) {
         return FAST_HOVER_HEIGHT;
     }
 
-    return mathfLerp(RIDE_HOVER_HEIGHT, FAST_HOVER_HEIGHT, lerp);
+    return mathfLerp(RIDE_HOVER_HEIGHT + bob_height, FAST_HOVER_HEIGHT, lerp);
 }
 
 void motorcycle_update(void* data) {
