@@ -16,7 +16,7 @@ struct npc_information npc_information[] = {
             .rotate_speed = 2.0f,
             .collision_layers = COLLISION_LAYER_TANGIBLE | COLLISION_LAYER_LIGHTING_TANGIBLE | COLLISION_LAYER_Z_TARGET,
             .collider = {
-                CAPSULE_COLLIDER(0.3f, 0.75f),
+                CAPSULE_COLLIDER(0.3f, 0.45f),
                 // about a 40 degree slope
                 .max_stable_slope = 0.219131191f,
                 .friction = 0.5f,

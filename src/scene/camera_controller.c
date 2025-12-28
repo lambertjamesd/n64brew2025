@@ -12,8 +12,8 @@
 #include <math.h>
 
 static struct move_towards_parameters camera_move_parameters = {
-    .max_speed = 20.0f,
-    .max_accel = 10.0f,
+    .max_speed = 80.0f,
+    .max_accel = 20.0f,
 };
 
 #define ASPECT_RATIO            (4.0f/3.0f)
