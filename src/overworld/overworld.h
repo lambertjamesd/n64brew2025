@@ -44,6 +44,8 @@ struct overworld_actor_spawn_location {
 struct overworld_actor {
     struct overworld_actor* next;
     entity_id entity_id;
+    uint8_t tile_x, tile_y;
+    uint8_t x, y;
     uint32_t spawn_id;
 };
 
