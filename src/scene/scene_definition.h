@@ -116,6 +116,8 @@ struct repair_interaction_definition {
 
 enum repair_part_type {
     REPAIR_PART_MOTOR,
+    REPAIR_PART_WATER_PUMP_GEAR,
+    REPAIR_PART_WATER_PUMP_ARM,
     REPAIR_PART_COUNT,
 };
 

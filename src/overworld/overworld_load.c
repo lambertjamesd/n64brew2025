@@ -424,7 +424,7 @@ void overworld_check_actor_despawn(struct overworld* overworld, struct Vector3* 
 
         bool should_remove;
 
-        if (entity) {
+        if (!entity) {
             should_remove = true;
         } else {
             // this is a bit hacky, right now all

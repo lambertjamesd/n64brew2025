@@ -21,6 +21,13 @@ static repair_part_type_def_t types[REPAIR_PART_COUNT] = {
             .center = {0.0f, 0.2f, 0.0f},
         }
     },
+    [REPAIR_PART_WATER_PUMP_GEAR] = {
+        .mesh_name = "rom:/meshes/parts/motor.tmesh",
+        .collider = {
+            BOX_COLLIDER(0.5f, 0.1f, 0.5f),
+            .center = {0.0f, 0.0f, 0.0f},
+        }
+    },
 };
 
 void repair_part_pickup_common_init() {

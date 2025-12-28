@@ -31,9 +31,12 @@ class SerializeContext():
                 return single_enum.str_to_int(value)
 
         raise Exception(f'{value} is not found in any enum value')
+
+    def get_bytes(self) -> bytes:
+        return b''.join(self._string_data)
     
     def write_strings(self, file):
-        all_bytes = b''.join(self._string_data)
+        all_bytes = self.get_bytes()
         file.write(struct.pack('>H', len(all_bytes)))
         file.write(all_bytes)
 

@@ -25,6 +25,12 @@
             "type": "repair_part_pickup"
         },
         {
+            "name": "parts_water_pump_gear",
+            "description": "",
+            "mesh": "meshes/parts/water_pump_gear.blend#gear",
+            "type": "repair_part_pickup"
+        },
+        {
             "name": "repair_part",
             "description": "",
             "mesh": "meshes/repair_part.blend#repair_part",

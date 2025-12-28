@@ -114,7 +114,6 @@ def write_object_groups(
 
     definitions = io.BytesIO()
     conditions = io.BytesIO()
-    strings = io.BytesIO()
 
     for object in objects:
         layout_strings(object.obj, object.def_type, context, None)
@@ -123,11 +122,10 @@ def write_object_groups(
         object.write_condition(variable_context, conditions)
         object.write_definition(context, definitions)
 
-    context.write_strings(strings)
 
     definition_bytes = definitions.getvalue()
     condition_bytes = conditions.getvalue()
-    string_bytes = strings.getvalue()
+    string_bytes = context.get_bytes()
     file.write(len(definition_bytes).to_bytes(4, 'big'))
     file.write(len(condition_bytes).to_bytes(2, 'big'))
     file.write(len(string_bytes).to_bytes(2, 'big'))
@@ -135,6 +133,8 @@ def write_object_groups(
     file.write(definition_bytes)
     file.write(condition_bytes)
     file.write(string_bytes)
+
+    print('string_bytes', string_bytes)
 
     file.write(first_spawn_id.to_bytes(4, 'big'))
 

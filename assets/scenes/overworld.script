@@ -20,6 +20,7 @@ func well_scrapbot()
         interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, towards_river;
         interact_with_npc INTERACTION_LOOK, water_pump_scrapbot, towards_river;
         cam_look_npc towards_river;
+        cam_animate "see_river"; 
         say "You can scavange for parts from broken pumps near the river";
     elif not has_pump_gear or not has_pump_arm then
         say "You still lack parts to repair the well";

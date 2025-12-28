@@ -200,7 +200,6 @@ def generate_overworld(
         variable_context
         ):
     mesh_entries = mesh_list.determine_mesh_data()
-
     mesh_bb = None
 
     for entry in mesh_entries:
