@@ -242,9 +242,6 @@ void repair_scene_update(void* data) {
         scene->is_complete = is_complete;
         repair_scene_exit_with_message(scene, "Repair complete");
         expression_set_bool(scene->is_complete, true);
-        for (int i = 0; i < scene->repair_part_count; i += 1) {
-            expression_set_bool(scene->repair_parts[i].has_part, false);
-        }
     }
 }
 

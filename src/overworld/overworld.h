@@ -8,6 +8,7 @@
 #include "../util/hash_map.h"
 #include "../entity/entity_id.h"
 #include "../particles/static_particles.h"
+#include "../scene/scene_definition.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <t3d/t3d.h>
@@ -32,6 +33,7 @@ struct overworld_tile {
 
 struct overworld_actor_spawn_information {
     uint16_t entity_type_id;
+    integer_variable scene_variable;
     struct expression expression;
     void* entity_def;
 };
@@ -46,6 +48,7 @@ struct overworld_actor {
     entity_id entity_id;
     uint8_t tile_x, tile_y;
     uint8_t x, y;
+    integer_variable scene_variable;
     uint32_t spawn_id;
 };
 

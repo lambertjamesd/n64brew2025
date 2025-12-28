@@ -144,9 +144,19 @@ def write_object_groups(
             idx
         ))
 
+    entity_id_varaibles = enums['entity_id_variable'] if 'entity_id_variable' in enums else None
+
     for object in objects:
         def_type = enums['enum entity_type_id'].str_to_int('ENTITY_TYPE_' + object.name)
+        
+        script_location_name = f"scene {object.obj.name}: entity_id"
+        scene_variable = 0xFFFF
+
+        if entity_id_varaibles and entity_id_varaibles.is_defined(script_location_name):
+            scene_variable = entity_id_varaibles.str_to_int(script_location_name)
+
         file.write(def_type.to_bytes(2, 'big'))
+        file.write(scene_variable.to_bytes(2, 'big'))
         
 
     

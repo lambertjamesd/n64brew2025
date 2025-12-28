@@ -151,6 +151,7 @@ void overworld_actor_tile_load_entities(struct overworld_actor_tile* tile, FILE*
     for (struct overworld_actor_spawn_information* curr = tile->spawn_information; curr < end; curr += 1) {
         uint16_t entity_type_id;
         fread(&entity_type_id, sizeof(uint16_t), 1, file);
+        fread(&curr->scene_variable, sizeof(integer_variable), 1, file);
 
         struct entity_definition* def = entity_def_get(entity_type_id);
         assert(def);
@@ -284,6 +285,7 @@ void overworld_free(struct overworld* overworld) {
     ) {
         struct overworld_actor* actor = (struct overworld_actor*)entry->value;
         entity_despawn(actor->entity_id);
+        expression_set_integer(actor->scene_variable, 0);
     }
 
     hash_map_destroy(&overworld->loaded_actors);
@@ -380,8 +382,10 @@ struct overworld_actor* overworld_actor_spawn(struct overworld* overworld, struc
     result->x = spawn_location->x;
     result->y = spawn_location->y;
     result->next = overworld->next_active_actor;
+    result->scene_variable = info->scene_variable;
     overworld->next_active_actor = result;
     hash_map_set(&overworld->loaded_actors, spawn_id, result);
+    expression_set_integer(info->scene_variable, result->entity_id);
 
     return result;
 }
@@ -474,6 +478,7 @@ void overworld_check_actor_despawn(struct overworld* overworld, struct Vector3* 
             entity_despawn(current->entity_id);
             hash_map_delete(&overworld->loaded_actors, current->spawn_id);
             overworld_reset_spawn_location(overworld, current);
+            expression_set_integer(current->scene_variable, 0);
             if (prev) {
                 prev->next = next;
             } else {
