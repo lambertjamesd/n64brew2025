@@ -134,8 +134,6 @@ def write_object_groups(
     file.write(condition_bytes)
     file.write(string_bytes)
 
-    print('string_bytes', string_bytes)
-
     file.write(first_spawn_id.to_bytes(4, 'big'))
 
     for idx, object in enumerate(objects):

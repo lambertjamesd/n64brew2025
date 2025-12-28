@@ -215,6 +215,8 @@ def generate_overworld(
 
     side_length = max(width, height) / subdivisions
 
+    print('side_length', side_length)
+
     for detail in detail_list:
         if 'collider' in detail.obj.data:
             collider.append(detail.obj.data['collider'], coordinate_convert_invert @ detail.obj.matrix_world)

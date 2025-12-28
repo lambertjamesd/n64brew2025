@@ -255,7 +255,10 @@ def check_for_overworld(base_transform: mathutils.Matrix, overworld_filename: st
     if lod_0_collection:
         lod_0_objects = list(lod_0_collection.all_objects)
 
-    subdivisions = collection['subdivisions'] if 'subdivisions' in collection else 8
+    subdivisions = 8
+    
+    if 'subdivisions' in collection:
+        subdivisions = collection['subdivisions']
 
     entities.overworld.generate_overworld(
         overworld_filename, 
