@@ -2,6 +2,7 @@
 #define __CUTSCENE_CUTSCENE_REFERENCE_H__
 
 #include "cutscene.h"
+#include "cutscene_runner.h"
 
 enum cutscene_ref_type {
     CUTSCENE_REF_NONE,
@@ -30,5 +31,7 @@ void cutscene_ref_init(cutscene_ref_t* ref, const char* name);
 void cutscene_ref_destroy(cutscene_ref_t* ref);
 
 void cutscene_ref_run(cutscene_ref_t* ref, entity_id subject);
+void cutscene_ref_run_then_callback(cutscene_ref_t* ref, cutscene_finish_callback finish_callback, void* data, entity_id subject);
+void cutscene_ref_run_then_destroy(cutscene_ref_t* ref, entity_id subject);
 
 #endif

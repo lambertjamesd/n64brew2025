@@ -1,10 +1,16 @@
 global has_pump_gear: bool;
-global has_pump_arm: bool;
 global has_repaired_pump: bool;
+global has_well_part_map: bool;
 
 scene repairs_water_pump_broken: entity_id;
 scene towards_river: entity_id;
 scene water_pump_scrapbot: entity_id;
+
+func settlement_loop()
+    if not has_pump_gear and not has_well_part_map then
+        interact_with_npc INTERACTION_LOOK, water_pump_scrapbot, ENTITY_ID_PLAYER;
+    end
+end
 
 func well_scrapbot()
     world_pause;
@@ -12,7 +18,7 @@ func well_scrapbot()
     interact_with_npc INTERACTION_LOOK, water_pump_scrapbot, ENTITY_ID_PLAYER;
     cam_look_npc water_pump_scrapbot;
 
-    if not has_pump_gear and not has_pump_arm then
+    if not has_pump_gear then
         say "Hello";
         interact_with_npc INTERACTION_LOOK, water_pump_scrapbot, repairs_water_pump_broken;
         npc_wait water_pump_scrapbot;
@@ -21,8 +27,7 @@ func well_scrapbot()
         interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, towards_river;
         interact_with_npc INTERACTION_LOOK, water_pump_scrapbot, towards_river;
         say "You can scavange for parts from broken pumps near the river";
-    elif not has_pump_gear or not has_pump_arm then
-        say "You still lack parts to repair the well";
+        has_well_part_map = true;
     elif not has_repaired_pump then 
         say "You have procured the parts";
         interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, repairs_water_pump_broken;
@@ -37,14 +42,21 @@ func well_scrapbot()
     cam_return;
 end
 
-func well_repair_exit()
-    world_pause;
-    
-    interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, water_pump_scrapbot;
-    interact_with_npc INTERACTION_LOOK, water_pump_scrapbot, ENTITY_ID_PLAYER;
-    cam_look_npc water_pump_scrapbot;
+func exit_repair_well()
+    if not has_well_part_map and not has_pump_gear then
+        delay 0.5;
+        world_pause;
+        
+        interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, water_pump_scrapbot;
+        interact_with_npc INTERACTION_LOOK, water_pump_scrapbot, ENTITY_ID_PLAYER;
+        cam_look_npc water_pump_scrapbot;
 
-    say "Hey!";
-    
-    world_unpause;
+        say "
+        Your attention please
+        
+        Please come speak to me. I have a map for you.";
+        
+        world_unpause;
+        cam_return;
+    end
 end

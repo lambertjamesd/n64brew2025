@@ -43,18 +43,41 @@ void cutscene_ref_destroy(cutscene_ref_t* ref) {
     }
 }
 
-void cutscene_ref_run(cutscene_ref_t* ref, entity_id subject) {
+void cutscene_ref_run_then_callback(cutscene_ref_t* ref, cutscene_finish_callback finish_callback, void* data, entity_id subject) {
     switch (ref->type) {
         case CUTSCENE_REF_DIRECT:
-            cutscene_runner_run(ref->data.direct.cutscene, 0, NULL, NULL, subject);
+            cutscene_runner_run(ref->data.direct.cutscene, 0, finish_callback, data, subject);
             break;
         case CUTSCENE_REF_SCENE:
-            if (current_scene && current_scene->cutscene) {
-                int fn_index = cutscene_find_function_index(current_scene->cutscene, ref->data.scene.name);
+            int fn_index = current_scene && current_scene->cutscene ? cutscene_find_function_index(current_scene->cutscene, ref->data.scene.name) : -1;
 
-                if (fn_index != -1) {
-                    cutscene_runner_run(current_scene->cutscene, fn_index, NULL, NULL, subject);
-                }
+            if (fn_index != -1) {
+                cutscene_runner_run(current_scene->cutscene, fn_index, finish_callback, data, subject);
+            } else {
+                finish_callback(NULL, data);
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void cutscene_ref_run(cutscene_ref_t* ref, entity_id subject) {
+    cutscene_ref_run_then_callback(ref, NULL, NULL, subject);
+}
+
+void cutscene_ref_run_then_destroy(cutscene_ref_t* ref, entity_id subject) {
+    switch (ref->type) {
+        case CUTSCENE_REF_DIRECT:
+            cutscene_runner_run(ref->data.direct.cutscene, 0, cutscene_runner_free_on_finish(), NULL, subject);
+            break;
+        case CUTSCENE_REF_SCENE:
+            int fn_index = current_scene && current_scene->cutscene ? cutscene_find_function_index(current_scene->cutscene, ref->data.scene.name) : -1;
+            free(ref->data.scene.name);
+            ref->data.scene.name = NULL;
+
+            if (fn_index != -1) {
+                cutscene_runner_run(current_scene->cutscene, fn_index, NULL, NULL, subject);
             }
             break;
         default:

@@ -19,13 +19,17 @@ static repair_part_type_def_t types[REPAIR_PART_COUNT] = {
         .collider = {
             BOX_COLLIDER(0.2f, 0.2f, 0.3f),
             .center = {0.0f, 0.2f, 0.0f},
-        }
+            .friction = 0.5,
+            .max_stable_slope = 0.219131191f,
+        },
     },
     [REPAIR_PART_WATER_PUMP_GEAR] = {
-        .mesh_name = "rom:/meshes/parts/motor.tmesh",
+        .mesh_name = "rom:/meshes/parts/water_pump_gear.tmesh",
         .collider = {
             BOX_COLLIDER(0.5f, 0.1f, 0.5f),
             .center = {0.0f, 0.0f, 0.0f},
+            .friction = 0.5,
+            .max_stable_slope = 0.219131191f,
         }
     },
 };

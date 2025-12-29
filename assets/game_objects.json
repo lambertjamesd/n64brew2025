@@ -55,6 +55,12 @@
             "type": "repair_interaction"
         },
         {
+            "name": "script_runner",
+            "description": "",
+            "mesh": "meshes/script_runner.blend#script_runner",
+            "type": "script_runner"
+        },
+        {
             "name": "vehicles_bike",
             "description": "",
             "mesh": "meshes/vehicles/bike.blend#Motorcycle",

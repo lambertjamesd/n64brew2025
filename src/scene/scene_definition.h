@@ -16,6 +16,7 @@ enum entity_type_id {
     ENTITY_TYPE_repair_part_pickup,
     ENTITY_TYPE_door,
     ENTITY_TYPE_npc,
+    ENTITY_TYPE_script_runner,
     
     ENTITY_TYPE_count,
 };
@@ -152,6 +153,12 @@ struct npc_definition {
     struct Vector2 rotation;
     enum npc_type npc_type;
     script_location dialog;
+};
+
+struct script_runner_definition {
+    struct Vector3 position;
+    script_location target;
+    bool loop;
 };
 
 #endif

@@ -11,8 +11,11 @@
 
 struct scene* current_scene;
 
-static char next_scene_name[64];
-static char next_entrance_name[16];
+#define MAX_SCENE_NAME_LENGTH       64
+#define MAX_ENTRANCE_NAME_LENGTH    32
+
+static char next_scene_name[MAX_SCENE_NAME_LENGTH];
+static char next_entrance_name[MAX_ENTRANCE_NAME_LENGTH];
 
 #define MAX_PARTICLE_DISTANCE 40.0f
 #define PARTICLE_FADE_DISTANCE 25.0f
@@ -195,6 +198,7 @@ void scene_queue_next(char* scene_name) {
     }
 
     *out = '\0';
+    assert(out <= &next_scene_name[MAX_SCENE_NAME_LENGTH]);
 
     out = next_entrance_name;
 
@@ -207,6 +211,7 @@ void scene_queue_next(char* scene_name) {
     ++curr;
 
     while ((*out++ = *curr++));
+    assert(out <= &next_entrance_name[MAX_ENTRANCE_NAME_LENGTH]);
 }
 
 void scene_clear_next() {

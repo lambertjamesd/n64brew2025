@@ -457,12 +457,12 @@ void cutscene_runner_update(void* data) {
             return;
         }
 
+        cutscene_runner.current_cutscene -= 1;
+
         if (active_cutscene->finish_callback) {
             evaluation_context_destroy(&active_cutscene->context);
             active_cutscene->finish_callback(active_cutscene->cutscene, active_cutscene->data);
         }
-
-        cutscene_runner.current_cutscene -= 1;
     }
 
     cutscene_runner_check_queue();

@@ -9,6 +9,7 @@
 #include "../entities/repair_part_pickup.h"
 #include "../entities/door.h"
 #include "../entities/npc.h"
+#include "../entities/script_runner.h"
 
 #define ENTITY_DEFINITION(name, fields) [ENTITY_TYPE_ ## name] = { \
     #name, \
@@ -32,6 +33,10 @@ static struct entity_field_type_location fields_npc[] = {
     { .offset = offsetof(struct npc_definition, dialog), .type = ENTITY_FIELD_TYPE_STRING },
 };
 
+static struct entity_field_type_location fields_script_runner[] = {
+    { .offset = offsetof(struct script_runner_definition, target), .type = ENTITY_FIELD_TYPE_STRING },
+};
+
 static struct entity_definition scene_entity_definitions[ENTITY_TYPE_count] = {
     ENTITY_DEFINITION(empty, fields_empty),
     ENTITY_DEFINITION(trigger_cube, fields_empty),
@@ -40,6 +45,7 @@ static struct entity_definition scene_entity_definitions[ENTITY_TYPE_count] = {
     ENTITY_DEFINITION(repair_part_pickup, fields_empty),
     ENTITY_DEFINITION(door, fields_empty),
     ENTITY_DEFINITION(npc, fields_npc),
+    ENTITY_DEFINITION(script_runner, fields_script_runner),
 };
 
 static uint16_t scene_entity_count[ENTITY_TYPE_count];
