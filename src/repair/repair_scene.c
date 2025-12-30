@@ -241,7 +241,7 @@ void repair_scene_update(void* data) {
     if (!scene->is_complete && is_complete) {
         scene->is_complete = is_complete;
         repair_scene_exit_with_message(scene, "Repair complete");
-        expression_set_bool(scene->is_complete, true);
+        expression_set_bool(scene->puzzle_complete, true);
     }
 }
 
