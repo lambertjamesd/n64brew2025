@@ -42,9 +42,9 @@ void load_scene_or_repair(const char* filename) {
 
 void setup() {
     debug_init_isviewer();
+    savefile_new();
     init_engine();
     interactable_reset();
-    savefile_new();
 
     fade_effect_init();
     fade_effect_set((color_t){0, 0, 0, 255}, 0.0f);

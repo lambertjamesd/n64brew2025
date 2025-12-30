@@ -15,6 +15,8 @@
 #include "expression_evaluate.h"
 #include "../menu/dialog_box.h"
 #include "../collision/collision_scene.h"
+#include "../menu/map_menu.h"
+#include "../player/inventory.h"
 #include <assert.h>
 
 #define MAX_QUEUED_CUTSCENES   4
@@ -125,6 +127,8 @@ void cutscene_runner_init_step(struct cutscene_active_entry* cutscene, struct cu
             cutscene_runner.active_step_data.dialog.has_shown = false;
             break;
         case CUTSCENE_STEP_SHOW_ITEM:
+            inventory_give_item(step->data.show_item.item);
+            map_menu_show_with_item(step->data.show_item.item);
             break;
         case CUTSCENE_STEP_PAUSE:
             if (step->data.pause.should_pause) {

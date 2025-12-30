@@ -13,6 +13,10 @@
 #include "menu_common.h"
 #include "../player/inventory.h"
 #include "../render/defs.h"
+#include "../render/coloru8.h"
+
+#define NEW_ITEM_ANIM_TIME      1.0f
+#define OPEN_ITEM_DELAY_TIME    1.0f
 
 enum menu_item_type {
     MENU_ITEM_PART,
@@ -50,18 +54,43 @@ struct menu_item {
     union menu_item_data data;
 };
 
+static struct menu_item menu_items[] = {
+    {
+        .type = MENU_ITEM_MAP,
+        .inventory_item = ITEM_WELL_PUMP_PART_MAP,
+        .name = "Well part map",
+        .data = {
+            .map = {
+                .image_filename = "rom:/images/maps/well_parts_map.sprite",
+            },
+        },
+    }
+};
+
+#define MENU_ITEM_COUNT      (sizeof(menu_items) / sizeof(*menu_items))
+
 enum map_menu_state {
     MAP_MENU_LIST,
-    MAP_MENU_SHOWING_MAP,
-    MAP_MENU_SHOWING_DESCRIPTION,
+    MAP_MENU_NEW_ITEMS,
+    MAP_MENU_NEW_ITEM_DETAILS,
+    MAP_MENU_DETAILS_ANIMATE,
+    MAP_MENU_DETAILS,
+};
+
+union map_menu_state_data {
+    struct {
+        float timer;
+    } new_items;
 };
 
 struct map_menu {
     enum map_menu_state state;
+    union map_menu_state_data state_data;
     enum inventory_item_type selected_item;
     vector2s16_t last_position;
     bool can_unpause;
-    bool is_showing_details;
+
+    bool has_prev[MENU_ITEM_COUNT];
 
     sprite_t* details_image;
 };
@@ -88,21 +117,6 @@ static const char* icon_files[MENU_ITEM_TYPE_COUNT] = {
     [MENU_ITEM_PART] = "rom:/images/maps/dot_matrix_map_icon.sprite",
     [MENU_ITEM_MAP] = "rom:/images/maps/dot_matrix_map_icon.sprite",
 };
-
-static struct menu_item menu_items[] = {
-    {
-        .type = MENU_ITEM_MAP,
-        .inventory_item = ITEM_WELL_PUMP_PART_MAP,
-        .name = "Well part map",
-        .data = {
-            .map = {
-                .image_filename = "rom:/images/maps/well_parts_map.sprite",
-            },
-        },
-    }
-};
-
-#define MENU_ITEM_COUNT      (sizeof(menu_items) / sizeof(*menu_items))
 
 static vector2_t player_cursor_points[3] = {
     {0.0f, 3.0f},
@@ -290,11 +304,12 @@ void map_render_details(struct menu_item* item) {
 }
 
 bool map_should_show_item(struct menu_item* item) {
-    // return inventory_has_item(item->inventory_item) && !inventory_has_item(item->hide_override);
-    return true;
+    return inventory_has_item(item->inventory_item) && !inventory_has_item(item->hide_override);
 }
 
-void map_render_items() {
+#define FADE_IN_RATIO   0.3f
+
+void map_render_items(float lerp_amount) {
     int x = 0;
     int y = 0;
     for (int i = 0; i < MENU_ITEM_COUNT; i += 1) {
@@ -312,6 +327,28 @@ void map_render_items() {
 
         rdpq_sync_pipe();
         rspq_block_run(assets.map_icon->block);
+
+        if (!map_menu.has_prev[i]) {
+            color_t prim_color;
+            if (lerp_amount >= 1.0f) {
+                prim_color = (color_t){0, 0, 0, 255};
+            } else if (lerp_amount < FADE_IN_RATIO) {
+                prim_color = coloru8_lerp(&(color_t){
+                    255, 255, 255, 0,
+                }, &(color_t){
+                    255, 255, 255, 255,
+                }, lerp_amount * (1.0f / FADE_IN_RATIO));
+            } else {
+                prim_color = coloru8_lerp(&(color_t){
+                    255, 255, 255, 255,
+                }, &(color_t){
+                    0, 0, 0, 255,
+                }, (lerp_amount - FADE_IN_RATIO) * (1.0f / (1.0f - FADE_IN_RATIO)));
+            }
+
+            rdpq_set_prim_color(prim_color);
+        }
+
         rdpq_sprite_blit(assets.icons[item->type], x + MENU_X, y + MAP_Y, NULL);
 
         x += ICON_SIZE;
@@ -360,20 +397,28 @@ void map_render(void* data) {
         }, 
         FONT_DIALOG, 
         MAP_X, MAP_Y - 4, 
-        "World",
-        5
+        "Map",
+        3
     );
+
+    map_render_minimap(MAP_X, MAP_Y);
 
     struct menu_item* selected_item = map_find_selected_item();
     map_render_title(selected_item);
 
-    if (selected_item && map_menu.is_showing_details) {
-        map_render_details(selected_item);
-    } else {
-        map_render_items();
+    switch (map_menu.state) {
+        case MAP_MENU_LIST:
+            map_render_items(1.0f);
+            break;
+        case MAP_MENU_NEW_ITEMS:
+        case MAP_MENU_NEW_ITEM_DETAILS:
+            map_render_items(map_menu.state_data.new_items.timer * (1.0f / NEW_ITEM_ANIM_TIME));
+            break;
+        case MAP_MENU_DETAILS_ANIMATE:
+        case MAP_MENU_DETAILS:
+            map_render_details(selected_item);
+            break;
     }
-
-    map_render_minimap(MAP_X, MAP_Y);
 }
 
 void map_menu_init() {
@@ -402,6 +447,10 @@ void map_menu_init() {
     }
 
     map_menu.selected_item = 0;
+    
+    for (int i = 0; i < MENU_ITEM_COUNT; i += 1) {
+        map_menu.has_prev[i] = map_should_show_item(&menu_items[i]);
+    }
 }
 
 void map_menu_destroy() {
@@ -415,10 +464,13 @@ void map_menu_show_details() {
         return;
     }
 
-    map_menu.is_showing_details = true;
-
-    if (selected->type == MENU_ITEM_MAP) {
-        map_menu.details_image = sprite_load(selected->data.map.image_filename);
+    if (map_menu.state == MAP_MENU_NEW_ITEMS) {
+        map_menu.state = MAP_MENU_NEW_ITEM_DETAILS;
+    } else {
+        map_menu.state = MAP_MENU_DETAILS;
+        if (selected->type == MENU_ITEM_MAP) {
+            map_menu.details_image = sprite_load(selected->data.map.image_filename);
+        }
     }
 }
 
@@ -428,33 +480,71 @@ void map_menu_hide_details() {
         map_menu.details_image = NULL;
     }
 
-    map_menu.is_showing_details = false;
+    map_menu.state = MAP_MENU_LIST;
+}
+
+void map_menu_animate_new_items(bool show_details) {
+    map_menu.state = show_details ? MAP_MENU_NEW_ITEM_DETAILS : MAP_MENU_NEW_ITEMS;
+    map_menu.state_data = (union map_menu_state_data){
+        .new_items = {
+            .timer = 0.0f,
+        },
+    };
 }
 
 void map_menu_update(void* data) {
     joypad_buttons_t pressed = joypad_get_buttons_pressed(0);
     joypad_inputs_t input = joypad_get_inputs(0);
-
+    
     if (!input.btn.start) {
         map_menu.can_unpause = true;
     }
-    
-    if ((pressed.start && map_menu.can_unpause) || (!map_menu.is_showing_details && pressed.b)) {
-        map_menu_hide();
-        map_menu.can_unpause = false;
-        return;
-    }
 
-    if (pressed.a) {
-        map_menu_show_details();
-    } else if (pressed.b) {
-        map_menu_hide_details();
+    switch (map_menu.state) {
+        case MAP_MENU_LIST:
+            if ((pressed.start && map_menu.can_unpause) || pressed.b) {
+                map_menu_hide();
+                return;
+            }
+            if (pressed.a) {
+                map_menu_show_details();
+            }
+            break;
+        case MAP_MENU_NEW_ITEMS:
+            map_menu.state_data.new_items.timer += fixed_time_step;
+            if (map_menu.state_data.new_items.timer >= NEW_ITEM_ANIM_TIME) {
+                map_menu.state = MAP_MENU_LIST;
+            }
+            break;
+        case MAP_MENU_NEW_ITEM_DETAILS:
+            map_menu.state_data.new_items.timer += fixed_time_step;
+            if (map_menu.state_data.new_items.timer >= NEW_ITEM_ANIM_TIME + OPEN_ITEM_DELAY_TIME) {
+                map_menu.state = MAP_MENU_LIST;
+                map_menu_show_details();
+            }
+            break;
+        case MAP_MENU_DETAILS_ANIMATE:
+            map_menu.state = MAP_MENU_DETAILS;
+            break;
+        case MAP_MENU_DETAILS:
+            if (pressed.start && map_menu.can_unpause) {
+                map_menu_hide();
+                return;
+            }
+            if (pressed.b) {
+                map_menu_hide_details();
+            }
+            break;
     }
 }
 
 void map_menu_show_with_item(enum inventory_item_type item) {
     if (!current_scene || !current_scene->overworld) {
         return;
+    }
+
+    if (current_scene) {
+        current_scene->can_pause = false;
     }
 
     assets.map = sprite_load("rom:/images/menu/map.sprite");
@@ -466,7 +556,27 @@ void map_menu_show_with_item(enum inventory_item_type item) {
     assets.selection_cursor = material_cache_load("rom:/materials/menu/selection_cursor.mat");
     
     map_menu.details_image = NULL;
-    map_menu.is_showing_details = false;
+    map_menu.state = MAP_MENU_LIST;
+
+    bool has_new = false;
+    bool should_show_details = false;
+
+    for (int i = 0; i < MENU_ITEM_COUNT; i += 1) {
+        bool should_show = map_should_show_item(&menu_items[i]);
+
+        if (should_show && !map_menu.has_prev[i]) {
+            if (menu_items[i].inventory_item == item && menu_items[i].type == MENU_ITEM_MAP) {
+                should_show_details = true;
+            }            
+
+            has_new = true;
+            break;
+        }
+    }
+
+    if (has_new) {
+        map_menu_animate_new_items(should_show_details);
+    }
 
     for (int i = 0; i < MENU_ITEM_TYPE_COUNT; i += 1) {
         assets.icons[i] = sprite_load(icon_files[i]);
@@ -479,11 +589,16 @@ void map_menu_show_with_item(enum inventory_item_type item) {
     update_add(&map_menu, map_menu_update, UPDATE_PRIORITY_PLAYER, UPDATE_LAYER_PAUSE_MENU);
     font_type_use(FONT_DIALOG);
     map_menu.can_unpause = false;
-    map_menu.selected_item = item;
+
+    if (item != ITEM_TYPE_NONE) {
+        map_menu.selected_item = item;
+    } else if (map_menu.selected_item == ITEM_TYPE_NONE) {
+        map_menu.selected_item = map_get_default_selection();
+    }
 }
 
 void map_menu_show() {
-    map_menu_show_with_item(map_get_default_selection());
+    map_menu_show_with_item(ITEM_TYPE_NONE);
 }
 
 void map_menu_hide() {
@@ -510,6 +625,10 @@ void map_menu_hide() {
     for (int i = 0; i < MENU_ITEM_TYPE_COUNT; i += 1) {
         sprite_free(assets.icons[i]);
         assets.icons[i] = NULL;
+    }
+    
+    for (int i = 0; i < MENU_ITEM_COUNT; i += 1) {
+        map_menu.has_prev[i] = map_should_show_item(&menu_items[i]);
     }
 
     update_unpause_layers(UPDATE_LAYER_WORLD | UPDATE_LAYER_CUTSCENE);
