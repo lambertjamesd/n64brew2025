@@ -9,6 +9,8 @@
 #include "../scene/scene.h"
 #include "../math/minmax.h"
 #include "../math/vector4.h"
+#include "../fonts/fonts.h"
+#include "menu_common.h"
 
 struct map_asssets {
     sprite_t* map;
@@ -18,7 +20,15 @@ struct map_asssets {
     material_t* map_view;
 };
 
+enum map_menu_state {
+    MAP_MENU_LIST,
+    MAP_MENU_SHOWING_MAP,
+    MAP_MENU_SHOWING_DESCRIPTION,
+};
+
 struct map_menu {
+    enum map_menu_state state;
+    int selected_item;
     vector2s16_t last_position;
     bool can_unpause;
 };
@@ -27,7 +37,7 @@ struct map_menu {
 #define MAP_SIZE                128
 
 #define MAP_X                   30
-#define MAP_Y                   56
+#define MAP_Y                   46
 
 #define BRUSH_HALF_SIZE         6
 #define BLUR_RADIUS             2
@@ -64,15 +74,15 @@ void map_get_position(vector3_t* world_pos, vector2_t* map_pos) {
 
 }
 
-void map_render(void* data) {
+void map_render_minimap(int map_x, int map_y) {
     rdpq_sync_pipe();
     rspq_block_run(assets.map_background->block);
 
     rdpq_texture_rectangle(
         TILE0,
-        MAP_X, MAP_Y,
-        MAP_X + MAP_SIZE,
-        MAP_Y + MAP_SIZE,
+        map_x, map_y,
+        map_x + MAP_SIZE,
+        map_y + MAP_SIZE,
         13, 13
     );
 
@@ -114,8 +124,8 @@ void map_render(void* data) {
 
             rdpq_texture_rectangle(
                 TILE0, 
-                MAP_X + x, MAP_Y + y, 
-                MAP_X + x + MAP_TILE_SIZE, MAP_Y + y + MAP_TILE_SIZE, 
+                x + map_x, y + map_y, 
+                x + map_x + MAP_TILE_SIZE, y + map_y + MAP_TILE_SIZE, 
                 0, 0
             );
         }
@@ -137,8 +147,8 @@ void map_render(void* data) {
     for (int i = 0; i < 3; i += 1) {
         vector2ComplexMul(&camera_cursor_points[i], &cam_rot, &cursor_points[i].pos);
         vector2Add(&cursor_points[i].pos, &screen_pos, &cursor_points[i].pos);
-        cursor_points[i].pos.x += MAP_X;
-        cursor_points[i].pos.y += MAP_Y;
+        cursor_points[i].pos.x += map_x;
+        cursor_points[i].pos.y += map_y;
         cursor_points[i].col = (vector4_t){
             0.5f, 0.5f, 0.0f,
             i == 0 ? 0.75f : 0.0f
@@ -160,8 +170,8 @@ void map_render(void* data) {
     for (int i = 0; i < 3; i += 1) {
         vector2ComplexMul(&player_cursor_points[i], rot, &cursor_points[i].pos);
         vector2Add(&cursor_points[i].pos, &screen_pos, &cursor_points[i].pos);
-        cursor_points[i].pos.x += MAP_X;
-        cursor_points[i].pos.y += MAP_Y;
+        cursor_points[i].pos.x += map_x;
+        cursor_points[i].pos.y += map_y;
     }
     rdpq_triangle(
         &TRIFMT_FILL, 
@@ -169,6 +179,27 @@ void map_render(void* data) {
         (float*)&cursor_points[1], 
         (float*)&cursor_points[2]
     );
+}
+
+void map_render(void* data) {
+    menu_common_render_background(26, 26, 268, 188);
+
+    
+    rdpq_text_printn(&(rdpq_textparms_t){
+            // .line_spacing = -3,
+            .align = ALIGN_RIGHT,
+            .valign = VALIGN_BOTTOM,
+            .width = 128,
+            .height = 0,
+            .wrap = WRAP_NONE,
+        }, 
+        FONT_DIALOG, 
+        MAP_X, MAP_Y - 4, 
+        "World",
+        5
+    );
+
+    map_render_minimap(MAP_X, MAP_Y);
 }
 
 void map_menu_init() {
@@ -230,6 +261,7 @@ void map_menu_show() {
     game_mode_enter_menu();
     menu_add_callback(map_render, &map_menu, MENU_PRIORITY_OVERLAY);
     update_add(&map_menu, map_menu_update, UPDATE_PRIORITY_PLAYER, UPDATE_LAYER_PAUSE_MENU);
+    font_type_use(FONT_DIALOG);
     map_menu.can_unpause = false;
 }
 
@@ -249,6 +281,7 @@ void map_menu_hide() {
     game_mode_exit_menu();
     menu_remove_callback(&map_menu);
     update_remove(&map_menu);
+    font_type_release(FONT_DIALOG);
 }
 
 void map_mark_revealed(struct Vector3* pos) {

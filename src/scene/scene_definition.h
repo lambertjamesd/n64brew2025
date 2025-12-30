@@ -46,6 +46,8 @@ struct motorcycle_spawn_point_definition {
 
 enum inventory_item_type {
     ITEM_TYPE_NONE,
+    ITEM_WELL_PART_MAP,
+    ITEM_WELL_HAS_GEAR,
 
     ITEM_TYPE_COUNT,
 };

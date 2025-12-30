@@ -5,13 +5,8 @@ import cutscene.parser
 import cutscene.variable_layout
 
 mapping = {
-    "fire_rune_level": 'SPELL_SYMBOL_FIRE',
-    "ice_rune_level": 'SPELL_SYMBOL_ICE',
-    "earth_rune_level": 'SPELL_SYMBOL_EARTH',
-    "air_rune_level": 'SPELL_SYMBOL_AIR',
-    "life_rune_level": 'SPELL_SYMBOL_LIFE',
-    "recast_rune_level": 'SPELL_SYMBOL_RECAST',
-    "has_staff_default": 'ITEM_TYPE_STAFF_DEFAULT',
+    "has_well_part_map": 'ITEM_WELL_PART_MAP',
+    "has_pump_gear": 'ITEM_WELL_HAS_GEAR',
 }
 
 data_type_mapping = {
