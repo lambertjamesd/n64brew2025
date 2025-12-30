@@ -11,6 +11,15 @@
 #include "../math/vector4.h"
 #include "../fonts/fonts.h"
 #include "menu_common.h"
+#include "../player/inventory.h"
+#include "../render/defs.h"
+
+enum menu_item_type {
+    MENU_ITEM_PART,
+    MENU_ITEM_MAP,
+
+    MENU_ITEM_TYPE_COUNT,
+};
 
 struct map_asssets {
     sprite_t* map;
@@ -18,6 +27,27 @@ struct map_asssets {
     material_t* map_background;
     material_t* map_arrow;
     material_t* map_view;
+    material_t* map_icon;
+    material_t* selection_cursor;
+
+    sprite_t* icons[MENU_ITEM_TYPE_COUNT];
+};
+
+union menu_item_data {
+    struct {
+        const char* description;
+    } part;
+    struct {
+        const char* image_filename;
+    } map;
+};
+
+struct menu_item {
+    enum menu_item_type type;
+    enum inventory_item_type inventory_item;
+    enum inventory_item_type hide_override;
+    const char* name;
+    union menu_item_data data;
 };
 
 enum map_menu_state {
@@ -28,9 +58,12 @@ enum map_menu_state {
 
 struct map_menu {
     enum map_menu_state state;
-    int selected_item;
+    enum inventory_item_type selected_item;
     vector2s16_t last_position;
     bool can_unpause;
+    bool is_showing_details;
+
+    sprite_t* details_image;
 };
 
 #define MAP_TILE_SIZE           32
@@ -39,13 +72,37 @@ struct map_menu {
 #define MAP_X                   30
 #define MAP_Y                   46
 
+#define MENU_X                  (SCREEN_WD - MAP_X - MAP_SIZE)
+
 #define BRUSH_HALF_SIZE         6
 #define BLUR_RADIUS             2
+
+#define ICON_SIZE               32
 
 static uint8_t __attribute__((aligned(16))) map_revealed[MAP_SIZE * MAP_SIZE];
 static uint8_t reveal_brush[BRUSH_HALF_SIZE * BRUSH_HALF_SIZE];
 static struct map_asssets assets;
 static struct map_menu map_menu;
+
+static const char* icon_files[MENU_ITEM_TYPE_COUNT] = {
+    [MENU_ITEM_PART] = "rom:/images/maps/dot_matrix_map_icon.sprite",
+    [MENU_ITEM_MAP] = "rom:/images/maps/dot_matrix_map_icon.sprite",
+};
+
+static struct menu_item menu_items[] = {
+    {
+        .type = MENU_ITEM_MAP,
+        .inventory_item = ITEM_WELL_PUMP_PART_MAP,
+        .name = "Well part map",
+        .data = {
+            .map = {
+                .image_filename = "rom:/images/maps/well_parts_map.sprite",
+            },
+        },
+    }
+};
+
+#define MENU_ITEM_COUNT      (sizeof(menu_items) / sizeof(*menu_items))
 
 static vector2_t player_cursor_points[3] = {
     {0.0f, 3.0f},
@@ -118,7 +175,6 @@ void map_render_minimap(int map_x, int map_y) {
             surf.buffer = (void*)((uint16_t*)assets.map->data + pixel_index);
             mask_surface.buffer = (void*)(map_revealed + pixel_index);
 
-
             rdpq_tex_upload(TILE1, &mask_surface, &mask_parms);
             rdpq_tex_upload(TILE0, &surf, &tex_params);
 
@@ -181,10 +237,119 @@ void map_render_minimap(int map_x, int map_y) {
     );
 }
 
+void map_render_title(struct menu_item* item) {
+    if (!item) {
+        return;
+    }
+
+    rdpq_text_printn(&(rdpq_textparms_t){
+            // .line_spacing = -3,
+            .align = ALIGN_RIGHT,
+            .valign = VALIGN_BOTTOM,
+            .width = 128,
+            .height = 0,
+            .wrap = WRAP_NONE,
+        }, 
+        FONT_DIALOG, 
+        MENU_X, MAP_Y - 4, 
+        item->name,
+        strlen(item->name)
+    );
+}
+
+void map_render_details(struct menu_item* item) {
+    switch (item->type) {
+        case MENU_ITEM_PART:
+            rdpq_text_printn(&(rdpq_textparms_t){
+                    // .line_spacing = -3,
+                    .align = ALIGN_LEFT,
+                    .valign = VALIGN_TOP,
+                    .width = 128,
+                    .height = 128,
+                    .wrap = WRAP_NONE,
+                }, 
+                FONT_DIALOG, 
+                MENU_X, MAP_Y, 
+                item->data.part.description,
+                strlen(item->data.part.description)
+            );
+            break;
+        case MENU_ITEM_MAP:
+            if (map_menu.details_image) {
+                rdpq_sync_pipe();
+                rspq_block_run(assets.map_icon->block);
+
+                int x = (MAP_SIZE - map_menu.details_image->width) >> 1;
+                int y = (MAP_SIZE - map_menu.details_image->height) >> 1;
+                rdpq_sprite_blit(map_menu.details_image, MENU_X + x, MAP_Y + y, NULL);
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+bool map_should_show_item(struct menu_item* item) {
+    // return inventory_has_item(item->inventory_item) && !inventory_has_item(item->hide_override);
+    return true;
+}
+
+void map_render_items() {
+    int x = 0;
+    int y = 0;
+    for (int i = 0; i < MENU_ITEM_COUNT; i += 1) {
+        struct menu_item* item = &menu_items[i];
+        
+        if (!map_should_show_item(&menu_items[i])) {
+            continue;
+        }
+
+        if (item->inventory_item == map_menu.selected_item) {
+            rdpq_sync_pipe();
+            rspq_block_run(assets.selection_cursor->block);
+            rdpq_texture_rectangle(TILE0, x + MENU_X, y + MAP_Y, x + MENU_X + ICON_SIZE, y + MAP_Y + ICON_SIZE, 0, 0);
+        }
+
+        rdpq_sync_pipe();
+        rspq_block_run(assets.map_icon->block);
+        rdpq_sprite_blit(assets.icons[item->type], x + MENU_X, y + MAP_Y, NULL);
+
+        x += ICON_SIZE;
+
+        if (x >= MAP_SIZE) {
+            x = 0;
+            y += ICON_SIZE;
+        }
+    }
+}
+
+enum inventory_item_type map_get_default_selection() {
+    for (int i = 0; i < MENU_ITEM_COUNT; i += 1) {
+        if (!map_should_show_item(&menu_items[i])) {
+            continue;
+        }
+        return menu_items[i].inventory_item;
+    }
+
+    return ITEM_TYPE_NONE;
+}
+
+struct menu_item* map_find_selected_item() {
+    for (int i = 0; i < MENU_ITEM_COUNT; i += 1) {
+        if (!map_should_show_item(&menu_items[i])) {
+            continue;
+        }
+        if (menu_items[i].inventory_item == map_menu.selected_item) {
+            return &menu_items[i];
+        }
+    }
+
+    return NULL;
+}
+
 void map_render(void* data) {
     menu_common_render_background(26, 26, 268, 188);
 
-    
     rdpq_text_printn(&(rdpq_textparms_t){
             // .line_spacing = -3,
             .align = ALIGN_RIGHT,
@@ -198,6 +363,15 @@ void map_render(void* data) {
         "World",
         5
     );
+
+    struct menu_item* selected_item = map_find_selected_item();
+    map_render_title(selected_item);
+
+    if (selected_item && map_menu.is_showing_details) {
+        map_render_details(selected_item);
+    } else {
+        map_render_items();
+    }
 
     map_render_minimap(MAP_X, MAP_Y);
 }
@@ -226,10 +400,35 @@ void map_menu_init() {
             pixel += 1;
         }
     }
+
+    map_menu.selected_item = 0;
 }
 
 void map_menu_destroy() {
 
+}
+
+void map_menu_show_details() {
+    struct menu_item* selected = map_find_selected_item();
+
+    if (!selected) {
+        return;
+    }
+
+    map_menu.is_showing_details = true;
+
+    if (selected->type == MENU_ITEM_MAP) {
+        map_menu.details_image = sprite_load(selected->data.map.image_filename);
+    }
+}
+
+void map_menu_hide_details() {
+    if (map_menu.details_image) {
+        sprite_free(map_menu.details_image);
+        map_menu.details_image = NULL;
+    }
+
+    map_menu.is_showing_details = false;
 }
 
 void map_menu_update(void* data) {
@@ -240,13 +439,20 @@ void map_menu_update(void* data) {
         map_menu.can_unpause = true;
     }
     
-    if (pressed.start && map_menu.can_unpause) {
+    if ((pressed.start && map_menu.can_unpause) || (!map_menu.is_showing_details && pressed.b)) {
         map_menu_hide();
         map_menu.can_unpause = false;
+        return;
+    }
+
+    if (pressed.a) {
+        map_menu_show_details();
+    } else if (pressed.b) {
+        map_menu_hide_details();
     }
 }
 
-void map_menu_show() {
+void map_menu_show_with_item(enum inventory_item_type item) {
     if (!current_scene || !current_scene->overworld) {
         return;
     }
@@ -256,6 +462,16 @@ void map_menu_show() {
     assets.map_background = material_cache_load("rom:/materials/menu/map_grid.mat");
     assets.map_arrow = material_cache_load("rom:/materials/menu/map_arrow.mat");
     assets.map_view = material_cache_load("rom:/materials/menu/map_view.mat");
+    assets.map_icon = material_cache_load("rom:/materials/menu/map_icon.mat");
+    assets.selection_cursor = material_cache_load("rom:/materials/menu/selection_cursor.mat");
+    
+    map_menu.details_image = NULL;
+    map_menu.is_showing_details = false;
+
+    for (int i = 0; i < MENU_ITEM_TYPE_COUNT; i += 1) {
+        assets.icons[i] = sprite_load(icon_files[i]);
+    }
+
     update_pause_layers(UPDATE_LAYER_WORLD | UPDATE_LAYER_CUTSCENE);
     update_unpause_layers(UPDATE_LAYER_PAUSE_MENU);
     game_mode_enter_menu();
@@ -263,6 +479,11 @@ void map_menu_show() {
     update_add(&map_menu, map_menu_update, UPDATE_PRIORITY_PLAYER, UPDATE_LAYER_PAUSE_MENU);
     font_type_use(FONT_DIALOG);
     map_menu.can_unpause = false;
+    map_menu.selected_item = item;
+}
+
+void map_menu_show() {
+    map_menu_show_with_item(map_get_default_selection());
 }
 
 void map_menu_hide() {
@@ -271,11 +492,26 @@ void map_menu_hide() {
     material_cache_release(assets.map_background);
     material_cache_release(assets.map_arrow);
     material_cache_release(assets.map_view);
+    material_cache_release(assets.map_icon);
+    material_cache_release(assets.selection_cursor);
     assets.map = NULL;
     assets.material = NULL;
     assets.map_background = NULL;
     assets.map_arrow = NULL;
     assets.map_view = NULL;
+    assets.map_icon = NULL;
+    assets.selection_cursor = NULL;
+
+    if (map_menu.details_image) {
+        sprite_free(map_menu.details_image);
+        map_menu.details_image = NULL;
+    }
+
+    for (int i = 0; i < MENU_ITEM_TYPE_COUNT; i += 1) {
+        sprite_free(assets.icons[i]);
+        assets.icons[i] = NULL;
+    }
+
     update_unpause_layers(UPDATE_LAYER_WORLD | UPDATE_LAYER_CUTSCENE);
     update_pause_layers(UPDATE_LAYER_PAUSE_MENU);
     game_mode_exit_menu();
@@ -288,8 +524,6 @@ void map_mark_revealed(struct Vector3* pos) {
     if (!current_scene || !current_scene->overworld) {
         return;
     }
-
-    overworld_t* overworld = current_scene->overworld;
 
     vector2_t screen_pos;
     map_get_position(pos, &screen_pos);

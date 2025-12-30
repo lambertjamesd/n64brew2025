@@ -63,7 +63,7 @@ void fade_effect_activate() {
     }
     is_active = true;
 
-    update_add(&start_color, fade_effect_update, UPDATE_PRIORITY_EFFECTS, UPDATE_LAYER_CUTSCENE | UPDATE_LAYER_WORLD);
+    update_add(&start_color, fade_effect_update, UPDATE_PRIORITY_EFFECTS, UPDATE_LAYER_CUTSCENE | UPDATE_LAYER_WORLD | UPDATE_LAYER_PAUSE_MENU);
     menu_add_callback(fade_effect_render, &start_color, MENU_PRIORITY_OVERLAY);
 }
 

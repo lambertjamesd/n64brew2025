@@ -5,8 +5,11 @@ import cutscene.parser
 import cutscene.variable_layout
 
 mapping = {
-    "has_well_part_map": 'ITEM_WELL_PART_MAP',
-    "has_pump_gear": 'ITEM_WELL_HAS_GEAR',
+    "has_motor": 'ITEM_WELL_HAS_MOTOR',
+    "has_repaired_motor": 'ITEM_WELL_HAS_FIXED_MOTOR',
+    "has_well_part_map": 'ITEM_WELL_PUMP_PART_MAP',
+    "has_pump_gear": 'ITEM_WELL_HAS_PUMP_GEAR',
+    "has_repaired_pump": 'ITEM_WELL_HAS_FIXED_PUMP',
 }
 
 data_type_mapping = {
