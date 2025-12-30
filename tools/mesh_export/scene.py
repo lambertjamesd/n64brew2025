@@ -337,7 +337,6 @@ def build_room_entity_block(objects: list[ObjectEntry], variable_context, contex
     entity_enum = enums['entity_id_variable']
 
     for object in objects:
-        print('object', object, object.name)
         object.write_condition(variable_context, block)
         on_despawn = enums['boolean_variable'].str_to_int(object.on_despawn or "disconnected")
 
@@ -573,14 +572,14 @@ def process_scene():
         for loading_zone in scene.loading_zones:
             context.get_string_offset(loading_zone.target)
 
-        context.write_strings(file)
-
         grouped = {}
         shared_entity_index = {}
         shared_entities = []
 
         if not has_overworld:
             grouped, shared_entity_index, shared_entities = read_room_objects(scene, scene_vars, context)
+
+        context.write_strings(file)
 
         write_room_entiites(room_collection, grouped, shared_entity_index, variable_context, context, enums, file)
 

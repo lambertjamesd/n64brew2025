@@ -51,9 +51,9 @@ void setup() {
     fade_effect_set((color_t){0, 0, 0, 0}, 3.0f);
 
     // scene_queue_next("rom:/scenes/overworld_accuracy_test.scene");
-    scene_queue_next("rom:/scenes/overworld.scene");
+    // scene_queue_next("rom:/scenes/overworld.scene");
     // scene_queue_next("rom:/repair/motorycle_engine.repair");
-    // scene_queue_next("rom:/scenes/garage.scene");
+    scene_queue_next("rom:/scenes/garage.scene");
 
     load_scene_or_repair(scene_get_next());
 
