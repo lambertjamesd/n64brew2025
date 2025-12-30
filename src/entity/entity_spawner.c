@@ -20,7 +20,8 @@
     sizeof(struct name), \
     sizeof(struct name ## _definition), \
     fields, \
-    sizeof(fields) / sizeof(*fields) \
+    sizeof(fields) / sizeof(*fields), \
+    ENTITY_TYPE_ ## name \
 }
 
 static struct entity_field_type_location fields_empty[] = {};

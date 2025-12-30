@@ -77,7 +77,7 @@ void door_init(door_t* door, struct door_definition* definition, entity_id entit
     door->was_open = false;
     door->is_open = definition->is_open;
 
-    update_add(door, door_update, UPDATE_PRIORITY_EFFECTS, UPDATE_LAYER_WORLD);
+    update_add(door, door_update, UPDATE_PRIORITY_EFFECTS, UPDATE_LAYER_WORLD | UPDATE_LAYER_CUTSCENE);
 }
 
 void door_destroy(door_t* door) {
