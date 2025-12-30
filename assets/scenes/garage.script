@@ -3,6 +3,7 @@ global has_repaired_motor: bool;
 
 scene door_open: bool;
 scene garage_door: entity_id;
+scene vehicles_bike: entity_id;
 
 func room_garage()
     if has_repaired_motor and not door_open then
@@ -10,8 +11,11 @@ func room_garage()
         delay 1;
         interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, garage_door;
         cam_look_npc garage_door;
-        delay 2;
+        delay 1;
         door_open = true;
+        delay 1;
+        interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, vehicles_bike;
+        npc_wait ENTITY_ID_PLAYER;
         cam_return;
         world_unpause;
     end
