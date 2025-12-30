@@ -280,8 +280,8 @@ void overworld_render_lod_0(struct overworld* overworld, struct Camera* camera, 
     rdpq_mode_zbuf(true, true);
 } 
 
-#define MAX_PARTICLE_DISTANCE 20.0f
-#define PARTICLE_FADE_DISTANCE 15.0f
+#define MAX_PARTICLE_DISTANCE 70.0f
+#define PARTICLE_FADE_DISTANCE 40.0f
 
 void overworld_render_tile(struct overworld* overworld, struct Camera* camera, struct frame_memory_pool* pool, int x, int z) {
     struct overworld_tile_render_block* block = &overworld->render_blocks[x & 0x3][z & 0x3];
