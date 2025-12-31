@@ -76,8 +76,10 @@ struct overworld_tile_render_block {
     uint8_t y_height;
 };
 
+#define LOD0_SORT_DIRECTION_COUNT   4
+
 struct overworld_lod0_entry {
-    struct tmesh mesh;
+    struct tmesh meshes[LOD0_SORT_DIRECTION_COUNT];
     int16_t x, z;
     uint16_t priority;
 };

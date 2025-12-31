@@ -196,6 +196,14 @@ int overworld_entry_sort(const void* a, const void* b) {
     return (int)(b_entry->priority - a_entry->priority);
 }
 
+int overworld_lod_0_direction_idnex(int dx, int dy) {
+    if (abs(dx) > abs(dy)) {
+        return dx > 0 ? 1 : 0;
+    }
+
+    return dy > 0 ? 3 : 2;
+}
+
 void overworld_render_lod_0_entries(struct overworld_lod0* lod0, int camera_x, int camera_z) {
     struct overworld_lod0_sort_entry order[lod0->entry_count];
 
@@ -205,7 +213,8 @@ void overworld_render_lod_0_entries(struct overworld_lod0* lod0, int camera_x, i
         int dx = (int)curr->x - camera_x;
         int dy = (int)curr->z - camera_z;
         entry->priority = ((dx * dx + dy * dy) >> 2) - ((uint32_t)(curr->priority) << 30);
-        entry->mesh = &curr->mesh;
+        
+        entry->mesh = &curr->meshes[overworld_lod_0_direction_idnex(dx, dy)];
     }
 
     qsort(order, lod0->entry_count, sizeof(struct overworld_lod0_sort_entry), overworld_entry_sort);

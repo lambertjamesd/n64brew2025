@@ -144,6 +144,13 @@ def generate_overworld_tile(
 
     return OverworldCell(data.getvalue(), cell_bb[0].y)
 
+sort_directions = [
+    mathutils.Vector((1, 0, 0)),
+    mathutils.Vector((-1, 0, 0)),
+    mathutils.Vector((0, 0, 1)),
+    mathutils.Vector((0, 0, -1)),
+]
+
 def generate_lod0(lod_0_objects: list[bpy.types.Object], subdivisions: int, settings: export_settings.ExportSettings, base_transform: mathutils.Matrix, file):
     lod_0_start_time = time.perf_counter()
 
@@ -177,7 +184,10 @@ def generate_lod0(lod_0_objects: list[bpy.types.Object], subdivisions: int, sett
         file.write(struct.pack('>hhH', single_mesh[1], single_mesh[2], single_mesh[3]))
         lod_0_settings.default_material_name = material_extract.material_romname(single_mesh[0].mat)
         lod_0_settings.default_material = material_extract.load_material_with_name(single_mesh[0].mat)
-        tiny3d_mesh_writer.write_mesh([single_mesh[0]], None, [], lod_0_settings, file)
+
+        for dir in sort_directions:
+            lod_0_settings.sort_direction = dir
+            tiny3d_mesh_writer.write_mesh([single_mesh[0]], None, [], lod_0_settings, file)
 
     print(f"lod_0 creation time {time.perf_counter() - lod_0_start_time}")
 

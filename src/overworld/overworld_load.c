@@ -244,7 +244,9 @@ struct overworld* overworld_load(const char* filename) {
         fread(&result->lod0.entries[i].x, sizeof(uint16_t), 1, result->file);
         fread(&result->lod0.entries[i].z, sizeof(uint16_t), 1, result->file);
         fread(&result->lod0.entries[i].priority, sizeof(uint16_t), 1, result->file);
-        tmesh_load(&result->lod0.entries[i].mesh, result->file);
+        for (int direction_index = 0; direction_index < LOD0_SORT_DIRECTION_COUNT; direction_index += 1) {
+            tmesh_load(&result->lod0.entries[i].meshes[direction_index], result->file);
+        }
     }
 
     result->inv_tile_size = 1.0f / result->tile_size;
@@ -291,7 +293,9 @@ void overworld_free(struct overworld* overworld) {
     hash_map_destroy(&overworld->loaded_actors);
 
     for (int i = 0; i < overworld->lod0.entry_count; i += 1) {
-        tmesh_release(&overworld->lod0.entries[i].mesh);
+        for (int direction_index = 0; direction_index < LOD0_SORT_DIRECTION_COUNT; direction_index += 1) {
+            tmesh_release(&overworld->lod0.entries[i].meshes[direction_index]);
+        }
     }
     free(overworld->lod0.entries);
 
