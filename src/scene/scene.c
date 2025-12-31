@@ -41,7 +41,7 @@ void scene_render_room(struct scene* scene, int room_index, struct render_batch*
     for (; curr_particle < end_particle; ++curr_particle) {
         render_batch_particles_t* particles = &curr_particle->particles;
 
-        for (int instance_index = 0; instance_index < particles->particle_count; instance_index += 1) {
+        for (int instance_index = 0; instance_index < curr_particle->instance_count; instance_index += 1) {
             static_particle_instance_data_t* instance = &curr_particle->instance_data[instance_index];
 
             float distance = fabsf((instance->center.x - batch->camera_matrix[3][0]) * batch->camera_matrix[2][0] +
