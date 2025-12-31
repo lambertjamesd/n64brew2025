@@ -16,9 +16,10 @@ struct frame_memory_pool {
     uint16_t current_word;
 } __attribute__((aligned(16)));
 
+typedef struct frame_memory_pool frame_memory_pool_t;
+
 void frame_pool_reset(struct frame_memory_pool* pool);
 void* frame_malloc(struct frame_memory_pool* pool, int bytes);
-
 
 T3DMat4FP* frame_pool_get_transformfp(struct frame_memory_pool* pool);
 

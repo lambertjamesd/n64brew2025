@@ -17,9 +17,6 @@ struct scene* current_scene;
 static char next_scene_name[MAX_SCENE_NAME_LENGTH];
 static char next_entrance_name[MAX_ENTRANCE_NAME_LENGTH];
 
-#define MAX_PARTICLE_DISTANCE 40.0f
-#define PARTICLE_FADE_DISTANCE 25.0f
-
 void scene_render_room(struct scene* scene, int room_index, struct render_batch* batch) {
     if (room_index < 0 || room_index >= scene->room_count) {
         return;
@@ -38,46 +35,50 @@ void scene_render_room(struct scene* scene, int room_index, struct render_batch*
     
     static_particles_t* curr_particle = scene->static_particles + range.start;
     static_particles_t* end_particle = scene->static_particles + range.end;
+    struct Transform transform;
+    quatIdent(&transform.rotation);
 
     for (; curr_particle < end_particle; ++curr_particle) {
         render_batch_particles_t* particles = &curr_particle->particles;
 
-        float distance = fabsf((curr_particle->center.x - batch->camera_matrix[3][0]) * batch->camera_matrix[2][0] +
-            (curr_particle->center.z - batch->camera_matrix[3][2]) * batch->camera_matrix[2][2]);
+        for (int instance_index = 0; instance_index < particles->particle_count; instance_index += 1) {
+            static_particle_instance_data_t* instance = &curr_particle->instance_data[instance_index];
 
-        if (distance > MAX_PARTICLE_DISTANCE) {
-            continue;
-        }
-
-        if (distance > PARTICLE_FADE_DISTANCE) {
-            render_batch_particles_t* fade_particles = frame_malloc(batch->pool, sizeof(render_batch_particles_t));
-
-            if (fade_particles) {
-                *fade_particles = *particles;
-                uint32_t scale = (uint32_t)((0xFFFF / (MAX_PARTICLE_DISTANCE - PARTICLE_FADE_DISTANCE)) * (MAX_PARTICLE_DISTANCE - distance));
-                particles = fade_particles;
-                particles->particle_scale_width = (uint16_t)((uint32_t)(scale * particles->particle_scale_width) >> 16);
-                particles->particle_scale_height = (uint16_t)((uint32_t)(scale * particles->particle_scale_height) >> 16);
+            float distance = fabsf((instance->center.x - batch->camera_matrix[3][0]) * batch->camera_matrix[2][0] +
+                (instance->center.z - batch->camera_matrix[3][2]) * batch->camera_matrix[2][2]);
+    
+            if (distance > MAX_PARTICLE_DISTANCE) {
+                continue;
             }
+    
+            if (distance > PARTICLE_FADE_DISTANCE) {
+                render_batch_particles_t* fade_particles = frame_malloc(batch->pool, sizeof(render_batch_particles_t));
+    
+                if (fade_particles) {
+                    *fade_particles = *particles;
+                    uint32_t scale = (uint32_t)((0xFFFF / (MAX_PARTICLE_DISTANCE - PARTICLE_FADE_DISTANCE)) * (MAX_PARTICLE_DISTANCE - distance));
+                    particles = fade_particles;
+                    particles->particle_scale_width = (uint16_t)((uint32_t)(scale * particles->particle_scale_width) >> 16);
+                    particles->particle_scale_height = (uint16_t)((uint32_t)(scale * particles->particle_scale_height) >> 16);
+                }
+            }
+    
+            transform.position = instance->center;
+            transform.scale = instance->size;
+    
+            T3DMat4FP* mtx = render_batch_transformfp_from_full(batch, &transform);
+    
+            if (!mtx) {
+                break;
+            }
+    
+            render_batch_add_particles(
+                batch,
+                curr_particle->material,
+                particles,
+                mtx
+            );
         }
-
-        struct Transform transform;
-        transform.position = curr_particle->center;
-        transform.scale = curr_particle->size;
-        quatIdent(&transform.rotation);
-
-        T3DMat4FP* mtx = render_batch_transformfp_from_full(batch, &transform);
-
-        if (!mtx) {
-            break;
-        }
-
-        render_batch_add_particles(
-            batch,
-            curr_particle->material,
-            particles,
-            mtx
-        );
     }
 }
 

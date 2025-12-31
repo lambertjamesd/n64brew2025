@@ -54,7 +54,6 @@ struct overworld_tile* overworld_tile_load(FILE* file) {
     T3DMat4FP* curr_matrix = UncachedAddr(result->detail_matrices);
 
     for (int i = 0; i < mesh_count; i += 1) {
-        
         tmesh_load(&result->terrain_meshes[i], file);
         rspq_block_begin();
         material_apply(result->terrain_meshes[i].material);

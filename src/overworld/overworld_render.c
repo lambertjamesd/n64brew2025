@@ -289,9 +289,6 @@ void overworld_render_lod_0(struct overworld* overworld, struct Camera* camera, 
     rdpq_mode_zbuf(true, true);
 } 
 
-#define MAX_PARTICLE_DISTANCE 70.0f
-#define PARTICLE_FADE_DISTANCE 40.0f
-
 void overworld_render_tile(struct overworld* overworld, struct Camera* camera, struct frame_memory_pool* pool, int x, int z) {
     struct overworld_tile_render_block* block = &overworld->render_blocks[x & 0x3][z & 0x3];
     struct Vector3* camera_position = &camera->transform.position;
@@ -347,55 +344,7 @@ void overworld_render_tile(struct overworld* overworld, struct Camera* camera, s
 
     if (block->tile->static_particle_count) {
         static_particles_start();
-        struct Transform transform;
-        quatIdent(&transform.rotation);
-        material_t* curr_material = NULL;
-        
-        for (int i = 0; i < block->tile->static_particle_count; i += 1) {
-            static_particles_t* particles = &block->tile->static_particles[i];
-            float distance = sqrtf(vector3DistSqrd(&particles->center, camera_position));
-    
-            if (distance >= MAX_PARTICLE_DISTANCE) {
-                continue;
-            }
-
-            render_batch_particles_t* batch_particles = &particles->particles;
-
-            if (distance >= PARTICLE_FADE_DISTANCE) {
-                render_batch_particles_t* fade_particles = frame_malloc(pool, sizeof(render_batch_particles_t));
-
-                if (fade_particles) {
-                    *fade_particles = *batch_particles;
-                    uint32_t scale = (uint32_t)((0xFFFF / (MAX_PARTICLE_DISTANCE - PARTICLE_FADE_DISTANCE)) * (MAX_PARTICLE_DISTANCE - distance));
-                    batch_particles = fade_particles;
-                    batch_particles->particle_scale_width = (uint16_t)((uint32_t)(scale * batch_particles->particle_scale_width) >> 16);
-                    batch_particles->particle_scale_height = (uint16_t)((uint32_t)(scale * batch_particles->particle_scale_height) >> 16);
-                }
-            }
-    
-            if (curr_material != particles->material) {
-                material_apply(particles->material);
-                curr_material = particles->material;
-            }
-    
-    
-            transform.position = particles->center;
-            vector3Sub(&particles->center, camera_position, &transform.position);
-            vector3Scale(&particles->size, &transform.scale, MODEL_WORLD_SCALE);
-            vector3Scale(&transform.position, &transform.position, WORLD_SCALE);
-    
-            T3DMat4FP* mtxfp = frame_pool_get_transformfp(pool);
-    
-            if (!mtxfp) {
-                break;
-            }
-    
-            mat4x4 mtx;
-            transformToMatrix(&transform, mtx);
-            t3d_mat4_to_fixed_3x4(mtxfp, (T3DMat4*)mtx);
-    
-            static_particles_render(batch_particles, mtxfp, particles->material->tex0.sprite != NULL);
-        }
+        static_particles_render_instances(block->tile->static_particles, block->tile->static_particle_count, pool, camera_position);
         static_particles_end();
     }
 }

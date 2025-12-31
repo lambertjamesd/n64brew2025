@@ -470,7 +470,6 @@ void render_batch_finish(struct render_batch* batch, mat4x4 view_proj_matrix, T3
         bool should_sprite_mode = element_type_2d[element->type];
 
         if (should_sprite_mode != is_sprite_mode) {
-            rdpq_sync_pipe();
             if (should_sprite_mode) {
                 static_particles_start();
             } else {

@@ -102,6 +102,8 @@ class Particles:
         material_filename = filename_str.encode()
         file.write(len(material_filename).to_bytes(1, 'big'))
         file.write(material_filename)
+        # instance count TODO
+        file.write((1).to_bytes(2, 'big'))
         file.write(struct.pack('>fff', self.position.x, self.position.y, self.position.z))
         file.write(struct.pack('>fff', self.scale.x, self.scale.y, self.scale.z))
 
