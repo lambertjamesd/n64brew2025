@@ -74,17 +74,28 @@ def transform_particle(point: mathutils.Vector, mid_point: mathutils.Vector, sca
         clamp_particle_pos(pos.z)
     ))
 
+class ParticleInstance:
+    def __init__(self, position: mathutils.Vector, scale: mathutils.Vector):
+        self.position: mathutils.Vector = position
+        self.scale: mathutils.Vector = scale
+
 class Particles:
     def __init__(self, obj: bpy.types.Object):
         self.obj: bpy.types.Object = obj
-        self.position: mathutils.Vector = mathutils.Vector()
-        self.scale: mathutils.Vector = mathutils.Vector()
+        self.instances = []
+        self.position: mathutils.Vector | None = None
+        self.scale: mathutils.Vector | None = None
         self.particle_count: int = 0
         self.particle_size: int = 0
         self.particle_scale_width: int = 0
         self.particle_scale_height: int = 0
         self.particles: bytes
         self.material: bpy.types.Material
+
+    def add_instnace(self, position: mathutils.Vector, scale: mathutils.Vector):
+        self.position = position
+        self.scale = scale
+        self.instances.append(ParticleInstance(position, scale))
 
     def set_dimensions(self, dimensions: mathutils.Vector):
         scaled = dimensions * 16
@@ -102,10 +113,10 @@ class Particles:
         material_filename = filename_str.encode()
         file.write(len(material_filename).to_bytes(1, 'big'))
         file.write(material_filename)
-        # instance count TODO
-        file.write((1).to_bytes(2, 'big'))
-        file.write(struct.pack('>fff', self.position.x, self.position.y, self.position.z))
-        file.write(struct.pack('>fff', self.scale.x, self.scale.y, self.scale.z))
+        file.write(len(self.instances).to_bytes(2, 'big'))
+        for instance in self.instances:
+            file.write(struct.pack('>fff', instance.position.x, instance.position.y, instance.position.z))
+            file.write(struct.pack('>fff', instance.scale.x, instance.scale.y, instance.scale.z))
 
         final_count = self.particle_count
 
@@ -113,6 +124,29 @@ class Particles:
             final_count += 1
 
         file.write(struct.pack('>HHHH', final_count, self.particle_size, self.particle_scale_width, self.particle_scale_height))
+
+    def can_combine_with(self, other):
+        if not isinstance(other, Particles):
+            return False
+        return self.obj.data == other.obj.data
+    
+def batch_particles(input: list[Particles]):
+    result: list[Particles] = []
+
+    for element in input:
+        was_used = False
+
+        for existing in result:
+            if existing.can_combine_with(element):
+                existing.instances += element.instances
+                was_used = True
+                break
+
+        if not was_used:
+            result.append(element)
+
+    return result
+
 
 def convert_channel(value):
     return math.floor(255 * value + 0.5)
@@ -203,8 +237,7 @@ def build_particles(obj: bpy.types.Object, base_transform: mathutils.Matrix) -> 
 
     result = Particles(obj)
 
-    result.position = mid_point
-    result.scale = scale * 0.5
+    result.add_instnace(mid_point, scale * 0.5)
     result.particle_count = len(mesh.vertices)
     result.set_dimensions(dimensions)
     result.material = mesh.materials[0]
@@ -272,6 +305,8 @@ def build_particles(obj: bpy.types.Object, base_transform: mathutils.Matrix) -> 
 
 def write_particles(particle_list: list[Particles], file):
     particle_data = io.BytesIO()
+
+    particle_list = batch_particles(particle_list)
 
     for particles in particle_list:
         particle_data.write(particles.particles)

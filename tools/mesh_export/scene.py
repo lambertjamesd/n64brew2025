@@ -184,6 +184,8 @@ def write_particles(scene: Scene, base_transform: mathutils.Matrix, room_collect
     for room_index in range(len(room_collection.rooms)):
         particles = room_to_particle[room_index]
 
+        particles = entities.particles.batch_particles(particles)
+
         for built in particles:
             built.write_into(file)
 
