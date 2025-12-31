@@ -405,6 +405,7 @@ void render_batch_finish(struct render_batch* batch, mat4x4 view_proj_matrix, T3
 
     struct material* current_mat = 0;
 
+    rdpq_sync_pipe();
     rdpq_set_mode_standard();
     rdpq_mode_persp(true);
     rdpq_mode_zbuf(true, true);

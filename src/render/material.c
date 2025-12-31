@@ -188,6 +188,7 @@ void material_load(struct material* into, FILE* material_file) {
     material_load_tex(&into->tex1, material_file);
 
     rspq_block_begin();
+    rdpq_sync_pipe();
 
     rdpq_mode_begin();
 
@@ -389,6 +390,5 @@ void material_release(struct material* material) {
 }
 
 void material_apply(struct material* material) {
-    rdpq_sync_pipe();
     rspq_block_run(material->block);
 }

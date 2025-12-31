@@ -96,6 +96,7 @@ void render_3d() {
 }
 
 void render_menu() {
+    rdpq_sync_pipe();
     rdpq_mode_persp(false);
     rdpq_set_mode_standard();
     menu_render();
@@ -110,6 +111,7 @@ void render(surface_t* zbuffer) {
     } else if (current_game_mode == GAME_MODE_MENU) {
         static surface_t background;
         background = surface_make_linear(zbuffer->buffer, FMT_RGBA16, zbuffer->width, zbuffer->height);
+        rdpq_sync_pipe();
         rdpq_set_mode_standard();
         rdpq_mode_combiner(RDPQ_COMBINER_TEX);
         rdpq_tex_blit(&background, 0, 0, NULL);
@@ -207,6 +209,7 @@ int main(void)
             rdpq_attach(fb, &zbuffer);
 
             render_3d();
+            rdpq_sync_pipe();
 
             // copy the frame buffer into the z buffer
             // to be used as the background while the game
@@ -224,6 +227,7 @@ int main(void)
             rdpq_mode_combiner(RDPQ_COMBINER_TEX);
             rdpq_tex_blit(fb, 0, 0, NULL);
 
+            rdpq_sync_pipe();
             rdpq_set_color_image(fb);
 
             render_menu();

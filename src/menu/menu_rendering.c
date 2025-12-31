@@ -37,6 +37,7 @@ void menu_remove_callback(void* data) {
 }
 
 void menu_render() {
+    rdpq_sync_pipe();
     rdpq_mode_zbuf(false, false);
     rdpq_mode_persp(false);
 

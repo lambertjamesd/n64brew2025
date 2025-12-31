@@ -61,6 +61,7 @@ void repair_scene_render(repair_scene_t* scene, T3DViewport* viewport, struct fr
 
     t3d_viewport_attach(viewport);
     
+    rdpq_sync_pipe();
     rdpq_set_mode_standard();
     rdpq_mode_persp(true);
     rdpq_mode_zbuf(true, true);
@@ -81,6 +82,7 @@ void repair_scene_render(repair_scene_t* scene, T3DViewport* viewport, struct fr
         repair_part_render(part, pool);
     }
     
+    rdpq_sync_pipe();
     rdpq_mode_persp(false);
     rdpq_set_mode_standard();
     repair_scene_render_cursor(scene);

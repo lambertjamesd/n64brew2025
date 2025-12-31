@@ -278,6 +278,7 @@ void overworld_render_lod_0(struct overworld* overworld, struct Camera* camera, 
     int camera_x = -(int)mtx.m[3][0];
     int camera_z = -(int)mtx.m[3][2];
 
+    rdpq_sync_pipe();
     rdpq_mode_zbuf(false, false);
 
     T3DMat4FP* mtx_fp = UncachedAddr(frame_malloc(pool, sizeof(T3DMat4FP)));
@@ -286,6 +287,7 @@ void overworld_render_lod_0(struct overworld* overworld, struct Camera* camera, 
     overworld_render_lod_0_entries(&overworld->lod0, camera_x, camera_z);
     t3d_matrix_pop(1);
 
+    rdpq_sync_pipe();
     rdpq_mode_zbuf(true, true);
 } 
 
