@@ -42,7 +42,7 @@ void load_scene_or_repair(const char* filename) {
 
 void setup() {
     debug_init_isviewer();
-    rdpq_debug_start();
+    // rdpq_debug_start();
     savefile_new();
     init_engine();
     interactable_reset();
