@@ -19,6 +19,18 @@
             "type": "empty"
         },
         {
+            "name": "garage_outside",
+            "description": "",
+            "mesh": "meshes/garage_outside.blend#door",
+            "type": "door"
+        },
+        {
+            "name": "objects_trigger_cube",
+            "description": "",
+            "mesh": "meshes/objects/trigger_cube.blend#Cube",
+            "type": "trigger_cube"
+        },
+        {
             "name": "parts_motor",
             "description": "",
             "mesh": "meshes/parts/motor.blend#hoverbike_motor",
