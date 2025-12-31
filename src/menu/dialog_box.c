@@ -79,7 +79,7 @@ void dialog_box_render(void* data) {
     );
 
     if (dialog_box.paused) {
-        rspq_block_run(menu_icons_material->block);
+        material_apply(menu_icons_material);
         rdpq_texture_rectangle(
             TILE0,
             274, 196,

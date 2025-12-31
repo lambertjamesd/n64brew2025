@@ -40,7 +40,7 @@ void fade_effect_update(void* data) {
 }
 
 void fade_effect_render(void* data) {
-    rspq_block_run(solid_primitive_material->block);
+    material_apply(solid_primitive_material);
 
     color_t color = fade_effect_calculate_color();
 

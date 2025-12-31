@@ -25,7 +25,7 @@ static color_t hover_color = {20, 200, 255, 255};
 
 void repair_scene_render_cursor(repair_scene_t* scene) {
     if (!scene->grabbed_part) {
-        rspq_block_run(scene->assets.cursor_material.block);
+        material_apply(&scene->assets.cursor_material);
     
         int x = (int)scene->screen_cursor.x - CURSOR_SIZE/2;
         int y = (int)scene->screen_cursor.y - CURSOR_SIZE/2;

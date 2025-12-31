@@ -57,7 +57,7 @@ struct overworld_tile* overworld_tile_load(FILE* file) {
         
         tmesh_load(&result->terrain_meshes[i], file);
         rspq_block_begin();
-        rspq_block_run(result->terrain_meshes[i].material->block);
+        material_apply(result->terrain_meshes[i].material);
         rspq_block_run(result->terrain_meshes[i].block);
         
         uint16_t block_detail_count;
@@ -73,7 +73,7 @@ struct overworld_tile* overworld_tile_load(FILE* file) {
             struct tmesh* mesh = result->detail_meshes[detail_type];
 
             if (curr_material != mesh->material) {
-                rspq_block_run(mesh->material->block);
+                material_apply(mesh->material);
                 curr_material = mesh->material;
             }
 

@@ -387,3 +387,8 @@ void material_load_file(struct material* into, const char* filename) {
 void material_release(struct material* material) {
     material_destroy(material);
 }
+
+void material_apply(struct material* material) {
+    rdpq_sync_pipe();
+    rspq_block_run(material->block);
+}

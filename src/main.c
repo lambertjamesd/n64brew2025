@@ -42,6 +42,7 @@ void load_scene_or_repair(const char* filename) {
 
 void setup() {
     debug_init_isviewer();
+    rdpq_debug_start();
     savefile_new();
     init_engine();
     interactable_reset();
@@ -51,9 +52,9 @@ void setup() {
     fade_effect_set((color_t){0, 0, 0, 0}, 3.0f);
 
     // scene_queue_next("rom:/scenes/overworld_accuracy_test.scene");
-    // scene_queue_next("rom:/scenes/overworld.scene");
+    scene_queue_next("rom:/scenes/overworld.scene");
     // scene_queue_next("rom:/repair/motorycle_engine.repair");
-    scene_queue_next("rom:/scenes/garage.scene");
+    // scene_queue_next("rom:/scenes/garage.scene");
 
     load_scene_or_repair(scene_get_next());
 

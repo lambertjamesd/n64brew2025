@@ -146,8 +146,7 @@ void map_get_position(vector3_t* world_pos, vector2_t* map_pos) {
 }
 
 void map_render_minimap(int map_x, int map_y) {
-    rdpq_sync_pipe();
-    rspq_block_run(assets.map_background->block);
+    material_apply(assets.map_background);
 
     rdpq_texture_rectangle(
         TILE0,
@@ -179,8 +178,7 @@ void map_render_minimap(int map_x, int map_y) {
         .tmem_addr = 2048,
     };
 
-    rdpq_sync_pipe();
-    rspq_block_run(assets.material->block);
+    material_apply(assets.material);
 
     for (int y = 0; y < MAP_SIZE; y += MAP_TILE_SIZE) {
         for (int x = 0; x < MAP_SIZE; x += MAP_TILE_SIZE) {
@@ -202,8 +200,7 @@ void map_render_minimap(int map_x, int map_y) {
     }
     
     
-    rdpq_sync_pipe();
-    rspq_block_run(assets.map_view->block);
+    material_apply(assets.map_view);
 
     vector2_t screen_pos;
     map_get_position(player_get_position(&current_scene->player), &screen_pos);
@@ -231,8 +228,7 @@ void map_render_minimap(int map_x, int map_y) {
         (float*)&cursor_points[2]
     );
     
-    rdpq_sync_pipe();
-    rspq_block_run(assets.map_arrow->block);
+    material_apply(assets.map_arrow);
 
     map_get_position(player_get_position(&current_scene->player), &screen_pos);
 
@@ -290,8 +286,7 @@ void map_render_details(struct menu_item* item) {
             break;
         case MENU_ITEM_MAP:
             if (map_menu.details_image) {
-                rdpq_sync_pipe();
-                rspq_block_run(assets.map_icon->block);
+                material_apply(assets.map_icon);
 
                 int x = (MAP_SIZE - map_menu.details_image->width) >> 1;
                 int y = (MAP_SIZE - map_menu.details_image->height) >> 1;
@@ -320,13 +315,11 @@ void map_render_items(float lerp_amount) {
         }
 
         if (item->inventory_item == map_menu.selected_item) {
-            rdpq_sync_pipe();
-            rspq_block_run(assets.selection_cursor->block);
+            material_apply(assets.selection_cursor);
             rdpq_texture_rectangle(TILE0, x + MENU_X, y + MAP_Y, x + MENU_X + ICON_SIZE, y + MAP_Y + ICON_SIZE, 0, 0);
         }
 
-        rdpq_sync_pipe();
-        rspq_block_run(assets.map_icon->block);
+        material_apply(assets.map_icon);
 
         if (!map_menu.has_prev[i]) {
             color_t prim_color;

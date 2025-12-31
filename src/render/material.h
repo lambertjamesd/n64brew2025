@@ -54,4 +54,6 @@ void material_load(struct material* into, FILE* material_file);
 void material_load_file(struct material* into, const char* filename);
 void material_release(struct material* material);
 
+void material_apply(struct material* material);
+
 #endif

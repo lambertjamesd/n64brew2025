@@ -154,6 +154,8 @@ void tmesh_load(struct tmesh* tmesh, FILE* file) {
     T3DMat4FP* armature = t3d_segment_placeholder(T3D_SEGMENT_SKELETON);
 
     rspq_block_begin();
+    bool should_sync = true;
+    rdpq_sync_pipe();
 
     for (uint16_t i = 0; i < command_count; i += 1) {
         uint8_t command;
@@ -190,7 +192,7 @@ void tmesh_load(struct tmesh* tmesh, FILE* file) {
                 uint16_t material_index;
                 fread(&material_index, sizeof(uint16_t), 1, file);
                 assert(material_index < tmesh->material_transition_count);
-                rspq_block_run(tmesh->transition_materials[material_index].block);
+                material_apply(&tmesh->transition_materials[material_index]);
                 break;
             }
             case TMESH_COMMAND_BONE:

@@ -29,8 +29,7 @@ void menu_common_init() {
 #define INSET_SIZE          (CORNER_SIZE - BORDER_MARGIN)
 
 void menu_common_render_background(int x, int y, int w, int h) {
-    rdpq_sync_pipe();
-    rspq_block_run(menu_border_material->block);
+    material_apply(menu_border_material);
 
     rdpq_texture_rectangle(
         TILE0,

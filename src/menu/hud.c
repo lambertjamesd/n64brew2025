@@ -77,7 +77,7 @@ void hud_render_interaction_preview(struct hud* hud) {
     int box_width = measure_text(FONT_DIALOG, interaction_name);
 
     rdpq_sync_pipe();
-    rspq_block_run(hud->assets.overlay_material->block);
+    material_apply(hud->assets.overlay_material);
     rdpq_set_prim_color((color_t){0, 0, 0, 128});
     rdpq_texture_rectangle(
         TILE0, 

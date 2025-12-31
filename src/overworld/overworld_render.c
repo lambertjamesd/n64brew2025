@@ -225,7 +225,7 @@ void overworld_render_lod_0_entries(struct overworld_lod0* lod0, int camera_x, i
         struct tmesh* mesh = order[i].mesh;
 
         if (mat != mesh->material) {
-            rspq_block_run(mesh->material->block);
+            material_apply(mesh->material);
             mat = mesh->material;
         }
         rspq_block_run(mesh->block);
@@ -374,7 +374,7 @@ void overworld_render_tile(struct overworld* overworld, struct Camera* camera, s
             }
     
             if (curr_material != particles->material) {
-                rspq_block_run(particles->material->block);
+                material_apply(particles->material);
                 curr_material = particles->material;
             }
     

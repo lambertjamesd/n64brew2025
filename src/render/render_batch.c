@@ -371,6 +371,7 @@ void render_batch_setup_light(struct render_batch* batch, enum light_source ligh
                 .y = -batch->camera_matrix[2][1],
                 .z = -batch->camera_matrix[2][2],
             }};
+            dir.y += 1.5f;
             t3d_light_set_ambient(black_color);
             t3d_light_set_directional(0, white_color, &dir);
             t3d_light_set_count(1);
@@ -440,9 +441,10 @@ void render_batch_finish(struct render_batch* batch, mat4x4 view_proj_matrix, T3
         struct render_batch_element* element = &batch->elements[index];
 
         if (current_mat != element->material) {
-            rdpq_sync_pipe();
             if (element->material->block) {
-                rspq_block_run(element->material->block);
+                material_apply(element->material);
+            } else {
+                rdpq_sync_pipe();
             }
 
             render_batch_check_texture_scroll(TILE0, &element->material->tex0);
