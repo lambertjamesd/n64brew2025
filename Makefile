@@ -30,7 +30,7 @@ filesystem/%.font64: assets/%.ttf
 	@echo "    [FONT] $@"
 	@$(N64_MKFONT) $(MKFONT_FLAGS) -o $(dir $@) "$<"
 
-filesystem/fonts/DeltaBlock.font64: MKFONT_FLAGS=--monochrome -s 10
+filesystem/fonts/DeltaBlock.font64: MKFONT_FLAGS=--monochrome -s 12
 
 ###
 # images
@@ -190,7 +190,7 @@ build/blender_results.txt: $(EXPORT_SOURCE)
 # source code
 ###
 
-SOURCES := $(shell find src/ ! -name '*_test.c' ! -name 'main.c' ! -name 'inventory_mapping.c' -type f -name '*.c' | sort)
+SOURCES := $(shell find src/ ! -name '*_test.c' ! -name 'main.c' ! -name 'inventory_mapping.c' -type f -name '*.c' | sort) src/player/inventory_mapping.c
 SOURCE_OBJS := $(SOURCES:src/%.c=$(BUILD_DIR)/%.o)
 OBJS := $(BUILD_DIR)/main.o $(SOURCE_OBJS)
 

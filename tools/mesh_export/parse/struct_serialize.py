@@ -11,10 +11,14 @@ class SerializeContext():
         self._strings: dict[str, int] = {}
         self._string_data: list[bytes] = []
         self._current_offset = 0
+        self._did_write = False
 
     def get_string_offset(self, value: str):
         if value in self._strings:
             return self._strings[value]
+        
+        if self._did_write:
+            raise Exception(f'tried to layout string {value} after bytes were written')
         
         result = self._current_offset
 
@@ -33,6 +37,8 @@ class SerializeContext():
         raise Exception(f'{value} is not found in any enum value')
 
     def get_bytes(self) -> bytes:
+        self._did_write = True
+
         return b''.join(self._string_data)
     
     def write_strings(self, file):

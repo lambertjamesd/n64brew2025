@@ -529,6 +529,8 @@ bool camera_is_animating(struct camera_controller* controller) {
                 controller->state_data.animate.current_frame < controller->state_data.animate.animation->frame_count;
         case CAMERA_STATE_MOVE_TO:
             return controller->state_data.move_to.moving_look_at || controller->state_data.move_to.moving_position;
+        case CAMERA_STATE_RETURN_TO_PLAYER:
+            return true;
         default:
             return false;
     }

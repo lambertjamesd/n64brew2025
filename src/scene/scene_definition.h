@@ -16,6 +16,7 @@ enum entity_type_id {
     ENTITY_TYPE_repair_part_pickup,
     ENTITY_TYPE_door,
     ENTITY_TYPE_npc,
+    ENTITY_TYPE_script_runner,
     
     ENTITY_TYPE_count,
 };
@@ -45,6 +46,13 @@ struct motorcycle_spawn_point_definition {
 
 enum inventory_item_type {
     ITEM_TYPE_NONE,
+
+    ITEM_WELL_HAS_MOTOR,
+    ITEM_WELL_HAS_FIXED_MOTOR,
+
+    ITEM_WELL_PUMP_PART_MAP,
+    ITEM_WELL_HAS_PUMP_GEAR,
+    ITEM_WELL_HAS_FIXED_PUMP,
 
     ITEM_TYPE_COUNT,
 };
@@ -152,6 +160,12 @@ struct npc_definition {
     struct Vector2 rotation;
     enum npc_type npc_type;
     script_location dialog;
+};
+
+struct script_runner_definition {
+    struct Vector3 position;
+    script_location target;
+    bool loop;
 };
 
 #endif

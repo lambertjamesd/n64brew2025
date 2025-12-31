@@ -16,10 +16,27 @@
 #define SCREEN_EDGE_MARGIN      20.0f
 #define TEXT_PADDING            2
 #define BOX_HEIGHT              10
-#define BOX_WIDTH               30
 
 static sprite_t* map_test;
 static material_t* map_render;
+
+int measure_text(enum font_type font, const char* message) {
+    const char* curr = message;
+
+    int result = 0;
+
+    while (*curr) {
+        rdpq_font_gmetrics_t metrics;
+        bool was_found = rdpq_font_get_glyph_metrics(font_get(font), *curr, &metrics);
+        ++curr;
+
+        if (was_found) {
+            result += metrics.xadvance;
+        }
+    }
+    
+    return result;
+}
 
 void hud_render_interaction_preview(struct hud* hud) {
     if (!hud->player->hover_interaction || !update_has_layer(UPDATE_LAYER_WORLD)) {
@@ -57,13 +74,15 @@ void hud_render_interaction_preview(struct hud* hud) {
     screen_pos.x = floorf(screen_pos.x);
     screen_pos.y = floorf(screen_pos.y);
 
+    int box_width = measure_text(FONT_DIALOG, interaction_name);
+
     rdpq_sync_pipe();
     rspq_block_run(hud->assets.overlay_material->block);
     rdpq_set_prim_color((color_t){0, 0, 0, 128});
     rdpq_texture_rectangle(
         TILE0, 
         screen_pos.x - TEXT_PADDING, screen_pos.y - BOX_HEIGHT - TEXT_PADDING, 
-        screen_pos.x + BOX_WIDTH + TEXT_PADDING, screen_pos.y + TEXT_PADDING,
+        screen_pos.x + box_width + TEXT_PADDING, screen_pos.y + TEXT_PADDING,
         0, 0
     );
     rdpq_sync_pipe();

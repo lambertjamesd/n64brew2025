@@ -5,13 +5,11 @@ import cutscene.parser
 import cutscene.variable_layout
 
 mapping = {
-    "fire_rune_level": 'SPELL_SYMBOL_FIRE',
-    "ice_rune_level": 'SPELL_SYMBOL_ICE',
-    "earth_rune_level": 'SPELL_SYMBOL_EARTH',
-    "air_rune_level": 'SPELL_SYMBOL_AIR',
-    "life_rune_level": 'SPELL_SYMBOL_LIFE',
-    "recast_rune_level": 'SPELL_SYMBOL_RECAST',
-    "has_staff_default": 'ITEM_TYPE_STAFF_DEFAULT',
+    "has_motor": 'ITEM_WELL_HAS_MOTOR',
+    "has_repaired_motor": 'ITEM_WELL_HAS_FIXED_MOTOR',
+    "has_well_part_map": 'ITEM_WELL_PUMP_PART_MAP',
+    "has_pump_gear": 'ITEM_WELL_HAS_PUMP_GEAR',
+    "has_repaired_pump": 'ITEM_WELL_HAS_FIXED_PUMP',
 }
 
 data_type_mapping = {

@@ -91,6 +91,9 @@ struct cutscene* cutscene_load(const char* filename) {
             case CUTSCENE_STEP_DIALOG:
                 cutscene_load_template_string(&step->data.dialog.message, file);
                 break;
+            case CUTSCENE_STEP_SHOW_ITEM:
+                fread(&step->data.show_item.item, 4, 1, file);
+                break;
             case CUTSCENE_STEP_PAUSE:
                 fread(&step->data.pause, 1, 2, file);
                 step->data.pause.layers = UPDATE_LAYER_WORLD;
@@ -293,7 +296,7 @@ void cutscene_builder_dialog(struct cutscene_builder* builder, const char* messa
     };
 }
 
-void cutscene_builder_show_item(struct cutscene_builder* builder, enum inventory_item_type item, bool should_show) {
+void cutscene_builder_show_item(struct cutscene_builder* builder, enum inventory_item_type item) {
     struct cutscene_step* step = cutscene_builder_next_step(builder);
     
     *step = (struct cutscene_step){
@@ -301,7 +304,6 @@ void cutscene_builder_show_item(struct cutscene_builder* builder, enum inventory
         .data = {
             .show_item = {
                 .item = item,
-                .should_show = should_show,
             },
         },
     };

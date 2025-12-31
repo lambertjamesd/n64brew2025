@@ -244,7 +244,9 @@ struct overworld* overworld_load(const char* filename) {
         fread(&result->lod0.entries[i].x, sizeof(uint16_t), 1, result->file);
         fread(&result->lod0.entries[i].z, sizeof(uint16_t), 1, result->file);
         fread(&result->lod0.entries[i].priority, sizeof(uint16_t), 1, result->file);
-        tmesh_load(&result->lod0.entries[i].mesh, result->file);
+        for (int direction_index = 0; direction_index < LOD0_SORT_DIRECTION_COUNT; direction_index += 1) {
+            tmesh_load(&result->lod0.entries[i].meshes[direction_index], result->file);
+        }
     }
 
     result->inv_tile_size = 1.0f / result->tile_size;
@@ -291,7 +293,9 @@ void overworld_free(struct overworld* overworld) {
     hash_map_destroy(&overworld->loaded_actors);
 
     for (int i = 0; i < overworld->lod0.entry_count; i += 1) {
-        tmesh_release(&overworld->lod0.entries[i].mesh);
+        for (int direction_index = 0; direction_index < LOD0_SORT_DIRECTION_COUNT; direction_index += 1) {
+            tmesh_release(&overworld->lod0.entries[i].meshes[direction_index]);
+        }
     }
     free(overworld->lod0.entries);
 
@@ -457,9 +461,11 @@ void overworld_check_actor_despawn(struct overworld* overworld, struct Vector3* 
         void* entity = entity_get(current->entity_id);
 
         bool should_remove;
+        bool should_reset;
 
         if (!entity) {
             should_remove = true;
+            should_reset = false;
         } else {
             // this is a bit hacky, right now all
             // entities need to put their position
@@ -470,6 +476,7 @@ void overworld_check_actor_despawn(struct overworld* overworld, struct Vector3* 
             float dz = entity_pos->z - player_pos->z;
 
             should_remove = dx * dx + dz * dz > DESPAWN_RADIUS * DESPAWN_RADIUS;
+            should_reset = true;
         }
 
         struct overworld_actor* next = current->next;
@@ -477,7 +484,9 @@ void overworld_check_actor_despawn(struct overworld* overworld, struct Vector3* 
         if (should_remove) {
             entity_despawn(current->entity_id);
             hash_map_delete(&overworld->loaded_actors, current->spawn_id);
-            overworld_reset_spawn_location(overworld, current);
+            if (should_reset) {
+                overworld_reset_spawn_location(overworld, current);
+            }
             expression_set_integer(current->scene_variable, 0);
             if (prev) {
                 prev->next = next;

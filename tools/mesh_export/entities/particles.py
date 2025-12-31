@@ -124,6 +124,18 @@ def pack_color(col):
         convert_channel(col[3])
     )
 
+def clamp(value, min_clamp, max_clamp):
+    return max(min_clamp, min(value, max_clamp))
+
+def pack_pos(pos, size):
+    return struct.pack(
+        '>bbbb', 
+        clamp(int(pos.x), -128, 127), 
+        clamp(int(pos.y), -128, 127), 
+        clamp(int(pos.z), -128, 127), 
+        clamp(math.floor(127 * size + 0.5), -128, 127)
+    )
+
 def extract_color(index, color, alpha, has_texture):
     result = list(color.data[index].color)
 
@@ -231,17 +243,11 @@ def build_particles(obj: bpy.types.Object, base_transform: mathutils.Matrix) -> 
 
         size_a = vertex.groups[size.index].weight if size else 1
 
-        particle_data.write(struct.pack(
-            '>bbbb', 
-            int(posA.x), int(posA.y), int(posA.z), math.floor(127 * size_a + 0.5)
-        ))
+        particle_data.write(pack_pos(posA, size_a))
 
         size_b = next_vertex.groups[size.index].weight if next_vertex and size else 1
 
-        particle_data.write(struct.pack(
-            '>bbbb', 
-            int(posB.x), int(posB.y), int(posB.z), math.floor(127 * size_b + 0.5)
-        ))
+        particle_data.write(pack_pos(posB, size_b))
 
         if color and color.domain == 'POINT':
             particle_data.write(extract_color(index, color, alpha, has_texture))

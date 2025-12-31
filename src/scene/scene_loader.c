@@ -11,6 +11,7 @@
 #include "../cutscene/cutscene_runner.h"
 #include "../cutscene/evaluation_context.h"
 #include "../cutscene/expression_evaluate.h"
+#include "../cutscene/cutscene_reference.h"
 #include "../overworld/overworld_load.h"
 #include "../util/memory_stream.h"
 #include "../effects/area_title.h"
@@ -192,6 +193,7 @@ struct scene* scene_load(const char* filename) {
     assert(header == EXPECTED_HEADER);
 
     struct scene* scene = malloc(sizeof(struct scene));
+    current_scene = scene;
 
     for (int i = 0; i < MAX_LOADED_ROOM; i += 1) {
         scene->loaded_rooms[i].room_index = ROOM_INDEX_NONE;
@@ -209,7 +211,8 @@ struct scene* scene_load(const char* filename) {
 
     bool found_entry = false;
 
-    struct cutscene* starting_cutscene = NULL;
+    cutscene_ref_t starting_cutscene;
+    cutscene_ref_init_null(&starting_cutscene);
 
     struct named_location* named_locations = malloc(sizeof(struct named_location) * location_count);
     struct named_location* end = named_locations + location_count;
@@ -250,7 +253,7 @@ struct scene* scene_load(const char* filename) {
             found_entry = true;
 
             if (on_enter_length) {
-                starting_cutscene = cutscene_load(on_enter);
+                cutscene_ref_init(&starting_cutscene, on_enter);
             }
         }
     }
@@ -325,9 +328,7 @@ struct scene* scene_load(const char* filename) {
 
     scene_show_room(scene, current_room);
 
-    if (starting_cutscene) {
-        cutscene_runner_run(starting_cutscene, 0, cutscene_runner_free_on_finish(), NULL, 0);
-    }
+    cutscene_ref_run_then_destroy(&starting_cutscene, 0);
 
     return scene;
 }

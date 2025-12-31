@@ -83,8 +83,7 @@ union cutscene_step_data {
         struct templated_string message;
     } dialog;
     struct {
-        uint16_t item;
-        uint16_t should_show;
+        enum inventory_item_type item;
     } show_item;
     struct {
         uint8_t should_pause;
@@ -176,7 +175,7 @@ void cutscene_builder_init(struct cutscene_builder* builder);
 
 void cutscene_builder_pause(struct cutscene_builder* builder, bool should_pause, bool should_change_game_mode, int layers);
 void cutscene_builder_dialog(struct cutscene_builder* builder, const char* message);
-void cutscene_builder_show_item(struct cutscene_builder* builder, enum inventory_item_type item, bool should_show);
+void cutscene_builder_show_item(struct cutscene_builder* builder, enum inventory_item_type item);
 void cutscene_builder_delay(struct cutscene_builder* builder, float delay);
 void cutscene_builder_interact_npc(
     struct cutscene_builder* builder,

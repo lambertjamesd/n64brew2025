@@ -22,78 +22,81 @@ void menu_common_init() {
     sprite_blit = material_cache_load("rom:/materials/menu/sprite_blit.mat");
 }
 
+#define BORDER_MARGIN       5
+#define CORNER_SIZE         13
+#define BORDER_IMAGE_SIZE   32
+
+#define INSET_SIZE          (CORNER_SIZE - BORDER_MARGIN)
+
 void menu_common_render_background(int x, int y, int w, int h) {
     rdpq_sync_pipe();
     rspq_block_run(menu_border_material->block);
 
     rdpq_texture_rectangle(
         TILE0,
-        x - 3, y - 3,
-        x, y, 
+        x - BORDER_MARGIN, y - BORDER_MARGIN,
+        x + INSET_SIZE, y + INSET_SIZE, 
         0, 0
     );
 
     rdpq_texture_rectangle_scaled(
         TILE0,
-        x, y - 3,
-        x + w, y, 
-        3, 0,
-        6, 3
+        x + INSET_SIZE, y - BORDER_MARGIN,
+        x + w - INSET_SIZE, y + INSET_SIZE, 
+        CORNER_SIZE, 0,
+        BORDER_IMAGE_SIZE - CORNER_SIZE, CORNER_SIZE
     );
 
     rdpq_texture_rectangle(
         TILE0,
-        x + w, y - 3,
-        x + w + 3, y, 
-        6, 0
+        x + w - INSET_SIZE, y - BORDER_MARGIN,
+        x + w + BORDER_MARGIN, y + INSET_SIZE, 
+        BORDER_IMAGE_SIZE - CORNER_SIZE, 0
     );
 
     rdpq_texture_rectangle_scaled(
         TILE0,
-        x - 3, y,
-        x, y + h, 
-        0, 3,
-        3, 6
+        x - BORDER_MARGIN, y + INSET_SIZE,
+        x + INSET_SIZE, y + h - INSET_SIZE, 
+        0, CORNER_SIZE,
+        CORNER_SIZE, BORDER_IMAGE_SIZE - CORNER_SIZE
     );
 
     rdpq_texture_rectangle(
         TILE0,
-        x - 3, y + h,
-        x, y + h + 3, 
-        0, 6
+        x - BORDER_MARGIN, y + h - INSET_SIZE,
+        x + INSET_SIZE, y + h + BORDER_MARGIN, 
+        0, BORDER_IMAGE_SIZE - CORNER_SIZE
     );
 
     rdpq_texture_rectangle_scaled(
         TILE0,
-        x, y + h,
-        x + w, y + h + 3, 
-        3, 6,
-        6, 9
+        x + INSET_SIZE, y + h - INSET_SIZE,
+        x + w - INSET_SIZE, y + h + BORDER_MARGIN, 
+        CORNER_SIZE, BORDER_IMAGE_SIZE - CORNER_SIZE,
+        BORDER_IMAGE_SIZE - CORNER_SIZE, BORDER_IMAGE_SIZE
     );
 
     rdpq_texture_rectangle(
         TILE0,
-        x + w, y + h,
-        x + w + 3, y + h + 3, 
-        6, 6
+        x + w - INSET_SIZE, y + h - INSET_SIZE,
+        x + w + BORDER_MARGIN, y + h + BORDER_MARGIN, 
+        BORDER_IMAGE_SIZE - CORNER_SIZE, BORDER_IMAGE_SIZE - CORNER_SIZE
     );
 
     rdpq_texture_rectangle_scaled(
         TILE0,
-        x + w, y,
-        x + w + 3, y + h, 
-        6, 3,
-        9, 6
+        x + w - INSET_SIZE, y + INSET_SIZE,
+        x + w + BORDER_MARGIN, y + h - INSET_SIZE, 
+        BORDER_IMAGE_SIZE - CORNER_SIZE, CORNER_SIZE,
+        BORDER_IMAGE_SIZE, BORDER_IMAGE_SIZE - CORNER_SIZE
     );
-
-    rdpq_sync_pipe();
-    rspq_block_run(menu_background_material->block);
 
     rdpq_texture_rectangle_scaled(
         TILE0,
-        x, y,
-        x + w, y + h,
-        0, 0,
-        64, 64
+        x + INSET_SIZE, y + INSET_SIZE,
+        x + w - INSET_SIZE, y + h - INSET_SIZE,
+        CORNER_SIZE, CORNER_SIZE,
+        BORDER_IMAGE_SIZE - CORNER_SIZE, BORDER_IMAGE_SIZE - CORNER_SIZE
     );
 }
