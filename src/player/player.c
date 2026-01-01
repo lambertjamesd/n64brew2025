@@ -383,6 +383,18 @@ void player_update_grounded(struct player* player, struct contact* ground_contac
     if (!player_handle_ground_movement(player, ground_contact, &target_direction, &speed)) {
         return;
     }
+
+    if (speed < 0.2f) {
+        player_loop_animation(player, PLAYER_ANIMATION_IDLE, 1.0f);
+        return;
+    }
+
+    if (speed < PLAYER_RUN_THRESHOLD) {
+        player_loop_animation(player, PLAYER_ANIMATION_WALK, speed * (1.0f / PLAYER_WALK_ANIM_SPEED));
+        return;
+    }
+    
+    player_loop_animation(player, PLAYER_ANIMATION_RUN, speed * (1.0f / PLAYER_MAX_SPEED));
 }
 
 void player_update_in_vehicle(struct player* player, struct contact* ground_contact) {
@@ -398,6 +410,7 @@ void player_update_in_vehicle(struct player* player, struct contact* ground_cont
     vehicle_steer(vehicle, &target_direction);
     vehicle_apply_driver_transform(vehicle, &player->cutscene_actor.transform);
     player->cutscene_actor.collider.velocity = gZeroVec;
+    player_loop_animation(player, PLAYER_ANIMATION_RIDE_BIKE, 1.0f);
 
     joypad_buttons_t pressed = joypad_get_buttons_pressed(0);
 
@@ -443,6 +456,8 @@ float player_on_damage(void* data, struct damage_info* damage) {
 
 static const char* animation_clip_names[PLAYER_ANIMATION_COUNT] = {
     [PLAYER_ANIMATION_IDLE] = "idle",
+    [PLAYER_ANIMATION_WALK] = "walk",
+    [PLAYER_ANIMATION_RUN] = "run",
     [PLAYER_ANIMATION_RIDE_BIKE] = "ride_bike",
 };
 
