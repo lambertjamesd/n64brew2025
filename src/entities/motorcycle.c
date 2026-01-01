@@ -15,13 +15,18 @@
 #define BACKUP_SPEED            -5.0f
 #define DRIVE_SPEED               50.0f
 #define BOOST_SPEED             80.0f
-#define MAX_TURN_RATE           1.0f
+#define MAX_TURN_RATE           2.0f
+
+#define MAX_TURN_ACCEL          50.0f
+#define DRIFT_ACCEL             20.0f
+
+#define TURN_SLOW_THRESHOLD     (MAX_TURN_ACCEL / MAX_TURN_RATE)
 
 #define STILL_HOVER_HEIGHT      0.25f
 #define RIDE_HOVER_HEIGHT       0.5f
 #define FAST_HOVER_HEIGHT       1.0f
 #define BOB_HEIGHT              0.1f
-#define BOB_TIME                3.0f
+#define BOB_TIME                2.0f
 
 struct motorcyle_assets {
     tmesh_t* mesh;
@@ -33,7 +38,7 @@ static motorcyle_assets_t assets;
 
 static dynamic_object_type_t collider_type = {
     BOX_COLLIDER(0.3f, 0.4f, 0.8f),
-    .max_stable_slope = 0.5f,
+    .max_stable_slope = 0.0f,
     .surface_type = SURFACE_TYPE_DEFAULT,
     .friction = 0.0f,
     .bounce = 0.1f,
@@ -163,51 +168,19 @@ float motorcycle_hover_height(motorcycle_t* motorcycle, float speed) {
     return mathfLerp(RIDE_HOVER_HEIGHT + bob_height, FAST_HOVER_HEIGHT, lerp);
 }
 
-void motorcycle_update(void* data) {
-    motorcycle_t* motorcycle = (motorcycle_t*)data;
-
-    float current_speed = sqrtf(vector3MagSqrd(&motorcycle->collider.velocity));
-
-    float target_height = motorcycle_hover_height(motorcycle, current_speed) + HOVER_SAG_AMOUNT;
-
-    vector3_t forward;
-
-    vector2ToLookDir(&motorcycle->transform.rotation, &forward);
-
-    float target_speed = 0.0f;
-    joypad_inputs_t input = joypad_get_inputs(0);
-    motorcycle->vehicle.is_boosting = input.btn.z && input.btn.a;
-
-    if (motorcycle->vehicle.driver) {
-        if (motorcycle->vehicle.is_boosting) {
-            target_speed = BOOST_SPEED;
-        } else if (input.btn.a) {
-            target_speed = DRIVE_SPEED;
-        } else if (input.btn.b) {
-            target_speed = input.stick_y > -20 ? 0.0f : BACKUP_SPEED;
-        } else {
-            target_speed = 0.99f * sqrtf(vector3MagSqrd2D(&motorcycle->collider.velocity));
-        }
-
-        vector2_t new_rot;
-        vector2_t rotation_amount;
-        vector2ComplexFromAngle(fixed_time_step * MAX_TURN_RATE * input.stick_x * (1.0f / 80.0f), &rotation_amount);
-        vector2ComplexMul(&motorcycle->transform.rotation, &rotation_amount, &new_rot);
-        
-        vector2ToLookDir(&new_rot, &forward);
-        motorcycle->transform.rotation = new_rot;
+float motorcycle_target_speed(motorcycle_t* motorcycle, joypad_inputs_t input) {
+    if (motorcycle->vehicle.is_boosting) {
+        return BOOST_SPEED;
+    } else if (input.btn.a) {
+        return DRIVE_SPEED;
+    } else if (input.btn.b) {
+        return input.stick_y > -20 ? 0.0f : BACKUP_SPEED;
     } else {
-        target_speed = 0.0f;
+        return 0.99f * sqrtf(vector3MagSqrd2D(&motorcycle->collider.velocity));
     }
+}
 
-    current_speed = mathfMoveTowards(current_speed, target_speed, fixed_time_step * ACCEL_RATE);
-
-    vector3_t target_vel;
-    vector3Scale(&forward, &target_vel, target_speed);
-
-    motorcycle->vehicle.is_stopped = vector3MagSqrd2D(&motorcycle->collider.velocity) < 0.01f && input.stick_y > -20;
-
-    vector3_t ground_normal = (vector3_t){};
+float motorycle_get_ground_height(motorcycle_t* motorcycle, float target_height, vector3_t* ground_normal) {
     float min_height_offset = target_height;
 
     for (int i = 0; i < CAST_POINT_COUNT; i += 1) {
@@ -221,7 +194,7 @@ void motorcycle_update(void* data) {
             }
 
             if (actual_height < target_height) {
-                vector3Add(&ground_normal, &cast_point->normal, &ground_normal);
+                vector3Add(ground_normal, &cast_point->normal, ground_normal);
             }
         }
 
@@ -230,13 +203,67 @@ void motorcycle_update(void* data) {
         cast_point_set_pos(cast_point, &pos);
     }
 
+    return min_height_offset;
+}
+
+void motorcycle_update(void* data) {
+    motorcycle_t* motorcycle = (motorcycle_t*)data;
+
+    float current_speed = sqrtf(vector3MagSqrd(&motorcycle->collider.velocity));
+
+    float target_height = motorcycle_hover_height(motorcycle, current_speed) + HOVER_SAG_AMOUNT;
+
+    vector3_t forward;
+
+    vector2ToLookDir(&motorcycle->transform.rotation, &forward);
+
+    joypad_inputs_t input = joypad_get_inputs(0);
+    motorcycle->vehicle.is_boosting = input.btn.z && input.btn.a;
+
+    if (motorcycle->vehicle.driver) {
+        float target_speed = motorcycle_target_speed(motorcycle, input);
+        current_speed = mathfMoveTowards(current_speed, target_speed, fixed_time_step * ACCEL_RATE);
+
+        float turn_rate = MAX_TURN_RATE;
+
+        if (current_speed > TURN_SLOW_THRESHOLD) {
+            turn_rate = MAX_TURN_ACCEL / current_speed;
+        }
+
+        vector2_t new_rot;
+        vector2_t rotation_amount;
+
+        vector2ComplexFromAngle(fixed_time_step * turn_rate * input.stick_x * (1.0f / 80.0f), &rotation_amount);
+        vector2ComplexMul(&motorcycle->transform.rotation, &rotation_amount, &new_rot);
+        
+        vector2ToLookDir(&new_rot, &forward);
+        motorcycle->transform.rotation = new_rot;
+    } else {
+        current_speed = mathfMoveTowards(current_speed, 0.0f, fixed_time_step * ACCEL_RATE);
+    }
+
+
+    motorcycle->vehicle.is_stopped = vector3MagSqrd2D(&motorcycle->collider.velocity) < 0.01f && input.stick_y > -20;
+
+    vector3_t ground_normal = (vector3_t){};
+    float min_height_offset = motorycle_get_ground_height(motorcycle, target_height, &ground_normal);
+
     if (min_height_offset < target_height) {
         vector3_t* vel = &motorcycle->collider.velocity;
-        vector2ToLookDir(&motorcycle->transform.rotation, vel);
-        vector3Scale(vel, vel, current_speed);
-        vector3Normalize(&ground_normal, &ground_normal);
-        vector3ProjectPlane(vel, &ground_normal, vel);
 
+        vector3_t target_vel;
+        vector2ToLookDir(&motorcycle->transform.rotation, &target_vel);
+        vector3Normalize(&ground_normal, &ground_normal);
+        vector3ProjectPlane(&target_vel, &ground_normal, &target_vel);
+        vector3Normalize(&target_vel, &target_vel);
+        vector3Scale(&target_vel, &target_vel, current_speed);
+
+        float max_accel = motorcycle->has_traction ? MAX_TURN_ACCEL : DRIFT_ACCEL;
+
+        vector3_t accel;
+        vector3Sub(&target_vel, vel, &accel);
+
+        motorcycle->has_traction = vector3MoveTowards(vel, &target_vel, max_accel * scaled_time_step_inv, vel);
         vel->y = vel->y * 0.8 + (target_height - min_height_offset) * fixed_time_step * HOVER_SPRING_STRENGTH;
     }
 }
@@ -250,6 +277,8 @@ void motorcycle_init(motorcycle_t* motorcycle, struct motorcycle_definition* def
     update_add(motorcycle, motorcycle_update, UPDATE_PRIORITY_PHYICS, UPDATE_LAYER_WORLD);
 
     interactable_init(&motorcycle->interactable, entity_id, INTERACT_TYPE_RIDE, motorcycle_ride, motorcycle);
+
+    motorcycle->has_traction = true;
 
     for (int i = 0; i < CAST_POINT_COUNT; i += 1) {
         vector3_t cast_point;

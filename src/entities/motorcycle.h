@@ -18,6 +18,7 @@ struct motorcycle {
     dynamic_object_t collider;
     interactable_t interactable; 
     vehicle_t vehicle;
+    bool has_traction;
 
     cast_point_t cast_points[CAST_POINT_COUNT];
 };
