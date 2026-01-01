@@ -77,21 +77,25 @@ union camera_controller_state_data {
  * towards target and rotate the camera to look directly at looking_at
  */
 struct camera_controller {
+    // current camera state
+    enum camera_controller_state state;
+    union camera_controller_state_data state_data;
+    // external references
     struct Camera* camera;
-    struct Vector3 stable_position;
     struct player* player;
-    float follow_distace;
+    // where the camera is
+    struct Vector3 stable_position;
     struct Vector3 target;
     float speed;
+    // what the camera is looking at
     struct Vector3 looking_at;
-    float looking_at_speed;
     struct Vector3 look_target;
+    float looking_at_speed;
+    // camera shake
     struct Vector3 shake_offset;
     struct Vector3 shake_velocity;
     // checks if something is between the player and the camera
     camera_wall_checker_t wall_checker;
-    enum camera_controller_state state;
-    union camera_controller_state_data state_data;
 };
 
 void camera_controller_init(struct camera_controller* controller, struct Camera* camera, struct player* player);

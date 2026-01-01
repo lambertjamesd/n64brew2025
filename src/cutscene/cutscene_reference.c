@@ -83,4 +83,5 @@ void cutscene_ref_run_then_destroy(cutscene_ref_t* ref, entity_id subject) {
         default:
             break;
     }
+    ref->type = CUTSCENE_REF_NONE;
 }
