@@ -33,7 +33,7 @@ void camera_wall_checker_init(camera_wall_checker_t* checker) {
     collision_scene_add(&checker->collider);
 }
 
-void camera_wall_checker_update(camera_wall_checker_t* checker, vector3_t* look_target, vector3_t* position) {
+void camera_wall_checker_update(camera_wall_checker_t* checker, vector3_t* look_target, vector3_t* position, float follow_distance) {
     checker->actual_distance = sqrtf(vector3DistSqrd(&checker->position, &checker->cast_from));
 
     checker->position = *look_target;
@@ -45,7 +45,7 @@ void camera_wall_checker_update(camera_wall_checker_t* checker, vector3_t* look_
     vector3AddScaled(look_target, &direction, MIN_CAST_DISTANCE, &checker->position);
     checker->cast_from = checker->position;
     
-    vector3Scale(&direction, &checker->collider.velocity, CAMERA_FOLLOW_DISTANCE / fixed_time_step);
+    vector3Scale(&direction, &checker->collider.velocity, follow_distance / fixed_time_step);
 }
 
 void camera_wall_checker_destroy(camera_wall_checker_t* checker) {

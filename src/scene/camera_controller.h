@@ -6,9 +6,6 @@
 #include "camera_animation.h"
 #include "camera_wall_checker.h"
 
-#define CAMERA_FOLLOW_DISTANCE  3.4f
-#define CAMERA_FOLLOW_HEIGHT    1.6f
-
 enum camera_controller_state {
     CAMERA_STATE_FOLLOW,
     CAMERA_STATE_LOOK_AT_WITH_PLAYER,

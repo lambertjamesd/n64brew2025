@@ -14,7 +14,7 @@ struct camera_wall_checker {
 typedef struct camera_wall_checker camera_wall_checker_t;
 
 void camera_wall_checker_init(camera_wall_checker_t* checker);
-void camera_wall_checker_update(camera_wall_checker_t* checker, vector3_t* look_target, vector3_t* position);
+void camera_wall_checker_update(camera_wall_checker_t* checker, vector3_t* look_target, vector3_t* position, float follow_distance);
 void camera_wall_checker_destroy(camera_wall_checker_t* checker);
 
 #endif

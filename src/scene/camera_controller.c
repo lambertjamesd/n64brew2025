@@ -16,6 +16,15 @@ static struct move_towards_parameters camera_move_parameters = {
     .max_accel = 20.0f,
 };
 
+#define CAMERA_FOLLOW_DISTANCE  3.4f
+#define CAMERA_LOWER_FOLLOW_DISTANCE    0.5f
+#define CAMERA_UPPER_FOLLOW_DISTANCE    8.0f
+
+#define MIN_ANGLE                       -1.5f
+#define MAX_ANGLE                       1.5f
+
+#define CAMERA_FOLLOW_HEIGHT    1.6f
+
 #define ASPECT_RATIO            (4.0f/3.0f)
 #define OVER_SHOULDER_DISTANCE  1.1f
 #define EXTEND_SPEED            2.0f
@@ -25,8 +34,6 @@ static struct move_towards_parameters camera_move_parameters = {
 
 #define TURN_SPEED              13.0f
 #define TURN_ACCEL              32.0f
-
-#define MIN_TWO_TARGET_DISTANCE 
 
 void camera_cached_calcuations_check(struct camera_cached_calcuations* cache, struct Camera* camera) {
     if (camera->fov == cache->fov) {
@@ -156,28 +163,7 @@ void camera_controller_watch_target(struct camera_controller* controller, struct
     move_towards(&controller->looking_at, &controller->looking_at_speed, &looking_at, &camera_move_parameters);
 }
 
-/**
- * figure out where the camera should be positioned
- */
-void camera_controller_determine_player_move_target(struct camera_controller* controller, struct Vector3* result) {
-    struct Vector3* player_pos = player_get_position(controller->player);
-    
-    // deterine direction from camera's current position to the player
-    struct Vector3 offset;
-    vector3Sub(player_pos, &controller->stable_position, &offset);
-
-    // convert that direction to a unit vector in the x/z plane
-    offset.y = 0.0f;
-    vector3Normalize(&offset, &offset);
-
-    // if the normalize step failed (becuase the player and camera are the same point)
-    // just pick any direction to use
-    if (vector3MagSqrd(&offset) < 0.1f) {
-        offset = gForward;
-    }
-    
-    joypad_buttons_t buttons = joypad_get_buttons(0);
-
+void camera_controller_determine_horz_movement(struct camera_controller* controller, joypad_buttons_t buttons, vector3_t* offset) {
     float angle_delta = 0.0f;
 
     if (buttons.c_right) {
@@ -201,20 +187,85 @@ void camera_controller_determine_player_move_target(struct camera_controller* co
             curr_vel * fixed_time_step, 
             &rotation
         );
-        vector3RotateWith2(&offset, &rotation, &offset);
+        vector3RotateWith2(offset, &rotation, offset);
     }
 
     controller->state_data.follow.horizontal_velocity = curr_vel;
+}
+
+float camera_controller_determine_vert_movement(struct camera_controller* controller, joypad_buttons_t buttons, vector3_t* offset) {
+    float angle_delta = 0.0f;
+
+    if (buttons.c_down) {
+        angle_delta -= TURN_SPEED;
+    }
+
+    if (buttons.c_up) {
+        angle_delta += TURN_SPEED;
+    }
+
+    float curr_vel = controller->state_data.follow.vertical_angle_vel;
+    curr_vel = mathfMoveTowards(
+        curr_vel,
+        angle_delta,
+        fixed_time_step * TURN_ACCEL
+    );
+    controller->state_data.follow.vertical_angle = clampf(
+        controller->state_data.follow.vertical_angle + curr_vel * fixed_time_step,
+        MIN_ANGLE,
+        MAX_ANGLE
+    );
+
+    float cos_angle = cosf(controller->state_data.follow.vertical_angle);
+    float sin_angle = sinf(controller->state_data.follow.vertical_angle);
+
+    offset->x *= cos_angle;
+    offset->y = sin_angle;
+    offset->z *= cos_angle;
+
+    if (sin_angle < 0.0f) {
+        return mathfLerp(CAMERA_FOLLOW_DISTANCE, CAMERA_UPPER_FOLLOW_DISTANCE, -sin_angle);
+    } else {
+        return mathfLerp(CAMERA_FOLLOW_DISTANCE, CAMERA_LOWER_FOLLOW_DISTANCE, sin_angle);
+    }
+}
+
+/**
+ * figure out where the camera should be positioned
+ */
+float camera_controller_determine_player_move_target(struct camera_controller* controller, struct Vector3* result) {
+    struct Vector3* player_pos = player_get_position(controller->player);
+    
+    // deterine direction from camera's current position to the player
+    struct Vector3 offset;
+    vector3Sub(player_pos, &controller->stable_position, &offset);
+
+    // convert that direction to a unit vector in the x/z plane
+    offset.y = 0.0f;
+    vector3Normalize(&offset, &offset);
+
+    // if the normalize step failed (becuase the player and camera are the same point)
+    // just pick any direction to use
+    if (vector3MagSqrd(&offset) < 0.1f) {
+        offset = gForward;
+    }
+    
+    joypad_buttons_t buttons = joypad_get_buttons(0);
+
+    camera_controller_determine_horz_movement(controller, buttons, &offset);
+    float follow_distance = camera_controller_determine_vert_movement(controller, buttons, &offset);
 
     // determine how far the camera should be the wall checker will determine if the camera 
     // should move closer to avoid obstacles
-    float clamped_distance = controller->wall_checker.actual_distance + EXTEND_SPEED * fixed_time_step;
-
-    if (clamped_distance < CAMERA_FOLLOW_DISTANCE) {
-        vector3AddScaled(player_pos, &offset, -clamped_distance, result);
-    } else {
-        vector3AddScaled(player_pos, &offset, -CAMERA_FOLLOW_DISTANCE, result);
+    if (controller->wall_checker.collider.active_contacts) {
+        float clamped_distance = controller->wall_checker.actual_distance + EXTEND_SPEED * fixed_time_step;
+    
+        if (clamped_distance < follow_distance) {
+            follow_distance = clamped_distance;
+        }
     }
+
+    vector3AddScaled(player_pos, &offset, -follow_distance, result);
 
     // move the player up to compensate for the player's height
     result->y += CAMERA_FOLLOW_HEIGHT;
@@ -224,6 +275,8 @@ void camera_controller_determine_player_move_target(struct camera_controller* co
 
     // slowly move the looking_at towards the look target to prevent a jarring motion
     move_towards(&controller->looking_at, &controller->looking_at_speed, &looking_at, &camera_move_parameters);
+
+    return follow_distance;
 }
 
 void camera_controller_update_position(struct camera_controller* controller, struct TransformSingleAxis* target) {
@@ -303,7 +356,7 @@ void camera_controller_update_animation(struct camera_controller* controller) {
     }
 
     controller->camera->transform.rotation.w = sqrtf(1.0f - neg_w);
-    controller->camera->fov = (180.0f / M_PI) * anim_frame_buffer.fov;
+    controller->camera->fov = (180.0f / PI_F) * anim_frame_buffer.fov;
     controller->state_data.animate.current_frame += 1;
     camera_look_at_from_rotation(controller);
 }
@@ -373,9 +426,11 @@ void camera_follow_vehicle_update(struct camera_controller* controller) {
 }
 
 void camera_controller_update(struct camera_controller* controller) {
+    float follow_distance = CAMERA_FOLLOW_DISTANCE;
+
     switch (controller->state) {
         case CAMERA_STATE_FOLLOW: {
-            camera_controller_determine_player_move_target(controller, &controller->target);
+            follow_distance = camera_controller_determine_player_move_target(controller, &controller->target);
             camera_controller_update_position(controller, &controller->player->cutscene_actor.transform);
 
             if (controller->player->state == PLAYER_IN_VEHICLE) {
@@ -404,7 +459,7 @@ void camera_controller_update(struct camera_controller* controller) {
             break;
     }
 
-    camera_wall_checker_update(&controller->wall_checker, &controller->looking_at, &controller->target);
+    camera_wall_checker_update(&controller->wall_checker, &controller->looking_at, &controller->target, follow_distance);
 
     vector3AddScaled(&controller->shake_velocity, &controller->shake_offset, -50.0f, &controller->shake_velocity);
     vector3AddScaled(&controller->shake_offset, &controller->shake_velocity, fixed_time_step, &controller->shake_offset);
