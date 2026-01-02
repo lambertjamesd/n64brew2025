@@ -100,7 +100,7 @@ bool hash_map_set(struct hash_map* hash_map, int key, void* value) {
         result = hash_map_find_entry(hash_map->entries, hash_map->capacity, key);
     }
 
-    if (result->key == key) {
+    if (result->key == key && result->value) {
         result->value = value;
     } else {
         result->key = key;
@@ -134,6 +134,11 @@ struct hash_map_entry* hash_map_next(struct hash_map* hash_map, struct hash_map_
 
     do {
         ++curr;
+
+        if (curr == end) {
+            return NULL;
+        }
+
         if (curr->value) {
             return curr;
         }

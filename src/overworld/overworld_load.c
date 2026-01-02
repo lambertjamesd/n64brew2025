@@ -282,7 +282,7 @@ void overworld_free(struct overworld* overworld) {
     for (
         struct hash_map_entry* entry = hash_map_next(&overworld->loaded_actors, NULL);
         entry;
-        entry = hash_map_next(&overworld->loaded_actors, NULL)
+        entry = hash_map_next(&overworld->loaded_actors, entry)
     ) {
         struct overworld_actor* actor = (struct overworld_actor*)entry->value;
         entity_despawn(actor->entity_id);
