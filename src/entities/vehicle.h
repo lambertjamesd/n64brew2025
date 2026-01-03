@@ -47,6 +47,7 @@ struct vehicle {
     vector3_t last_input_direction;
     bool is_stopped: 1;
     bool is_boosting: 1;
+    bool hit_boost_pad: 1;
 };
 
 typedef struct vehicle vehicle_t;

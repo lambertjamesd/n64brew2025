@@ -19,6 +19,8 @@ struct motorcycle {
     interactable_t interactable; 
     vehicle_t vehicle;
     bool has_traction;
+    
+    float boost_timer;
 
     cast_point_t cast_points[CAST_POINT_COUNT];
 };

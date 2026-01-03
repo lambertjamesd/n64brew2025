@@ -9,6 +9,7 @@
 #include "../cutscene/cutscene_runner.h"
 #include "../scene/scene.h"
 #include "../time/time.h"
+#include "vehicle.h"
 
 static dynamic_object_type_t interact = {
     BOX_COLLIDER(2.0f, 0.5f, 2.0f),
@@ -20,7 +21,7 @@ static spatial_trigger_type_t boost_trigger = {
     .center = {0.0f, 1.0f, 0.0f},
     .data = {
         .cylinder = {
-            .half_height = 1.0f,
+            .half_height = 1.5f,
             .radius = 2.5f,
         },
     },
@@ -58,6 +59,22 @@ void boost_pad_render(void* data, struct render_batch* batch) {
     render_batch_add_tmesh(batch, &assets.outline, mtx, NULL, NULL, NULL);
 }
 
+void boost_pad_update(void* data) {
+    boost_pad_t* boost_pad = (boost_pad_t*)data;
+
+    for (
+        contact_t* contact = boost_pad->boost_trigger.active_contacts;
+        contact;
+        contact = contact->next
+    ) {
+        vehicle_t* vehicle = vehicle_get(contact->other_object);
+
+        if (vehicle) {
+            vehicle->hit_boost_pad = true;
+        }
+    }
+}
+
 void boost_pad_interact(struct interactable* interactable, entity_id from) {
     boost_pad_t* boost_pad = (boost_pad_t*)interactable->data;
     cutscene_builder_t cutscene;
@@ -65,7 +82,7 @@ void boost_pad_interact(struct interactable* interactable, entity_id from) {
 
     cutscene_builder_pause(&cutscene, true, false, UPDATE_LAYER_WORLD);
     cutscene_builder_camera_look_at(&cutscene, boost_pad->collider.entity_id);
-    cutscene_builder_dialog(&cutscene, "You need to find and repair the boost base station\n");
+    cutscene_builder_dialog(&cutscene, "You need to find the base station and repair it\n");
     cutscene_builder_camera_return(&cutscene);
     cutscene_builder_pause(&cutscene, false, false, UPDATE_LAYER_WORLD);
 
@@ -78,11 +95,12 @@ void boost_pad_init(boost_pad_t* boost_pad, struct boost_pad_definition* definit
 
     render_scene_add(&boost_pad->transform.position, 2.5f, boost_pad_render, boost_pad);
 
-    boost_pad->is_on = expression_get_bool(definition->is_on);
+    boost_pad->is_on = true; // expression_get_bool(definition->is_on);
 
     if (boost_pad->is_on) {
         spatial_trigger_init(&boost_pad->boost_trigger, &boost_pad->transform_sa, &boost_trigger, COLLISION_LAYER_TANGIBLE, entity_id);
         collision_scene_add_trigger(&boost_pad->boost_trigger);
+        update_add(boost_pad, boost_pad_update, UPDATE_PRIORITY_PHYICS, UPDATE_LAYER_WORLD);
     } else {
         dynamic_object_init(entity_id, &boost_pad->collider, &interact, COLLISION_LAYER_INTERACT_ONLY, &boost_pad->transform.position, NULL);
         boost_pad->collider.is_fixed = true;
@@ -97,6 +115,7 @@ void boost_pad_destroy(boost_pad_t* boost_pad, struct boost_pad_definition* defi
 
     if (boost_pad->is_on) {
         collision_scene_remove_trigger(&boost_pad->boost_trigger);
+        update_remove(boost_pad);
     } else {
         collision_scene_remove(&boost_pad->collider);
         interactable_destroy(&boost_pad->interactable);

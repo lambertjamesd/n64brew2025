@@ -12,21 +12,26 @@
 #define HOVER_SPRING_STRENGTH   (-GRAVITY_CONSTANT / HOVER_SAG_AMOUNT)
 
 #define ACCEL_RATE              20.0f
+#define BOOST_ACCEL_RATE        50.0f
 #define BACKUP_SPEED            -5.0f
-#define DRIVE_SPEED               50.0f
-#define BOOST_SPEED             80.0f
+#define DRIVE_SPEED             35.0f
+#define BOOST_SPEED             60.0f
 #define MAX_TURN_RATE           2.0f
 
-#define MAX_TURN_ACCEL          50.0f
+#define MAX_BOOST_TURN_ACCEL    50.0f
+#define MAX_TURN_ACCEL          30.0f
 #define DRIFT_ACCEL             20.0f
 
-#define TURN_SLOW_THRESHOLD     (MAX_TURN_ACCEL / MAX_TURN_RATE)
+#define TURN_BOOST_SLOW_THESHOLD    (MAX_BOOST_TURN_ACCEL / MAX_TURN_RATE)
+#define TURN_SLOW_THRESHOLD         (MAX_TURN_ACCEL / MAX_TURN_RATE)
 
 #define STILL_HOVER_HEIGHT      0.25f
 #define RIDE_HOVER_HEIGHT       0.5f
 #define FAST_HOVER_HEIGHT       1.0f
 #define BOB_HEIGHT              0.1f
 #define BOB_TIME                2.0f
+
+#define BOOST_TIME              2.5f
 
 struct motorcyle_assets {
     tmesh_t* mesh;
@@ -169,10 +174,8 @@ float motorcycle_hover_height(motorcycle_t* motorcycle, float speed) {
 }
 
 float motorcycle_target_speed(motorcycle_t* motorcycle, joypad_inputs_t input) {
-    if (motorcycle->vehicle.is_boosting) {
-        return BOOST_SPEED;
-    } else if (input.btn.a) {
-        return DRIVE_SPEED;
+    if (input.btn.a) {
+        return motorcycle->boost_timer > 0.0f ? BOOST_SPEED : DRIVE_SPEED;
     } else if (input.btn.b) {
         return input.stick_y > -20 ? 0.0f : BACKUP_SPEED;
     } else {
@@ -218,16 +221,36 @@ void motorcycle_update(void* data) {
     vector2ToLookDir(&motorcycle->transform.rotation, &forward);
 
     joypad_inputs_t input = joypad_get_inputs(0);
-    motorcycle->vehicle.is_boosting = input.btn.z && input.btn.a;
+    
+    if (motorcycle->vehicle.hit_boost_pad) {
+        motorcycle->boost_timer = BOOST_TIME;
+        motorcycle->vehicle.hit_boost_pad = false;
+    }
+
+    motorcycle->vehicle.is_boosting = false;
+
+    if (motorcycle->boost_timer > 0.0f) {
+        motorcycle->boost_timer -= fixed_time_step;
+        motorcycle->vehicle.is_boosting = input.btn.a;
+
+        if (!input.btn.a) {
+            motorcycle->boost_timer = 0.0f;
+        }
+    }
 
     if (motorcycle->vehicle.driver) {
+        float accel = motorcycle->vehicle.is_boosting ? BOOST_ACCEL_RATE : ACCEL_RATE;
+
         float target_speed = motorcycle_target_speed(motorcycle, input);
         current_speed = mathfMoveTowards(current_speed, target_speed, fixed_time_step * ACCEL_RATE);
 
         float turn_rate = MAX_TURN_RATE;
 
-        if (current_speed > TURN_SLOW_THRESHOLD) {
-            turn_rate = MAX_TURN_ACCEL / current_speed;
+        float slow_threshold = motorcycle->vehicle.is_boosting ? TURN_BOOST_SLOW_THESHOLD : TURN_SLOW_THRESHOLD;
+        float turn_accel = motorcycle->vehicle.is_boosting ? MAX_BOOST_TURN_ACCEL : MAX_TURN_ACCEL;
+
+        if (current_speed > slow_threshold) {
+            turn_rate = turn_accel / current_speed;
         }
 
         vector2_t new_rot;
@@ -241,7 +264,6 @@ void motorcycle_update(void* data) {
     } else {
         current_speed = mathfMoveTowards(current_speed, 0.0f, fixed_time_step * ACCEL_RATE);
     }
-
 
     motorcycle->vehicle.is_stopped = vector3MagSqrd2D(&motorcycle->collider.velocity) < 0.01f && input.stick_y > -20;
 
@@ -275,10 +297,11 @@ void motorcycle_init(motorcycle_t* motorcycle, struct motorcycle_definition* def
     vehicle_init(&motorcycle->vehicle, &motorcycle->transform, &vehicle_def, entity_id);
     collision_scene_add(&motorcycle->collider);
     update_add(motorcycle, motorcycle_update, UPDATE_PRIORITY_PHYICS, UPDATE_LAYER_WORLD);
-
+    
     interactable_init(&motorcycle->interactable, entity_id, INTERACT_TYPE_RIDE, motorcycle_ride, motorcycle);
-
+    
     motorcycle->has_traction = true;
+    motorcycle->boost_timer = 0.0f;
 
     for (int i = 0; i < CAST_POINT_COUNT; i += 1) {
         vector3_t cast_point;
