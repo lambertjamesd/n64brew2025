@@ -428,6 +428,18 @@ void cutscene_builder_camera_return(struct cutscene_builder* builder) {
     };
 }
 
+void cutscene_builder_camera_look_at(struct cutscene_builder* builder, entity_id target) {
+    struct cutscene_step* expression = cutscene_builder_next_step(builder);
+    struct cutscene_step* look = cutscene_builder_next_step(builder);
+    *expression = (struct cutscene_step){
+        .type = CUTSCENE_STEP_EXPRESSION,
+    };
+    expression_load_literal(&expression->data.expression.expression, target);
+    *look = (struct cutscene_step){
+        .type = CUTSCENE_STEP_CAMERA_LOOK_AT_NPC,
+    };
+}
+
 void cutscene_builder_camera_move_to(struct cutscene_builder* builder, struct Vector3* position, camera_move_to_args_t* args) {
     struct cutscene_step* step = cutscene_builder_next_step(builder);
 

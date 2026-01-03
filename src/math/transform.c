@@ -3,6 +3,12 @@
 #include <assert.h>
 #include "../render/defs.h"
 
+void transformInit(struct Transform* transform, vector3_t* pos, quaternion_t* rot, vector3_t* scale) {
+    transform->position = *pos;
+    transform->rotation = *rot;
+    transform->scale = *scale;
+}
+
 void transformInitIdentity(struct Transform* in) {
     in->position = gZeroVec;
     quatIdent(&in->rotation);

@@ -77,6 +77,12 @@
             "description": "",
             "mesh": "meshes/vehicles/bike.blend#Motorcycle",
             "type": "motorcycle"
+        },
+        {
+            "name": "vehicles_boost_pad_base",
+            "description": "",
+            "mesh": "meshes/vehicles/boost_pad_base.blend#boost_pad",
+            "type": "boost_pad"
         }
     ]
 }

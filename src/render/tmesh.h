@@ -37,6 +37,7 @@ struct tmesh {
 typedef struct tmesh tmesh_t;
 
 void tmesh_load(struct tmesh* tmesh, FILE* file);
+void tmesh_load_filename(struct tmesh* tmesh, const char* filename);
 void tmesh_release(struct tmesh* tmesh);
 
 #endif

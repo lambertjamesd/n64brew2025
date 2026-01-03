@@ -80,6 +80,17 @@ struct element_attr {
 
 typedef struct element_attr element_attr_t;
 
+static inline element_attr_t element_attr_prim_color(color_t color) {
+    return (element_attr_t) {
+        .type = ELEMENT_ATTR_PRIM_COLOR,
+        .color = color,
+    };
+}
+
+static inline element_attr_t element_attr_end() {
+    return (element_attr_t){.type = ELEMENT_ATTR_NONE};
+}
+
 struct render_batch_element {
     struct material* material;
     uint16_t type;

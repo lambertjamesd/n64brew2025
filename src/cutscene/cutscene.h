@@ -197,6 +197,7 @@ void cutscene_builder_npc_wait(
 void cutscene_builder_camera_wait(struct cutscene_builder* builder);
 void cutscene_builder_camera_follow(struct cutscene_builder* builder);
 void cutscene_builder_camera_return(struct cutscene_builder* builder);
+void cutscene_builder_camera_look_at(struct cutscene_builder* builder, entity_id target);
 void cutscene_builder_camera_move_to(struct cutscene_builder* builder, struct Vector3* position, camera_move_to_args_t* args);
 void cutscene_builder_set_boolean(struct cutscene_builder* builder, boolean_variable variable, bool value);
 void cutscene_builder_callback(struct cutscene_builder* builder, cutscene_step_callback callback, void* data);

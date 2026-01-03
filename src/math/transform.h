@@ -12,6 +12,7 @@ struct Transform {
 
 typedef struct Transform transform_t;
 
+void transformInit(struct Transform* transform, vector3_t* pos, quaternion_t* rot, vector3_t* scale);
 void transformInitIdentity(struct Transform* in);
 void transformToMatrix(struct Transform* in, float mtx[4][4]);
 void transformToWorldMatrix(struct Transform* in, float mtx[4][4]);

@@ -224,6 +224,12 @@ void tmesh_load(struct tmesh* tmesh, FILE* file) {
     tmesh->block = rspq_block_end();
 }
 
+void tmesh_load_filename(struct tmesh* tmesh, const char* filename) {
+    FILE* file = asset_fopen(filename, NULL);
+    tmesh_load(tmesh, file);
+    fclose(file);
+}
+
 void tmesh_release(struct tmesh* tmesh) {
     rspq_block_free(tmesh->block);
     free(tmesh->vertices);

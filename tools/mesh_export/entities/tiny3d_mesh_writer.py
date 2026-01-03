@@ -344,9 +344,9 @@ def _pack_normal(normal: mathutils.Vector):
 def _pack_color(color):
     return struct.pack(
         '>BBBB', 
-        int(pow(color[0], 1 / 2.2) * 255),
-        int(pow(color[1], 1 / 2.2) * 255),
-        int(pow(color[2], 1 / 2.2) * 255),
+        int(pow(max(0, color[0]), 1 / 2.2) * 255),
+        int(pow(max(0, color[1]), 1 / 2.2) * 255),
+        int(pow(max(0, color[2]), 1 / 2.2) * 255),
         int(color[3] * 255)
     )
 

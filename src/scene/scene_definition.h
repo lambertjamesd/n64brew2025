@@ -17,6 +17,8 @@ enum entity_type_id {
     ENTITY_TYPE_door,
     ENTITY_TYPE_npc,
     ENTITY_TYPE_script_runner,
+    ENTITY_TYPE_boost_pad,
+    // type enum insert point
     
     ENTITY_TYPE_count,
 };
@@ -166,6 +168,12 @@ struct script_runner_definition {
     struct Vector3 position;
     script_location target;
     bool loop;
+};
+
+struct boost_pad_definition {
+    struct Vector3 position;
+    struct Quaternion rotation;
+    boolean_variable is_on;
 };
 
 // definition insert point

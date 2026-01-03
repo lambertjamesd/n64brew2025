@@ -178,9 +178,9 @@ class CombineMode():
     
     def uses(self, attr: str) -> bool:
         if attr == 'TEX1':
-            return bool((self.cyc1 and self.cyc1.uses(attr)) or (self.cyc2 and self.cyc2.uses('TEX0')))
-        if attr == 'TEX0':
             return bool(self.cyc1 and self.cyc1.uses(attr))
+        if attr == 'TEX0':
+            return bool(self.cyc1 and self.cyc1.uses(attr) or (self.cyc2 and self.cyc2.uses('TEX1')))
 
         return bool((self.cyc1 and self.cyc1.uses(attr)) or (self.cyc2 and self.cyc2.uses(attr)))
 
