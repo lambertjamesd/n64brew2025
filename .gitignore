@@ -5,6 +5,7 @@ libdragon/
 .libdragon/
 
 filesystem/
+crashes/
 
 **/__pycache__/**
 

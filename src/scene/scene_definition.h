@@ -168,4 +168,6 @@ struct script_runner_definition {
     bool loop;
 };
 
+// definition insert point
+
 #endif

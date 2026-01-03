@@ -166,7 +166,7 @@ void repair_scene_check_drop(repair_scene_t* scene) {
 
     scene->grabbed_part = NULL;
 
-    if (fabsf(quatDot(&grabbed_part->transform.rotation, &grabbed_part->target_rotation)) < 0.9f) {
+    if (fabsf(quatDot(&grabbed_part->transform.rotation, &grabbed_part->end_rotation)) < 0.9f) {
         return;
     }
 

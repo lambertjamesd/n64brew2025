@@ -10,6 +10,7 @@
 #include "../entities/door.h"
 #include "../entities/npc.h"
 #include "../entities/script_runner.h"
+// include_list insert point
 
 #define ENTITY_DEFINITION(name, fields) [ENTITY_TYPE_ ## name] = { \
     #name, \
@@ -47,6 +48,7 @@ static struct entity_definition scene_entity_definitions[ENTITY_TYPE_count] = {
     ENTITY_DEFINITION(door, fields_empty),
     ENTITY_DEFINITION(npc, fields_npc),
     ENTITY_DEFINITION(script_runner, fields_script_runner),
+    // scene_entity_definitions insert point
 };
 
 static uint16_t scene_entity_count[ENTITY_TYPE_count];
