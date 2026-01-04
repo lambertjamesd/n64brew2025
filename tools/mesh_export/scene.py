@@ -490,6 +490,7 @@ def process_scene():
     overworld_filename = sys.argv[-1]
 
     scene = Scene()
+    bpy.ops.object.mode_set(mode='OBJECT')
 
     base_transform = mathutils.Matrix.Rotation(-math.pi * 0.5, 4, 'X')
     definitions = {}

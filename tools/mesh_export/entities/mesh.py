@@ -315,10 +315,13 @@ class mesh_list():
             for material_index in range(max(len(mesh.materials), 1)):
                 if material_index < len(mesh.materials):
                     mat = mesh.materials[material_index]
+
+                    if mat == None:
+                        continue
+
                     name = mat.name
                 else:
-                    mat = None
-                    name = ""
+                    continue
 
                 if not name in mesh_by_material:
                     mesh_by_material[name] = mesh_data(mat)
