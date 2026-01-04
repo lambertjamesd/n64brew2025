@@ -2,7 +2,7 @@
 global has_motor: bool;
 global has_repaired_motor: bool;
 
-global has_pump_gear: bool = true;
+global has_pump_gear: bool;
 global has_repaired_pump: bool;
 
-global has_well_part_map: bool = true;
+global has_well_part_map: bool;

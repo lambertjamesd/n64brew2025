@@ -484,6 +484,20 @@ def read_room_objects(scene: Scene, scene_vars, context) -> tuple[dict[int, list
     
     return  grouped, shared_entity_index, shared_entities
 
+def write_minimap_range(scene_rotation: mathutils.Matrix, file):
+    minimap_min = mathutils.Vector()
+    minimap_max = mathutils.Vector()
+
+    if 'minimap_min' in bpy.data.objects:
+        final_transform = scene_rotation @ bpy.data.objects['minimap_min'].matrix_world
+        minimap_min = final_transform @ mathutils.Vector()
+        
+    if 'minimap_max' in bpy.data.objects:
+        final_transform = scene_rotation @ bpy.data.objects['minimap_max'].matrix_world
+        minimap_max = final_transform @ mathutils.Vector()
+
+    file.write(struct.pack('>ffff', minimap_min.x, minimap_min.z, minimap_max.x, minimap_max.z))
+
 def process_scene():
     input_filename = sys.argv[1]
     output_filename = sys.argv[-2]
@@ -595,6 +609,8 @@ def process_scene():
             write_string(overworld_file_location, file)
         else:
             file.write(b'\0')
+
+        write_minimap_range(base_transform, file)
 
         entities.camera_animation.export_camera_animations(output_filename.replace('.scene', '.sanim'), file)
 

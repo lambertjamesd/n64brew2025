@@ -85,6 +85,14 @@ def generate_overworld_tile(
         x: int, z: int, 
         map_min: mathutils.Vector, 
         settings: export_settings.ExportSettings):
+    if len(cell) == 0:
+        data = io.BytesIO()
+        data.write(struct.pack('>BHH', 0, 0, 0))
+        data.write(struct.pack('>f', 0))
+        particles.write_particles(particle_list, data)
+        return OverworldCell(data.getvalue(), 0)
+
+
     cell_bb = cell[0].bounding_box()
 
     for i in range(1, len(cell)):

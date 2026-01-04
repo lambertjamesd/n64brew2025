@@ -57,6 +57,11 @@ void scene_load_static_particles(scene_t* scene, int room_count, FILE* file) {
     fread(scene->room_particle_ranges, sizeof(struct static_entity_range), room_count, file);
 }
 
+void scene_load_minimap(scene_t* scene, FILE* file) {
+    fread(&scene->minimap_min, sizeof(vector2_t), 1, file);
+    fread(&scene->minimap_max, sizeof(vector2_t), 1, file);
+}
+
 void scene_load_camera_animations(struct camera_animation_list* list, const char* filename, FILE* file) {
     uint16_t count;
     fread(&count, sizeof(count), 1, file);
@@ -316,6 +321,8 @@ struct scene* scene_load(const char* filename) {
     } else {
         scene->overworld = NULL;
     }
+
+    scene_load_minimap(scene, file);
 
     scene_load_camera_animations(&scene->camera_animations, filename, file);
 

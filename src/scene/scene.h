@@ -104,6 +104,8 @@ struct scene {
     struct loading_zone* loading_zones;
     struct named_location* named_locations;
     struct overworld* overworld;
+    vector2_t minimap_min;
+    vector2_t minimap_max;
 
     room_entity_block_t* room_entities;
     shared_entity_block_t shared_entities;

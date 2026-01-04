@@ -139,13 +139,19 @@ struct view_vertex {
 };
 
 void map_get_position(vector3_t* world_pos, vector2_t* map_pos) {
-    overworld_t* overworld = current_scene->overworld;
-    map_pos->x = (MAP_SIZE * (world_pos->x - overworld->min.x) * overworld->inv_tile_size / overworld->tile_x);
-    map_pos->y = (MAP_SIZE * (world_pos->z - overworld->min.y) * overworld->inv_tile_size / overworld->tile_x);
+    float width = current_scene->minimap_max.x - current_scene->minimap_min.x;
+    float height = current_scene->minimap_max.y - current_scene->minimap_min.y;
+
+    map_pos->x = (MAP_SIZE * (world_pos->x - current_scene->minimap_min.x) / width);
+    map_pos->y = (MAP_SIZE * (world_pos->z - current_scene->minimap_min.y) / height);
 
 }
 
 void map_render_minimap(int map_x, int map_y) {
+    if (!current_scene) {
+        return;
+    }
+
     material_apply(assets.map_background);
 
     rdpq_texture_rectangle(
@@ -532,10 +538,6 @@ void map_menu_update(void* data) {
 }
 
 void map_menu_show_with_item(enum inventory_item_type item) {
-    if (!current_scene || !current_scene->overworld) {
-        return;
-    }
-
     if (current_scene) {
         current_scene->can_pause = false;
     }
