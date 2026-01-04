@@ -151,19 +151,19 @@ sort_directions = [
     mathutils.Vector((0, 0, -1)),
 ]
 
-def generate_lod0(lod_0_objects: list[bpy.types.Object], subdivisions: int, settings: export_settings.ExportSettings, base_transform: mathutils.Matrix, file):
-    lod_0_start_time = time.perf_counter()
+def generate_lod0(lod_1_objects: list[bpy.types.Object], subdivisions: int, settings: export_settings.ExportSettings, base_transform: mathutils.Matrix, file):
+    lod_1_start_time = time.perf_counter()
 
-    lod_0_settings = settings.copy()
-    lod_0_settings.sort_direction = mathutils.Vector((1, 0, 0))
-    lod_0_settings.fog_scale = 1 / subdivisions
+    lod_1_settings = settings.copy()
+    lod_1_settings.sort_direction = mathutils.Vector((1, 0, 0))
+    lod_1_settings.fog_scale = 1 / subdivisions
 
     scaled_transform = mathutils.Matrix.Scale(1 / subdivisions, 4) @ base_transform
     center_scale = settings.world_scale
 
     all_meshes: list[tuple[mesh.mesh_data, int, int, int]] = []
 
-    for obj in lod_0_objects:
+    for obj in lod_1_objects:
         mesh_list = mesh.mesh_list(scaled_transform)
         mesh_list.append(obj)
 
@@ -182,14 +182,14 @@ def generate_lod0(lod_0_objects: list[bpy.types.Object], subdivisions: int, sett
 
     for single_mesh in all_meshes:
         file.write(struct.pack('>hhH', single_mesh[1], single_mesh[2], single_mesh[3]))
-        lod_0_settings.default_material_name = material_extract.material_romname(single_mesh[0].mat)
-        lod_0_settings.default_material = material_extract.load_material_with_name(single_mesh[0].mat)
+        lod_1_settings.default_material_name = material_extract.material_romname(single_mesh[0].mat)
+        lod_1_settings.default_material = material_extract.load_material_with_name(single_mesh[0].mat)
 
         for dir in sort_directions:
-            lod_0_settings.sort_direction = dir
-            tiny3d_mesh_writer.write_mesh([single_mesh[0]], None, [], lod_0_settings, file)
+            lod_1_settings.sort_direction = dir
+            tiny3d_mesh_writer.write_mesh([single_mesh[0]], None, [], lod_1_settings, file)
 
-    print(f"lod_0 creation time {time.perf_counter() - lod_0_start_time}")
+    print(f"lod_1 creation time {time.perf_counter() - lod_1_start_time}")
 
 class OverworldInputData():
     def __init__(self):
@@ -198,7 +198,7 @@ class OverworldInputData():
 def generate_overworld(
         overworld_filename: str, 
         mesh_list: mesh.mesh_list, 
-        lod_0_objects: list[bpy.types.Object], 
+        lod_1_objects: list[bpy.types.Object], 
         collider: mesh_collider.MeshCollider, 
         detail_list: list[OverworldDetail], 
         entity_list: list[entities.ObjectEntry],
@@ -311,7 +311,7 @@ def generate_overworld(
         file.write(struct.pack('>ff', mesh_bb[0].x, mesh_bb[0].z))
         file.write(struct.pack('>f', side_length))
 
-        generate_lod0(lod_0_objects, subdivisions, settings, base_transform, file)
+        generate_lod0(lod_1_objects, subdivisions, settings, base_transform, file)
 
         visual_block_location = file.tell() + 8 * subdivisions * subdivisions
 

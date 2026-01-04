@@ -196,7 +196,7 @@ int overworld_entry_sort(const void* a, const void* b) {
     return (int)(b_entry->priority - a_entry->priority);
 }
 
-int overworld_lod_0_direction_idnex(int dx, int dy) {
+int overworld_lod_1_direction_idnex(int dx, int dy) {
     if (abs(dx) > abs(dy)) {
         return dx > 0 ? 1 : 0;
     }
@@ -204,7 +204,7 @@ int overworld_lod_0_direction_idnex(int dx, int dy) {
     return dy > 0 ? 3 : 2;
 }
 
-void overworld_render_lod_0_entries(struct overworld_lod0* lod0, int camera_x, int camera_z) {
+void overworld_render_lod_1_entries(struct overworld_lod0* lod0, int camera_x, int camera_z) {
     struct overworld_lod0_sort_entry order[lod0->entry_count];
 
     struct overworld_lod0_entry* end = lod0->entries + lod0->entry_count;
@@ -214,7 +214,7 @@ void overworld_render_lod_0_entries(struct overworld_lod0* lod0, int camera_x, i
         int dy = (int)curr->z - camera_z;
         entry->priority = ((dx * dx + dy * dy) >> 2) - ((uint32_t)(curr->priority) << 30);
         
-        entry->mesh = &curr->meshes[overworld_lod_0_direction_idnex(dx, dy)];
+        entry->mesh = &curr->meshes[overworld_lod_1_direction_idnex(dx, dy)];
     }
 
     qsort(order, lod0->entry_count, sizeof(struct overworld_lod0_sort_entry), overworld_entry_sort);
@@ -232,7 +232,7 @@ void overworld_render_lod_0_entries(struct overworld_lod0* lod0, int camera_x, i
     }
 }
 
-void overworld_render_lod_0(struct overworld* overworld, struct Camera* camera, T3DViewport* prev_viewport, struct frame_memory_pool* pool) {
+void overworld_render_lod_1(struct overworld* overworld, struct Camera* camera, T3DViewport* prev_viewport, struct frame_memory_pool* pool) {
     T3DViewport* new_viewport = frame_malloc(pool, sizeof(T3DViewport));
     *new_viewport = t3d_viewport_create();
     
@@ -284,7 +284,7 @@ void overworld_render_lod_0(struct overworld* overworld, struct Camera* camera, 
     T3DMat4FP* mtx_fp = UncachedAddr(frame_malloc(pool, sizeof(T3DMat4FP)));
     t3d_mat4_to_fixed_3x4(mtx_fp, &mtx);
     t3d_matrix_push(mtx_fp);
-    overworld_render_lod_0_entries(&overworld->lod0, camera_x, camera_z);
+    overworld_render_lod_1_entries(&overworld->lod0, camera_x, camera_z);
     t3d_matrix_pop(1);
 
     rdpq_sync_pipe();
@@ -361,7 +361,7 @@ void overworld_render(struct overworld* overworld, mat4x4 view_proj_matrix, stru
     state.min_x = state.loop[0].x;
     state.max_x = state.loop[0].x;
 
-    overworld_render_lod_0(overworld, camera, viewport, pool);
+    overworld_render_lod_1(overworld, camera, viewport, pool);
 
     t3d_viewport_attach(viewport);
 

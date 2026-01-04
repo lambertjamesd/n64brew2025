@@ -208,10 +208,10 @@ def find_static_blacklist():
 def check_for_overworld(base_transform: mathutils.Matrix, overworld_filename: str, definitions, enums, variable_context):
     settings = entities.export_settings.ExportSettings()
 
-    if not ('lod_1' in  bpy.data.collections):
+    if not ('lod_0' in  bpy.data.collections):
         return False
     
-    collection: bpy.types.Collection = bpy.data.collections["lod_1"]
+    collection: bpy.types.Collection = bpy.data.collections["lod_0"]
 
     mesh_list = entities.mesh.mesh_list(base_transform)
     detail_list: list[entities.overworld.OverworldDetail] = []
@@ -251,11 +251,11 @@ def check_for_overworld(base_transform: mathutils.Matrix, overworld_filename: st
         if obj.rigid_body and obj.rigid_body.collision_shape == 'MESH':
             collider.append(mesh, final_transform)
 
-    lod_0_collection: bpy.types.Collection | None = bpy.data.collections["lod_0"] if "lod_0" in bpy.data.collections else None
-    lod_0_objects = []
+    lod_1_collection: bpy.types.Collection | None = bpy.data.collections["lod_1"] if "lod_1" in bpy.data.collections else None
+    lod_1_objects = []
 
-    if lod_0_collection:
-        lod_0_objects = list(lod_0_collection.all_objects)
+    if lod_1_collection:
+        lod_1_objects = list(lod_1_collection.all_objects)
 
     subdivisions = 8
     
@@ -265,7 +265,7 @@ def check_for_overworld(base_transform: mathutils.Matrix, overworld_filename: st
     entities.overworld.generate_overworld(
         overworld_filename, 
         mesh_list, 
-        lod_0_objects, 
+        lod_1_objects, 
         collider, 
         detail_list, 
         entity_list,
