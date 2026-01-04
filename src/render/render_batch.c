@@ -65,6 +65,10 @@ struct render_batch_element* render_batch_add_tmesh(
     struct tmesh** attachments,
     struct element_attr* additional_attrs
 ) {
+    if (!mesh->material) {
+        return NULL;
+    }
+
     struct render_batch_element* element = render_batch_add(batch);
 
     if (!element) {

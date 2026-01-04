@@ -346,6 +346,10 @@ void cutscene_runner_init_step(struct cutscene_active_entry* cutscene, struct cu
             scene_queue_next(step->data.load_scene.scene);
             break;
         }
+        case CUTSCENE_STEP_DESPAWN: {
+            entity_despawn(evaluation_context_pop(&cutscene->context));
+            break;
+        }
     }
 }
 

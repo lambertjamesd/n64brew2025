@@ -253,12 +253,13 @@ float camera_controller_determine_player_move_target(struct camera_controller* c
     joypad_buttons_t buttons = joypad_get_buttons(0);
 
     camera_controller_determine_horz_movement(controller, buttons, &offset);
-    float follow_distance = camera_controller_determine_vert_movement(controller, buttons, &offset);
+    float target_distance = camera_controller_determine_vert_movement(controller, buttons, &offset);
+    float follow_distance = target_distance;
 
     // determine how far the camera should be the wall checker will determine if the camera 
     // should move closer to avoid obstacles
     if (controller->wall_checker.collider.active_contacts) {
-        float clamped_distance = controller->wall_checker.actual_distance + EXTEND_SPEED * fixed_time_step;
+        float clamped_distance = controller->wall_checker.actual_distance;
     
         if (clamped_distance < follow_distance) {
             follow_distance = clamped_distance;
@@ -276,7 +277,7 @@ float camera_controller_determine_player_move_target(struct camera_controller* c
     // slowly move the looking_at towards the look target to prevent a jarring motion
     move_towards(&controller->looking_at, &controller->looking_at_speed, &looking_at, &camera_move_parameters);
 
-    return follow_distance;
+    return target_distance;
 }
 
 void camera_controller_update_position(struct camera_controller* controller, struct TransformSingleAxis* target) {

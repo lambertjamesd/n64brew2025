@@ -98,9 +98,7 @@ def _less_than_state(current: str):
     return _default_state(current), '<'
 
 def _comment_state(current: str):
-    if current == '\n':
-        return _whitespace_state, 'comment'
-    return _comment_state, None
+    return _whitespace_state, 'comment'
 
 def _comment_start_state(current: str):
     if current == '/':

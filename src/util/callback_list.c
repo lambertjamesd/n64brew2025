@@ -68,6 +68,8 @@ void callback_list_do_insert_with_id(struct callback_list* list, void* callback,
 
     element->callback = callback;
     element->id = id;
+    // copy data payload in
+    memcpy(element + 1, data, list->element_size - sizeof(struct callback_element));
 
     int insert_index = blist_insertion_index(list, list->count, callback_list_element_compare);
 
@@ -81,10 +83,8 @@ void callback_list_do_insert_with_id(struct callback_list* list, void* callback,
         element = callback_list_get(list, insert_index);
         element->callback = callback;
         element->id = id;
+        memcpy(element + 1, data, list->element_size - sizeof(struct callback_element));
     }
-
-    // copy data payload in
-    memcpy(element + 1, data, list->element_size - sizeof(struct callback_element));
 
     list->count += 1;
 }

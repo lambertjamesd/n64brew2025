@@ -39,6 +39,7 @@ enum cutscene_step_type {
     CUTSCENE_STEP_CALLBACK,
     CUTSCENE_STEP_SHOW_BOSS_HEALTH,
     CUTSCENE_STEP_LOAD_SCENE,
+    CUTSCENE_STEP_DESPAWN,
 };
 
 typedef void (*cutscene_step_callback)(void* data);

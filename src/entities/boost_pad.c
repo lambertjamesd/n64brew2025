@@ -95,7 +95,7 @@ void boost_pad_init(boost_pad_t* boost_pad, struct boost_pad_definition* definit
 
     render_scene_add(&boost_pad->transform.position, 2.5f, boost_pad_render, boost_pad);
 
-    boost_pad->is_on = true; // expression_get_bool(definition->is_on);
+    boost_pad->is_on = definition->is_on == VARIABLE_DISCONNECTED || expression_get_bool(definition->is_on);
 
     if (boost_pad->is_on) {
         spatial_trigger_init(&boost_pad->boost_trigger, &boost_pad->transform_sa, &boost_trigger, COLLISION_LAYER_TANGIBLE, entity_id);

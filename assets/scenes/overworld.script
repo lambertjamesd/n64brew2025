@@ -5,6 +5,7 @@ global has_well_part_map: bool;
 scene repairs_water_pump_broken: entity_id;
 scene towards_river: entity_id;
 scene water_pump_scrapbot: entity_id;
+scene house_entrance: entity_id;
 
 func settlement_loop()
     if not has_pump_gear and not has_well_part_map then
@@ -19,25 +20,29 @@ func well_scrapbot()
     cam_look_npc water_pump_scrapbot;
 
     if not has_well_part_map then
-        say "Hello";
+        say "
+            Hello Jax. I have a task for you.
+
+            Aquire clean water to tend to Sampson's wounds.
+        ";
         interact_with_npc INTERACTION_LOOK, water_pump_scrapbot, repairs_water_pump_broken;
         npc_wait water_pump_scrapbot;
-        say "This well is in need of repairs";
+        say "However, the well was damaged in the storm and needs new parts.";
         cam_animate "see_river"; 
         interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, towards_river;
         interact_with_npc INTERACTION_LOOK, water_pump_scrapbot, towards_river;
-        say "You can scavange for parts from broken pumps near the river";
+        say "You can scavange for parts near the river.";
         cam_return;
         cam_wait;
         interact_with_npc INTERACTION_LOOK, water_pump_scrapbot, ENTITY_ID_PLAYER;
         npc_wait water_pump_scrapbot;
-        say "Here is a map you can follow to aquire the parts";
+        say "Here is a map you can follow to find the parts.";
         world_unpause;
         has_well_part_map = true;
         show_item ITEM_WELL_PUMP_PART_MAP;
         return;
     elif not has_pump_gear then
-        say "Check the map I gave to you to find the parts";
+        say "Consult the map I already gave you to aquire the parts.";
     elif not has_repaired_pump then 
         say "You have procured the parts";
         interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, repairs_water_pump_broken;
@@ -68,5 +73,26 @@ func exit_repair_well()
         
         world_unpause;
         cam_return;
+    elif has_repaired_pump then
+        delay 0.5;
+        world_pause;
+        
+        interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, water_pump_scrapbot;
+        interact_with_npc INTERACTION_LOOK, water_pump_scrapbot, ENTITY_ID_PLAYER;
+        cam_look_npc water_pump_scrapbot;
+
+        say "
+            Good work.
+            
+            You have repaired the well.
+
+            Come with me so we can tend to Sampson's wounds.
+        ";
+
+        interact_with_npc INTERACTION_LOOK_MOVE, water_pump_scrapbot, house_entrance;
+        world_unpause;
+        cam_return;
+        npc_wait water_pump_scrapbot;
+        despawn water_pump_scrapbot;
     end
 end
