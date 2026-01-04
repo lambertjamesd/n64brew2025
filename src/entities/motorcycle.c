@@ -238,6 +238,10 @@ void motorcycle_update(void* data) {
         }
     }
 
+    if (input.btn.z) {
+        motorcycle->vehicle.is_boosting = true;
+    }
+
     if (motorcycle->vehicle.driver) {
         float accel = motorcycle->vehicle.is_boosting ? BOOST_ACCEL_RATE : ACCEL_RATE;
 
