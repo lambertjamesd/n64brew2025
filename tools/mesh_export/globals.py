@@ -10,6 +10,12 @@ mapping = {
     "has_well_part_map": 'ITEM_WELL_PUMP_PART_MAP',
     "has_pump_gear": 'ITEM_WELL_HAS_PUMP_GEAR',
     "has_repaired_pump": 'ITEM_WELL_HAS_FIXED_PUMP',
+    
+    "has_generator_part_map": 'ITEM_GENERATOR_PART_MAP',
+    "has_generator_part_0": 'ITEM_GENERATOR_PART_0',
+    "has_generator_part_1": 'ITEM_GENERATOR_PART_1',
+    "has_generator_part_2": 'ITEM_GENERATOR_PART_2',
+    "has_repaired_generator": 'ITEM_GENERATOR_HAS_FIXED',
 }
 
 data_type_mapping = {

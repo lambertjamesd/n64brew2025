@@ -1,0 +1,55 @@
+
+global has_generator_part_map: bool;
+global has_generator_part_0: bool;
+global has_generator_part_1: bool;
+global has_generator_part_2: bool;
+global has_repaired_generator: bool;
+
+scene characters_brother: entity_id;
+scene repairs_generator_broken: entity_id;
+
+func room_house()
+
+end
+
+func on_enter()
+    npc_animate characters_brother, "injured", true;
+end
+
+func on_brother_talk()
+    world_pause;
+    say "It hurts";
+    world_unpause;
+end
+
+func on_robot_talk()
+    world_pause;
+    interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, ENTITY_ID_SUBJECT;
+    interact_with_npc INTERACTION_LOOK, ENTITY_ID_SUBJECT, ENTITY_ID_PLAYER;
+    cam_look_npc ENTITY_ID_SUBJECT;
+
+    if not has_generator_part_map then
+        say "
+            I have tended to Sampson's wounds.
+            
+            However his recovery is still questionable.
+            
+            This medical machine has lost power.
+        ";
+        cam_look_npc repairs_generator_broken;
+        say "
+            The generator needs to be repaired.
+
+            You should be able to aquire parts near the old mountain mines.
+        ";
+        world_unpause;
+        has_generator_part_map = true;
+        show_item ITEM_GENERATOR_PART_MAP;
+        return;
+    else
+        say "After you aquire the parts return here to fix the generator";
+    end
+
+    world_unpause;
+    cam_return;
+end

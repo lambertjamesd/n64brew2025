@@ -56,6 +56,12 @@ enum inventory_item_type {
     ITEM_WELL_HAS_PUMP_GEAR,
     ITEM_WELL_HAS_FIXED_PUMP,
 
+    ITEM_GENERATOR_PART_MAP,
+    ITEM_GENERATOR_PART_0,
+    ITEM_GENERATOR_PART_1,
+    ITEM_GENERATOR_PART_2,
+    ITEM_GENERATOR_HAS_FIXED,
+
     ITEM_TYPE_COUNT,
 };
 
@@ -114,6 +120,8 @@ struct repair_part_definition {
 enum repair_type {
     REPAIR_BIKE_MOTOR,
     REPAIR_WELL,
+    REPAIR_GENERATOR,
+    REPAIR_MEDICAL_DEVICE,
     REPAIR_COUNT,
 };
 
@@ -127,7 +135,6 @@ struct repair_interaction_definition {
 enum repair_part_type {
     REPAIR_PART_MOTOR,
     REPAIR_PART_WATER_PUMP_GEAR,
-    REPAIR_PART_WATER_PUMP_ARM,
     REPAIR_PART_COUNT,
 };
 
@@ -153,8 +160,14 @@ struct door_definition {
     room_id room_b;
 };
 
+enum scrapbot_locations {
+    SCRAPBOT_LOCATION_WELL,
+    SCRAPBOT_LOCATION_BROTHER,
+};
+
 enum npc_type {
     NPC_TYPE_SCRAPBOT1,
+    NPC_BROTHER,
 };
 
 struct npc_definition {
