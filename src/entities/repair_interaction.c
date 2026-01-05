@@ -28,6 +28,13 @@ static repair_interaction_type_def_t types[REPAIR_COUNT] = {
             .center = {0.0f, 0.8f, 0.0f},
         }
     },
+    [REPAIR_GENERATOR] = {
+        .mesh_name = "rom:/meshes/repairs/generator_broken.tmesh",
+        .collider = {
+            BOX_COLLIDER(0.6f, 0.6f, 1.0f),
+            .center = {0.0f, 0.6f, 0.0f},
+        }
+    },
 };
 
 void repair_interaction_common_init() {

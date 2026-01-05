@@ -142,6 +142,8 @@ def generate_overworld_tile(
             pos, rot, scale = detail.final_transform.decompose()
             adjusted_pos = (pos + cell_corner) * settings.fixed_point_scale
 
+            scale = scale * 0.5
+
             data.write(struct.pack('>fff', adjusted_pos.x, adjusted_pos.y, adjusted_pos.z))
             data.write(struct.pack('>ffff', rot.x, rot.y, rot.z, rot.w))
             data.write(struct.pack('>fff', scale.x, scale.y, scale.z))

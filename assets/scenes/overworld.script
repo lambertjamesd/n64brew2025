@@ -89,6 +89,8 @@ func exit_repair_well()
             Come with me so we can tend to Sampson's wounds.
         ";
 
+        scrapbot_location = SCRAPBOT_LOCATION_BROTHER;
+
         interact_with_npc INTERACTION_LOOK_MOVE, water_pump_scrapbot, house_entrance;
         world_unpause;
         cam_return;

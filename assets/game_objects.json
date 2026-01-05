@@ -7,6 +7,12 @@
             "type": "npc"
         },
         {
+            "name": "characters_brother",
+            "description": "",
+            "mesh": "meshes/characters/brother.blend#brother",
+            "type": "npc"
+        },
+        {
             "name": "doors_garage_door",
             "description": "",
             "mesh": "meshes/doors/garage_door.blend#door",
@@ -53,6 +59,12 @@
             "description": "",
             "mesh": "meshes/repair_scene.blend#repair_scene",
             "type": "repair_scene"
+        },
+        {
+            "name": "repairs_generator_broken",
+            "description": "",
+            "mesh": "meshes/repairs/generator_broken.blend#generator_broken",
+            "type": "repair_interaction"
         },
         {
             "name": "repairs_hoverbike_no_motor",
