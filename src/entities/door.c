@@ -55,7 +55,7 @@ void door_init(door_t* door, struct door_definition* definition, entity_id entit
 
     transformSaInit(&door->transform, &definition->position, &definition->rotation, 1.0f);
     renderable_single_axis_init(&door->renderable, &door->transform, type_def->mesh_name);
-    // render_scene_add_renderable(&door->renderable, 3.0f);
+    render_scene_add_renderable(&door->renderable, 3.0f);
 
     animator_init(&door->animator, door->renderable.mesh->armature.bone_count);
     door->animation_set = animation_cache_load(type_def->animations_name);
@@ -81,7 +81,7 @@ void door_init(door_t* door, struct door_definition* definition, entity_id entit
 }
 
 void door_destroy(door_t* door) {
-    // render_scene_remove(&door->renderable);
+    render_scene_remove(&door->renderable);
     renderable_destroy(&door->renderable);
     if (!door->was_open) {
         collision_scene_remove(&door->collider);

@@ -148,7 +148,7 @@ void map_get_position(vector3_t* world_pos, vector2_t* map_pos) {
 }
 
 void map_render_minimap(int map_x, int map_y) {
-    if (!current_scene) {
+    if (!current_scene || !current_scene->overworld) {
         return;
     }
 
