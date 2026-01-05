@@ -494,8 +494,10 @@ void overworld_check_actor_despawn(struct overworld* overworld, struct Vector3* 
             }
             current->next = overworld->next_free_actor;
             overworld->next_free_actor = current;
+            overworld_debug_active(overworld);
+        } else {
+            prev = current;
         }
-
         current = next;
     }
 }
