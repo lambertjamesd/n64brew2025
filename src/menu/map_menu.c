@@ -64,7 +64,17 @@ static struct menu_item menu_items[] = {
                 .image_filename = "rom:/images/maps/well_parts_map.sprite",
             },
         },
-    }
+    },
+    {
+        .type = MENU_ITEM_MAP,
+        .inventory_item = ITEM_GENERATOR_PART_MAP,
+        .name = "Power parts map",
+        .data = {
+            .map = {
+                .image_filename = "rom:/images/maps/generator_parts_map.sprite",
+            },
+        },
+    },
 };
 
 #define MENU_ITEM_COUNT      (sizeof(menu_items) / sizeof(*menu_items))

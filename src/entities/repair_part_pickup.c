@@ -32,6 +32,33 @@ static repair_part_type_def_t types[REPAIR_PART_COUNT] = {
             .max_stable_slope = 0.219131191f,
         }
     },
+    [REPAIR_PART_GEN_FAN] = {
+        .mesh_name = "rom:/meshes/parts/gen_fan.tmesh",
+        .collider = {
+            BOX_COLLIDER(0.4f, 0.4f, 0.4f),
+            .center = {0.0f, 0.0f, 0.0f},
+            .friction = 0.5,
+            .max_stable_slope = 0.219131191f,
+        }
+    },
+    [REPAIR_PART_GEN_STARTER] = {
+        .mesh_name = "rom:/meshes/parts/gen_starter.tmesh",
+        .collider = {
+            BOX_COLLIDER(0.3f, 0.3f, 0.3f),
+            .center = {0.0f, 0.0f, 0.0f},
+            .friction = 0.5,
+            .max_stable_slope = 0.219131191f,
+        }
+    },
+    [REPAIR_PART_GEN_BULB] = {
+        .mesh_name = "rom:/meshes/parts/gen_bulb.tmesh",
+        .collider = {
+            BOX_COLLIDER(0.2f, 0.2f, 0.2f),
+            .center = {0.0f, 0.2f, 0.0f},
+            .friction = 0.5,
+            .max_stable_slope = 0.219131191f,
+        }
+    },
 };
 
 void repair_part_pickup_common_init() {

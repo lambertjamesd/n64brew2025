@@ -37,6 +37,24 @@
             "type": "trigger_cube"
         },
         {
+            "name": "parts_gen_bulb",
+            "description": "",
+            "mesh": "meshes/parts/gen_bulb.blend#gen_bulb",
+            "type": "repair_part_pickup"
+        },
+        {
+            "name": "parts_gen_fan",
+            "description": "",
+            "mesh": "meshes/parts/gen_fan.blend#gen_fan",
+            "type": "repair_part_pickup"
+        },
+        {
+            "name": "parts_gen_starter",
+            "description": "",
+            "mesh": "meshes/parts/gen_starter.blend#gen_starter",
+            "type": "repair_part_pickup"
+        },
+        {
             "name": "parts_motor",
             "description": "",
             "mesh": "meshes/parts/motor.blend#hoverbike_motor",
