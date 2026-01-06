@@ -134,7 +134,7 @@ def generate_overworld_tile(
             
         tiny3d_mesh_writer.write_mesh(y_cell, None, [], settings, data)
 
-        cell_details = detail_cells[y]
+        cell_details = detail_cells[y] if y < len(detail_cells) else []
         data.write(struct.pack('>H', len(cell_details)))
 
         for detail in cell_details:
