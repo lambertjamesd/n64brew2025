@@ -1,0 +1,19 @@
+
+global has_well_part_map: bool;
+global has_pump_gear: bool;
+global has_repaired_pump: bool;
+global scrapbot_location: i8;
+
+scene repair_well: entity_id;
+
+func room_default()
+    if are_touching(repair_well, ENTITY_ID_PLAYER) then
+        has_motor = true;
+        has_repaired_motor = true;
+        has_well_part_map = true;
+        has_pump_gear = true;
+        scrapbot_location = SCRAPBOT_LOCATION_WELL;
+
+        load_scene "rom:/scenes/overworld.scene#exit_repair_well";
+    end
+end

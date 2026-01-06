@@ -526,7 +526,9 @@ bool cutscene_runner_is_running() {
 
 void cutscene_cancel_active(struct cutscene_active_entry* entry) {
     cutscene_runner_cancel_step(entry, &entry->function->steps[entry->current_instruction]);
-    entry->finish_callback(entry->cutscene, entry->data);
+    if (entry->finish_callback) {
+        entry->finish_callback(entry->cutscene, entry->data);
+    }
 }
 
 void cutscene_runner_cancel(struct cutscene* cutscene) {
