@@ -367,7 +367,7 @@ def flags_for_material(mat: material.Material) -> int:
     elif mat.culling == True:
         flags |= T3D_FLAG_CULL_BACK
 
-    if mat.tex0:
+    if mat.tex0 or mat.tex1:
         flags |= T3D_FLAG_TEXTURED
 
     if mat.combine_mode and mat.combine_mode.uses('SHADE'):

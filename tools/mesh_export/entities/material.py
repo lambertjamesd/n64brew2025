@@ -178,7 +178,7 @@ class CombineMode():
     
     def uses(self, attr: str) -> bool:
         if attr == 'TEX1':
-            return bool(self.cyc1 and self.cyc1.uses(attr))
+            return bool((self.cyc1 and self.cyc1.uses(attr)) or (self.cyc2 and self.cyc2.uses('TEX0')))
         if attr == 'TEX0':
             return bool(self.cyc1 and self.cyc1.uses(attr) or (self.cyc2 and self.cyc2.uses('TEX1')))
 
@@ -516,6 +516,8 @@ class Material():
     def get_image_size(self) -> tuple[int, int]:
         if self.tex0:
             return (self.tex0.width, self.tex0.height)
+        if self.tex1:
+            return (self.tex1.width, self.tex1.height)
         
         return 128, 128
     
