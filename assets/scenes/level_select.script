@@ -4,14 +4,41 @@ global has_pump_gear: bool;
 global has_repaired_pump: bool;
 global scrapbot_location: i8;
 
+scene intro: entity_id;
 scene repair_well: entity_id;
 
 func room_default()
-    if are_touching(repair_well, ENTITY_ID_PLAYER) then
+    if are_touching(intro, ENTITY_ID_PLAYER) then
+        has_motor = false;
+        has_repaired_motor = false;
+        has_well_part_map = false;
+        has_pump_gear = false;
+        
+        has_repaired_pump = false;
+
+        has_generator_part_map = false;
+        has_generator_part_0 = false;
+        has_generator_part_1 = false;
+        has_generator_part_2 = false;
+        has_repaired_generator = false;
+
+        scrapbot_location = SCRAPBOT_LOCATION_WELL;
+
+        load_scene "rom:/scenes/intro.scene#default";
+    elif are_touching(repair_well, ENTITY_ID_PLAYER) then
         has_motor = true;
         has_repaired_motor = true;
         has_well_part_map = true;
         has_pump_gear = true;
+        
+        has_repaired_pump = false;
+
+        has_generator_part_map = false;
+        has_generator_part_0 = false;
+        has_generator_part_1 = false;
+        has_generator_part_2 = false;
+        has_repaired_generator = false;
+
         scrapbot_location = SCRAPBOT_LOCATION_WELL;
 
         load_scene "rom:/scenes/overworld.scene#exit_repair_well";

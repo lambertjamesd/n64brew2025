@@ -16,6 +16,8 @@
 #include "../audio/audio.h"
 #include "../entities/vehicle.h"
 #include "../menu/map_menu.h"
+#include "../scene/scene.h"
+#include "../config.h"
 
 #include "../effects/fade_effect.h"
 
@@ -433,6 +435,13 @@ void player_update_state(struct player* player, struct contact* ground_contact) 
 }
 
 void player_update(struct player* player) {
+#if ENABLE_CHEATS
+    joypad_buttons_t buttons = joypad_get_buttons(0);
+    if (buttons.r && buttons.l) {
+        scene_queue_next("rom:/scenes/level_select.scene#default");
+    }
+#endif
+
     if (cutscene_actor_update(&player->cutscene_actor) || !update_has_layer(UPDATE_LAYER_WORLD)) {
         return;
     }

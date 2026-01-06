@@ -7,6 +7,7 @@
 #include "../collision/collision_scene.h"
 #include "../time/time.h"
 #include "../math/mathf.h"
+#include "../config.h"
 
 #define HOVER_SAG_AMOUNT        0.25f
 #define HOVER_SPRING_STRENGTH   (-GRAVITY_CONSTANT / HOVER_SAG_AMOUNT)
@@ -238,9 +239,11 @@ void motorcycle_update(void* data) {
         }
     }
 
+#if ENABLE_CHEATS
     if (input.btn.z) {
         motorcycle->vehicle.is_boosting = true;
     }
+#endif
 
     if (motorcycle->vehicle.driver) {
         float accel = motorcycle->vehicle.is_boosting ? BOOST_ACCEL_RATE : ACCEL_RATE;
