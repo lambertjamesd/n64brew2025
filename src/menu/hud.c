@@ -11,6 +11,9 @@
 #include "../render/defs.h"
 #include "../fonts/fonts.h"
 #include "../resource/material_cache.h"
+#include "../scene/scene.h"
+#include "../math/vector2.h"
+#include "menu_common.h"
 #include <string.h>
 
 #define SCREEN_EDGE_MARGIN      20.0f
@@ -102,8 +105,49 @@ void hud_render_interaction_preview(struct hud* hud) {
     );
 }
 
+static color_t compass_color = {0x5d, 0x56, 0x9f, 0xff};
+
+static vector2_t arrow_vertices[] = {
+    {0.0f, 10.0f},
+    {-4.0f, -7.0f},
+    {0.0f, -4.0f},
+    {4.0f, -7.0f},
+};
+
+static vector2_t compass_center = {284.0f, 39.0f};
+
+void hud_render_compass(struct hud* hud) {
+    if (!current_scene || !current_scene->overworld) {
+        return;
+    }
+    material_apply(hud->assets.icon_material);
+    rdpq_sprite_blit(hud->assets.compass_border, SCREEN_WD - 20 - 32, 18, NULL);
+    material_apply(hud->assets.compass_arrow);
+    rdpq_set_prim_color(compass_color);
+
+    vector2_t transformed[4];
+
+    vector2_t* rot = player_get_rotation(&current_scene->player);
+    for (int i = 0; i < 4; i += 1) {
+        menu_transform_point(&arrow_vertices[i], rot, &compass_center, &transformed[i]);
+    }
+    rdpq_triangle(
+        &TRIFMT_FILL, 
+        (float*)&transformed[0], 
+        (float*)&transformed[1], 
+        (float*)&transformed[2]
+    );
+    rdpq_triangle(
+        &TRIFMT_FILL, 
+        (float*)&transformed[0], 
+        (float*)&transformed[2], 
+        (float*)&transformed[3]
+    );
+}
+
 void hud_render(void *data) {
     hud_render_interaction_preview(data);
+    hud_render_compass(data);
 }
 
 void hud_init(struct hud* hud, struct player* player, camera_t* camera) {
@@ -113,10 +157,16 @@ void hud_init(struct hud* hud, struct player* player, camera_t* camera) {
     hud->camera = camera;
 
     hud->assets.overlay_material = material_cache_load("rom:/materials/menu/solid_primitive.mat");
+    hud->assets.compass_border = sprite_load("rom:/images/menu/compass_border.sprite");
+    hud->assets.icon_material = material_cache_load("rom:/materials/menu/map_icon.mat");
+    hud->assets.compass_arrow = material_cache_load("rom:/materials/menu/map_arrow.mat");
 }
 
 void hud_destroy(struct hud* hud) {
     menu_remove_callback(hud);
     font_type_release(FONT_DIALOG);
     material_cache_release(hud->assets.overlay_material);
+    material_cache_release(hud->assets.icon_material);
+    material_cache_release(hud->assets.compass_arrow);
+    sprite_free(hud->assets.compass_border);
 }

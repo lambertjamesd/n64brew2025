@@ -1,6 +1,7 @@
 #include "menu_common.h"
 
 #include "../resource/material_cache.h"
+#include "../math/vector2.h"
 
 static struct material* menu_background_material;
 static struct material* menu_border_material;
@@ -98,4 +99,9 @@ void menu_common_render_background(int x, int y, int w, int h) {
         CORNER_SIZE, CORNER_SIZE,
         BORDER_IMAGE_SIZE - CORNER_SIZE, BORDER_IMAGE_SIZE - CORNER_SIZE
     );
+}
+
+void menu_transform_point(vector2_t* input, vector2_t* rotation, vector2_t* screen_pos, vector2_t* output) {
+    vector2ComplexMul(input, rotation, output);
+    vector2Add(output, screen_pos, output);
 }

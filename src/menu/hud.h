@@ -8,6 +8,9 @@
 
 struct hud_assets {
     material_t* overlay_material;
+    material_t* icon_material;
+    material_t* compass_arrow;
+    sprite_t* compass_border;
 };
 
 typedef struct hud_assets hud_assets_t;

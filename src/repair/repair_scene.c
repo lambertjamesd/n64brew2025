@@ -36,10 +36,19 @@ void repair_scene_render_cursor(repair_scene_t* scene) {
 }
 
 void repair_scene_render(repair_scene_t* scene, T3DViewport* viewport, struct frame_memory_pool* pool) {
+    
+    rdpq_sync_pipe();
+    rdpq_set_mode_standard();
+    rdpq_mode_persp(false);
+    rdpq_sprite_blit(scene->assets.background, 0.0f, 0.0f, NULL);
+    
+    rdpq_sync_pipe();
+    rdpq_mode_persp(true);
+
     float tan_fov = tanf(scene->camera_fov * 0.5f);
     float aspect_ratio = (float)viewport->size[0] / (float)viewport->size[1];
 
-    float near = 0.5f * WORLD_SCALE;
+    float near = 10.0f * WORLD_SCALE;
     float far = 50.0f * WORLD_SCALE;
 
     matrixPerspective(
@@ -288,6 +297,7 @@ repair_scene_t* repair_scene_load(const char* filename) {
     fclose(file);
 
     material_load_file(&result->assets.cursor_material, "rom:/materials/repair/cursor.mat");
+    result->assets.background = sprite_load("rom:/images/repair/background.sprite");
 
     update_add(result, repair_scene_update, UPDATE_PRIORITY_PLAYER, UPDATE_LAYER_WORLD | UPDATE_LAYER_CUTSCENE);
 
@@ -316,6 +326,7 @@ void repair_scene_destroy(repair_scene_t* scene) {
     update_remove(scene);
 
     material_release(&scene->assets.cursor_material);
+    sprite_free(scene->assets.background);
 
     tmesh_release(&scene->static_meshes);
     for (int i = 0; i < scene->repair_part_count; i += 1) {

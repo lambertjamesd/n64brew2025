@@ -133,17 +133,12 @@ static vector2_t camera_cursor_points[3] = {
     {TAN_HORZ * VIEW_DEPTH, VIEW_DEPTH},
 };
 
-struct view_vertex {
-    vector2_t pos;
-    vector4_t col;
-};
-
 void map_get_position(vector3_t* world_pos, vector2_t* map_pos) {
     float width = current_scene->minimap_max.x - current_scene->minimap_min.x;
     float height = current_scene->minimap_max.y - current_scene->minimap_min.y;
 
     map_pos->x = (MAP_SIZE * (world_pos->x - current_scene->minimap_min.x) / width);
-    map_pos->y = (MAP_SIZE * (world_pos->z - current_scene->minimap_min.y) / height);
+    map_pos->y = (MAP_SIZE * (1.0f - (world_pos->z - current_scene->minimap_min.y) / height));
 
 }
 
@@ -218,8 +213,7 @@ void map_render_minimap(int map_x, int map_y) {
     vector2Negate(&cam_rot, &cam_rot);
     struct view_vertex cursor_points[3];
     for (int i = 0; i < 3; i += 1) {
-        vector2ComplexMul(&camera_cursor_points[i], &cam_rot, &cursor_points[i].pos);
-        vector2Add(&cursor_points[i].pos, &screen_pos, &cursor_points[i].pos);
+        menu_transform_point(&player_cursor_points[i], &cam_rot, &screen_pos, &cursor_points[i].pos);
         cursor_points[i].pos.x += map_x;
         cursor_points[i].pos.y += map_y;
         cursor_points[i].col = (vector4_t){
@@ -240,8 +234,7 @@ void map_render_minimap(int map_x, int map_y) {
 
     vector2_t* rot = player_get_rotation(&current_scene->player);
     for (int i = 0; i < 3; i += 1) {
-        vector2ComplexMul(&player_cursor_points[i], rot, &cursor_points[i].pos);
-        vector2Add(&cursor_points[i].pos, &screen_pos, &cursor_points[i].pos);
+        menu_transform_point(&player_cursor_points[i], rot, &screen_pos, &cursor_points[i].pos);
         cursor_points[i].pos.x += map_x;
         cursor_points[i].pos.y += map_y;
     }

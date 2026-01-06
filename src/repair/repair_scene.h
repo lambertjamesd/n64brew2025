@@ -11,6 +11,7 @@
 #include "../render/material.h"
 
 struct repar_scene_assets {
+    sprite_t* background;
     material_t cursor_material;
 };
 
