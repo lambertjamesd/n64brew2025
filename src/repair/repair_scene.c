@@ -48,8 +48,8 @@ void repair_scene_render(repair_scene_t* scene, T3DViewport* viewport, struct fr
     float tan_fov = tanf(scene->camera_fov * 0.5f);
     float aspect_ratio = (float)viewport->size[0] / (float)viewport->size[1];
 
-    float near = 10.0f * WORLD_SCALE;
-    float far = 50.0f * WORLD_SCALE;
+    float near = 5.0f * WORLD_SCALE;
+    float far = 40.0f * WORLD_SCALE;
 
     matrixPerspective(
         viewport->matProj.m, 

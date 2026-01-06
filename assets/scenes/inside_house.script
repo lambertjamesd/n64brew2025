@@ -43,6 +43,7 @@ func on_robot_talk()
             You should be able to aquire parts near the old mountain mines.
         ";
         world_unpause;
+        cam_return;
         has_generator_part_map = true;
         show_item ITEM_GENERATOR_PART_MAP;
         return;
