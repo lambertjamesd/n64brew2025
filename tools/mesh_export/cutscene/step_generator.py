@@ -41,6 +41,7 @@ CUTSCENE_STEP_LOAD_SCENE = 30
 CUTSCENE_STEP_DESPAWN = 31
 CUTSCENE_STEP_START_TIMER = 32
 CUTSCENE_STEP_CANCEL_TIMER = 33
+CUTSCENE_STEP_ASK = 34
 
 class ParameterType():
     def __init__(self, name: str, is_static: bool):
@@ -54,6 +55,7 @@ class Alias():
 
 _step_args = {
     "say": [ParameterType("tstr", True)],
+    "ask": [ParameterType("tstr", True)],
     "pause": [ParameterType("bool", True), ParameterType("bool", True)],
     "delay": [ParameterType("float", True)],
     "interact_with_npc": [ParameterType("int", True), ParameterType("entity_id", False), ParameterType("entity_id", False)],
@@ -88,6 +90,7 @@ _step_args = {
 
 _step_ids = {
     "say": CUTSCENE_STEP_DIALOG,
+    "ask": CUTSCENE_STEP_ASK,
     "pause": CUTSCENE_STEP_PAUSE,
     "delay": CUTSCENE_STEP_DELAY,
     "interact_with_npc": CUTSCENE_STEP_INTERACT_WITH_NPC,

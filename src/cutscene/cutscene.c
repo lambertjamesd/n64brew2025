@@ -89,6 +89,7 @@ struct cutscene* cutscene_load(const char* filename) {
 
         switch (step_type) {
             case CUTSCENE_STEP_DIALOG:
+            case CUTSCENE_STEP_ASK:
                 cutscene_load_template_string(&step->data.dialog.message, file);
                 break;
             case CUTSCENE_STEP_SHOW_ITEM:
@@ -198,6 +199,7 @@ void cutscene_destroy(struct cutscene* cutscene) {
 
         switch (step->type) {
             case CUTSCENE_STEP_DIALOG:
+            case CUTSCENE_STEP_ASK:
                 cutscene_destroy_template_string(&step->data.dialog.message);
                 break;
             case CUTSCENE_STEP_EXPRESSION:

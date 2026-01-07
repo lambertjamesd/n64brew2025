@@ -42,6 +42,7 @@ enum cutscene_step_type {
     CUTSCENE_STEP_DESPAWN,
     CUTSCENE_STEP_START_TIMER,
     CUTSCENE_STEP_CANCEL_TIMER,
+    CUTSCENE_STEP_ASK,
 };
 
 typedef void (*cutscene_step_callback)(void* data);

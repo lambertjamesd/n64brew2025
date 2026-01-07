@@ -7,6 +7,7 @@ typedef int (*expression_built_in_fn)(struct evaluation_context* context, int ar
 
 enum expression_built_in_type {
     EXPRESSION_BUILT_IN_ARE_TOUCHING,
+    EXPRESSION_BUILT_ASK_RESPONSE,
 
     EXPRESSION_BUILT_IN_COUNT,
 };

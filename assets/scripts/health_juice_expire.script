@@ -5,5 +5,13 @@ end
 
 world_pause;
 has_health_juice = false;
-say "The health juice has expired";
+ask "The health juice has expired. Try again?";
+
+if ask_response() then
+    fade FADE_COLOR_BLACK, 0.5;
+    delay 0.5;
+    load_scene "rom:/scenes/overworld.scene#health_juice";
+    fade FADE_COLOR_NONE, 0.5;
+end
+
 world_unpause;

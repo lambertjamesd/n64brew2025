@@ -22,13 +22,17 @@ struct dialog_box {
 
     dialog_end_callback end_callback;
     void* end_callback_data;
+    bool last_response;
+    bool is_asking_question;
 };
 
 void dialog_box_init();
 void dialog_box_show(char* message, int* args, dialog_end_callback end_callback, void* end_callback_data);
+void dialog_box_ask(char* message, int* args, dialog_end_callback end_callback, void* end_callback_data);
 bool dialog_box_is_active();
 void dialog_box_hide();
 void dialog_box_destroy();
+bool dialog_box_get_response();
 
 void dialog_box_format_string(char* into, char* format, int* args);
 

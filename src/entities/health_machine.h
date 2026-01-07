@@ -10,8 +10,8 @@
 #include "../entity/interactable.h"
 
 struct health_machine {
-    entity_id entity_id;
     transform_sa_t transform;
+    entity_id entity_id;
     renderable_t renderable;
     dynamic_object_t collider;
     interactable_t interactable;

@@ -1,5 +1,6 @@
 
 EXPRESSION_BUILT_IN_ARE_TOUCHING = 0
+EXPRESSION_BUILT_ASK_RESPONSE = 1
 
 class FunctionParameter():
     def __init__(self, name: str, type: str):
@@ -20,7 +21,8 @@ class BuiltInFunction():
 
 
 _built_in_functions = {
-    "are_touching": BuiltInFunction(EXPRESSION_BUILT_IN_ARE_TOUCHING, "int", [FunctionParameter("a", "int"), FunctionParameter("b", "int")])
+    "are_touching": BuiltInFunction(EXPRESSION_BUILT_IN_ARE_TOUCHING, "int", [FunctionParameter("a", "int"), FunctionParameter("b", "int")]),
+    "ask_response": BuiltInFunction(EXPRESSION_BUILT_ASK_RESPONSE, "int", []),
 }
 
 def lookup(name: str) -> BuiltInFunction | None:
