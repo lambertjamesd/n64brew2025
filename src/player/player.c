@@ -436,8 +436,7 @@ void player_update_state(struct player* player, struct contact* ground_contact) 
 
 void player_update(struct player* player) {
 #if ENABLE_CHEATS
-    joypad_buttons_t buttons = joypad_get_buttons(0);
-    if (buttons.r && buttons.l) {
+    if (joypad_get_buttons(0).l && joypad_get_buttons_pressed(0).r) {
         scene_queue_next("rom:/scenes/level_select.scene#default");
     }
 #endif

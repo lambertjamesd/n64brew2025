@@ -87,6 +87,7 @@ void dialog_box_render(void* data) {
             dialog_box.end_of_message ? 16 : 0, 0
         );
     }
+    rdpq_sync_pipe();
 }
 
 void dialog_box_format_string(char* into, char* format, int* args) {

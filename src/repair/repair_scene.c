@@ -10,6 +10,7 @@
 #include "../cutscene/cutscene.h"
 #include "../cutscene/cutscene_runner.h"
 #include "../cutscene/expression_evaluate.h"
+#include "../config.h"
 
 // WRLD
 #define EXPECTED_HEADER 0x57524C44
@@ -36,14 +37,7 @@ void repair_scene_render_cursor(repair_scene_t* scene) {
 }
 
 void repair_scene_render(repair_scene_t* scene, T3DViewport* viewport, struct frame_memory_pool* pool) {
-    
-    rdpq_sync_pipe();
-    rdpq_set_mode_standard();
-    rdpq_mode_persp(false);
-    rdpq_sprite_blit(scene->assets.background, 0.0f, 0.0f, NULL);
-    
-    rdpq_sync_pipe();
-    rdpq_mode_persp(true);
+    rspq_block_run(scene->background_block);
 
     float tan_fov = tanf(scene->camera_fov * 0.5f);
     float aspect_ratio = (float)viewport->size[0] / (float)viewport->size[1];
@@ -84,7 +78,7 @@ void repair_scene_render(repair_scene_t* scene, T3DViewport* viewport, struct fr
     t3d_mat4_to_fixed(mtx_fp, &mtx);
     t3d_matrix_push(mtx_fp);
     rspq_block_run(scene->static_meshes.block);
-    t3d_matrix_pop(1);  
+    t3d_matrix_pop(1);
 
     for (int i = 0; i < scene->repair_part_count; i += 1) {
         repair_part_t* part = &scene->repair_parts[i];
@@ -249,6 +243,12 @@ void repair_scene_update(void* data) {
         }
     }
 
+#if ENABLE_CHEATS
+    if (pressed.l) {
+        is_complete = true;
+    }
+#endif
+
     if (!scene->is_complete && is_complete) {
         scene->is_complete = is_complete;
         repair_scene_exit_with_message(scene, "Repair complete");
@@ -316,10 +316,19 @@ repair_scene_t* repair_scene_load(const char* filename) {
         repair_scene_exit_with_message(result, "You are missing some parts");
     }
 
+    rspq_block_begin();
+    
+    rdpq_sync_pipe();
+    rdpq_set_mode_copy(false);
+    rdpq_sprite_blit(result->assets.background, 0.0f, 0.0f, NULL);
+
+    result->background_block = rspq_block_end();
+
     return result;
 }
 
 void repair_scene_destroy(repair_scene_t* scene) {
+    rspq_block_free(scene->background_block);
     font_type_release(FONT_DIALOG);
 
     free(scene->exit_scene);

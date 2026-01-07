@@ -34,6 +34,8 @@ struct repair_scene {
     boolean_variable puzzle_complete;
     scene_entry_point exit_scene;
 
+    rspq_block_t* background_block;
+
     bool is_missing_parts: 1;
     bool is_complete: 1;
 };
