@@ -5,8 +5,13 @@ global has_generator_part_1: bool;
 global has_generator_part_2: bool;
 global has_repaired_generator: bool;
 
+global has_health_juice_map: bool;
+
 scene characters_brother: entity_id;
 scene repairs_generator_broken: entity_id;
+scene medical_machine: entity_id;
+scene scrapbot: entity_id;
+scene near_med_machine: entity_id;
 
 func room_house()
 
@@ -30,27 +35,67 @@ func on_robot_talk()
 
     if not has_generator_part_map then
         say "
-            I have tended to Sampson's wounds.
-            
-            However his recovery is still questionable.
-            
-            This medical machine has lost power.
+            There is a problem.
+
+            The medical machine has lost power.
         ";
         cam_look_npc repairs_generator_broken;
         say "
             The generator needs to be repaired.
 
             You should be able to aquire parts near the old mountain mines.
+            
+            I will stay here and do what I can with the fresh water you helped procure.
+
+            This map will aid you in finding the generator parts.
         ";
         world_unpause;
         cam_return;
         has_generator_part_map = true;
         show_item ITEM_GENERATOR_PART_MAP;
         return;
+    elif has_generator_part_0 and has_generator_part_1 and has_generator_part_2 then
+        if has_repaired_generator then
+            say "Use the map to locate more health juice for the machine";
+        else
+            say "
+                The medical machine is back online.
+
+                You need to follow that new map I gave to get more health juice.
+            ";
+        end
     else
         say "After you aquire the parts return here to fix the generator";
     end
 
     world_unpause;
     cam_return;
+end
+
+func on_exit_generator()
+    if has_repaired_generator and not has_health_juice_map then
+        cam_animate "power_back";
+        world_pause;
+        interact_with_npc INTERACTION_LOOK, scrapbot, medical_machine;
+        cam_wait;
+        interact_with_npc INTERACTION_LOOK_MOVE, ENTITY_ID_PLAYER, near_med_machine;
+        npc_set_speed ENTITY_ID_PLAYER, 3;
+        npc_wait scrapbot;
+        say "The power is back online.";
+        npc_wait ENTITY_ID_PLAYER;
+        interact_with_npc INTERACTION_LOOK, scrapbot, ENTITY_ID_PLAYER;
+        cam_look_npc scrapbot;
+        say "
+            Although it appears the health juice went bad while the power was out.
+
+            You will need to bring back more health juice.
+
+            Here is a map where you can find some.
+        ";
+        world_unpause;
+        cam_return;
+        has_health_juice_map = true;
+        show_item ITEM_HEALTH_JUICE_MAP;
+        return;
+    end
 end

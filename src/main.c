@@ -22,6 +22,7 @@
 #include "effects/fade_effect.h"
 #include "audio/audio.h"
 #include "repair/repair_scene.h"
+#include "config.h"
 
 #include <libdragon.h>
 #include <n64sys.h>
@@ -40,7 +41,7 @@ void load_scene_or_repair(const char* filename) {
 }
 
 
-void setup() {
+void setup() {\
     debug_init_isviewer();
     // rdpq_debug_start();
     savefile_new();
@@ -51,7 +52,12 @@ void setup() {
     fade_effect_set((color_t){0, 0, 0, 255}, 0.0f);
     fade_effect_set((color_t){0, 0, 0, 0}, 3.0f);
 
+#if ENABLE_CHEATS
     scene_queue_next("rom:/scenes/level_select.scene#default");
+#else
+    scene_queue_next("rom:/scenes/intro.scene#default");
+#endif
+
     // scene_queue_next("rom:/scenes/overworld_accuracy_test.scene");
     // scene_queue_next("rom:/scenes/overwrorld.scene");
     // scene_queue_next("rom:/repair/motorycle_engine.repair");

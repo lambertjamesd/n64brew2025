@@ -1,6 +1,7 @@
 #include "repair_interaction.h"
 
 #include "../collision/shapes/box.h"
+#include "../collision/shapes/cylinder.h"
 #include "../collision/collision_scene.h"
 #include "../render/render_scene.h"
 #include "../cutscene/cutscene.h"
@@ -33,6 +34,13 @@ static repair_interaction_type_def_t types[REPAIR_COUNT] = {
         .collider = {
             BOX_COLLIDER(0.6f, 0.6f, 1.0f),
             .center = {0.0f, 0.6f, 0.0f},
+        }
+    },
+    [REPAIR_MEDICAL_DEVICE] = {
+        .mesh_name = "rom:/meshes/repairs/medical_machine_broken.tmesh",
+        .collider = {
+            CYLINDER_COLLIDER(0.5f, 0.5f),
+            .center = {0.0f, 0.5f, 0.0f},
         }
     },
 };

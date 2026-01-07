@@ -91,6 +91,12 @@
             "type": "repair_interaction"
         },
         {
+            "name": "repairs_medical_machine_broken",
+            "description": "",
+            "mesh": "meshes/repairs/medical_machine_broken.blend#repair_device",
+            "type": "repair_interaction"
+        },
+        {
             "name": "repairs_water_pump_broken",
             "description": "",
             "mesh": "meshes/repairs/water_pump_broken.blend#water_pump_broken",

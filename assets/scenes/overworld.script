@@ -23,7 +23,7 @@ func well_scrapbot()
         say "
             Hello Jax. I have a task for you.
 
-            Aquire clean water to tend to Sampson's wounds.
+            Aquire clean water to tend to Samson's wounds.
         ";
         interact_with_npc INTERACTION_LOOK, water_pump_scrapbot, repairs_water_pump_broken;
         npc_wait water_pump_scrapbot;
@@ -73,7 +73,7 @@ func exit_repair_well()
         
         world_unpause;
         cam_return;
-    elif has_repaired_pump then
+    elif has_repaired_pump and scrapbot_location == SCRAPBOT_LOCATION_WELL then
         delay 0.5;
         world_pause;
         
@@ -86,7 +86,7 @@ func exit_repair_well()
             
             You have repaired the well.
 
-            Come with me so we can tend to Sampson's wounds.
+            Come with me so we can tend to Samson's wounds.
         ";
 
         scrapbot_location = SCRAPBOT_LOCATION_BROTHER;

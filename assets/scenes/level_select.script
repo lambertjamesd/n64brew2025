@@ -6,6 +6,7 @@ global scrapbot_location: i8;
 
 scene intro: entity_id;
 scene repair_well: entity_id;
+scene gen_parts: entity_id;
 scene repair_generator: entity_id;
 
 func room_default()
@@ -22,6 +23,10 @@ func room_default()
         has_generator_part_1 = false;
         has_generator_part_2 = false;
         has_repaired_generator = false;
+
+        has_health_juice_map = false;
+        has_health_juice = false;
+        has_repaired_health_machine = false;
 
         scrapbot_location = SCRAPBOT_LOCATION_WELL;
 
@@ -40,9 +45,34 @@ func room_default()
         has_generator_part_2 = false;
         has_repaired_generator = false;
 
+        has_health_juice_map = false;
+        has_health_juice = false;
+        has_repaired_health_machine = false;
+
         scrapbot_location = SCRAPBOT_LOCATION_WELL;
 
         load_scene "rom:/scenes/overworld.scene#exit_repair_well";
+    elif are_touching(gen_parts, ENTITY_ID_PLAYER) then
+        has_motor = true;
+        has_repaired_motor = true;
+        has_well_part_map = true;
+        has_pump_gear = true;
+        
+        has_repaired_pump = true;
+
+        has_generator_part_map = true;
+        has_generator_part_0 = false;
+        has_generator_part_1 = false;
+        has_generator_part_2 = false;
+        has_repaired_generator = false;
+
+        has_health_juice_map = false;
+        has_health_juice = false;
+        has_repaired_health_machine = false;
+
+        scrapbot_location = SCRAPBOT_LOCATION_BROTHER;
+
+        load_scene "rom:/scenes/overworld.scene#gen_parts";
     elif are_touching(repair_generator, ENTITY_ID_PLAYER) then
         has_motor = true;
         has_repaired_motor = true;
@@ -56,6 +86,10 @@ func room_default()
         has_generator_part_1 = true;
         has_generator_part_2 = true;
         has_repaired_generator = false;
+
+        has_health_juice_map = false;
+        has_health_juice = false;
+        has_repaired_health_machine = false;
 
         scrapbot_location = SCRAPBOT_LOCATION_BROTHER;
 

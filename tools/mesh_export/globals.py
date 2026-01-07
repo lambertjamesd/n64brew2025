@@ -16,6 +16,10 @@ mapping = {
     "has_generator_part_1": 'ITEM_GENERATOR_PART_1',
     "has_generator_part_2": 'ITEM_GENERATOR_PART_2',
     "has_repaired_generator": 'ITEM_GENERATOR_HAS_FIXED',
+    
+    "has_health_juice_map": 'ITEM_HEALTH_JUICE_MAP',
+    "has_health_juice": 'ITEM_HEALTH_JUICE',
+    "has_repaired_health_machine": 'ITEM_HEALTH_MACHINE_FIXED',
 }
 
 data_type_mapping = {

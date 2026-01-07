@@ -25,6 +25,17 @@ enum menu_item_type {
     MENU_ITEM_TYPE_COUNT,
 };
 
+enum menu_icon_type {
+    MENU_ICON_MOTOR_PART,
+    MENU_ICON_WELL_PART,
+    MENU_ICON_GEN_FAN_PART,
+    MENU_ICON_GEN_STARTER_PART,
+    MENU_ICON_GEN_BULB_PART,
+    MENU_ICON_MAP,
+
+    MENU_ICON_TYPE_COUNT,
+};
+
 struct map_asssets {
     sprite_t* map;
     material_t* material;
@@ -34,7 +45,7 @@ struct map_asssets {
     material_t* map_icon;
     material_t* selection_cursor;
 
-    sprite_t* icons[MENU_ITEM_TYPE_COUNT];
+    sprite_t* icons[MENU_ICON_TYPE_COUNT];
 };
 
 union menu_item_data {
@@ -48,6 +59,7 @@ union menu_item_data {
 
 struct menu_item {
     enum menu_item_type type;
+    enum menu_icon_type icon;
     enum inventory_item_type inventory_item;
     enum inventory_item_type hide_override;
     const char* name;
@@ -57,6 +69,7 @@ struct menu_item {
 static struct menu_item menu_items[] = {
     {
         .type = MENU_ITEM_MAP,
+        .icon = MENU_ICON_MAP,
         .inventory_item = ITEM_WELL_PUMP_PART_MAP,
         .name = "Well part map",
         .data = {
@@ -67,11 +80,86 @@ static struct menu_item menu_items[] = {
     },
     {
         .type = MENU_ITEM_MAP,
+        .icon = MENU_ICON_MAP,
         .inventory_item = ITEM_GENERATOR_PART_MAP,
         .name = "Power parts map",
         .data = {
             .map = {
                 .image_filename = "rom:/images/maps/generator_parts_map.sprite",
+            },
+        },
+    },
+    {
+        .type = MENU_ITEM_MAP,
+        .icon = MENU_ICON_MAP,
+        .inventory_item = ITEM_HEALTH_JUICE_MAP,
+        .name = "Health juice",
+        .data = {
+            .map = {
+                .image_filename = "rom:/images/maps/health_juice_map.sprite",
+            },
+        },
+    },
+    
+    {
+        .type = MENU_ITEM_PART,
+        .icon = MENU_ICON_MOTOR_PART,
+        .inventory_item = ITEM_WELL_HAS_MOTOR,
+        .hide_override = ITEM_WELL_HAS_FIXED_MOTOR,
+        .name = "Bike motor",
+        .data = {
+            .part = {
+                .description = "The motor to your hoverbike",
+            },
+        },
+    },
+    
+    {
+        .type = MENU_ITEM_PART,
+        .icon = MENU_ICON_WELL_PART,
+        .inventory_item = ITEM_WELL_HAS_PUMP_GEAR,
+        .hide_override = ITEM_WELL_HAS_FIXED_PUMP,
+        .name = "Well parts",
+        .data = {
+            .part = {
+                .description = "The parts you need to fix the water well",
+            },
+        },
+    },
+    
+    {
+        .type = MENU_ITEM_PART,
+        .icon = MENU_ICON_GEN_FAN_PART,
+        .inventory_item = ITEM_GENERATOR_PART_0,
+        .hide_override = ITEM_GENERATOR_HAS_FIXED,
+        .name = "Fan",
+        .data = {
+            .part = {
+                .description = "A fan needed to fix the generator",
+            },
+        },
+    },
+    {
+        .type = MENU_ITEM_PART,
+        .icon = MENU_ICON_GEN_STARTER_PART,
+        .inventory_item = ITEM_GENERATOR_PART_1,
+        .hide_override = ITEM_GENERATOR_HAS_FIXED,
+        .name = "Starter",
+        .data = {
+            .part = {
+                .description = "A starter needed to fix the generator",
+            },
+        },
+    },
+    {
+        .type = MENU_ITEM_PART,
+        .icon = MENU_ICON_GEN_BULB_PART,
+        .inventory_item = ITEM_GENERATOR_PART_2,
+        .hide_override = ITEM_GENERATOR_HAS_FIXED,
+        .name = "Bulb",
+        .data = {
+            .part = {
+                .description = "A bulb for fixing the generator",
             },
         },
     },
@@ -123,9 +211,13 @@ static uint8_t reveal_brush[BRUSH_HALF_SIZE * BRUSH_HALF_SIZE];
 static struct map_asssets assets;
 static struct map_menu map_menu;
 
-static const char* icon_files[MENU_ITEM_TYPE_COUNT] = {
-    [MENU_ITEM_PART] = "rom:/images/maps/dot_matrix_map_icon.sprite",
-    [MENU_ITEM_MAP] = "rom:/images/maps/dot_matrix_map_icon.sprite",
+static const char* icon_files[MENU_ICON_TYPE_COUNT] = {
+    [MENU_ICON_MOTOR_PART] = "rom:/images/parts/motor.sprite",
+    [MENU_ICON_WELL_PART] = "rom:/images/parts/water_pump_gear.sprite",
+    [MENU_ICON_GEN_FAN_PART] = "rom:/images/parts/gen_fan.sprite",
+    [MENU_ICON_GEN_STARTER_PART] = "rom:/images/parts/gen_starter.sprite",
+    [MENU_ICON_GEN_BULB_PART] = "rom:/images/parts/gen_bulb.sprite",
+    [MENU_ICON_MAP] = "rom:/images/maps/dot_matrix_map_icon.sprite",
 };
 
 static vector2_t player_cursor_points[3] = {
@@ -351,7 +443,7 @@ void map_render_items(float lerp_amount) {
             rdpq_set_prim_color(prim_color);
         }
 
-        rdpq_sprite_blit(assets.icons[item->type], x + MENU_X, y + MAP_Y, NULL);
+        rdpq_sprite_blit(assets.icons[item->icon], x + MENU_X, y + MAP_Y, NULL);
 
         x += ICON_SIZE;
 
@@ -576,7 +668,7 @@ void map_menu_show_with_item(enum inventory_item_type item) {
         map_menu_animate_new_items(should_show_details);
     }
 
-    for (int i = 0; i < MENU_ITEM_TYPE_COUNT; i += 1) {
+    for (int i = 0; i < MENU_ICON_TYPE_COUNT; i += 1) {
         assets.icons[i] = sprite_load(icon_files[i]);
     }
 
@@ -620,7 +712,7 @@ void map_menu_hide() {
         map_menu.details_image = NULL;
     }
 
-    for (int i = 0; i < MENU_ITEM_TYPE_COUNT; i += 1) {
+    for (int i = 0; i < MENU_ICON_TYPE_COUNT; i += 1) {
         sprite_free(assets.icons[i]);
         assets.icons[i] = NULL;
     }

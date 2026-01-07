@@ -12,4 +12,8 @@ global has_generator_part_1: bool;
 global has_generator_part_2: bool;
 global has_repaired_generator: bool;
 
+global has_health_juice_map: bool;
+global has_health_juice: bool;
+global has_repaired_health_machine: bool;
+
 global scrapbot_location: i8;

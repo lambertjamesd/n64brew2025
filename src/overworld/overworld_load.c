@@ -501,6 +501,20 @@ void overworld_check_actor_despawn(struct overworld* overworld, struct Vector3* 
     }
 }
 
+void overworld_despawn_all_tiles(struct overworld* overworld) {
+    for (int y = 0; y < LOADED_TILE_ARRAY_SIZE; y += 1) {
+        for (int x = 0; x < LOADED_TILE_ARRAY_SIZE; x += 1) {
+            struct overworld_actor_tile** slot = overworld_get_actor_tile_slot(overworld, x, y);
+            
+            if (*slot) {
+                collision_scene_remove_static_mesh(&(*slot)->collider);
+                overworld_actor_tile_free(*slot);
+                *slot = NULL;
+            }
+        }
+    }
+}
+
 void overworld_check_collider_tiles(struct overworld* overworld, struct Vector3* player_pos) {
     float tile_x = (player_pos->x - overworld->min.x) * overworld->inv_tile_size;
     float tile_y = (player_pos->z - overworld->min.y) * overworld->inv_tile_size;

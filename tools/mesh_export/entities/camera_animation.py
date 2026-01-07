@@ -118,7 +118,7 @@ def export_camera_animations(filename: str, scene_file):
         if not anim.movement_action:
             raise Exception(f"animation {name} only has lens data add an action to the camera object that ends in _cam")
         if not anim.lens_action:
-            raise Exception(f"animation {name} only has movment data add an action to the camera data that ends in _lens")
+            anim.lens_action = anim.movement_action
 
 
         animation_content.append(anim.pack_animation_data())
