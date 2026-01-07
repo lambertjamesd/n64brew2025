@@ -1,0 +1,9 @@
+
+if has_repaired_health_machine then
+    return;
+end
+
+world_pause;
+has_health_juice = false;
+say "The health juice has expired";
+world_unpause;

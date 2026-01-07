@@ -8,8 +8,12 @@ scene intro: entity_id;
 scene repair_well: entity_id;
 scene gen_parts: entity_id;
 scene repair_generator: entity_id;
+scene health_juice: entity_id;
 
 func room_default()
+    world_unpause;
+    cam_return;
+
     if are_touching(intro, ENTITY_ID_PLAYER) then
         has_motor = false;
         has_repaired_motor = false;
@@ -94,5 +98,26 @@ func room_default()
         scrapbot_location = SCRAPBOT_LOCATION_BROTHER;
 
         load_scene "rom:/scenes/inside_house.scene#default";
+    elif are_touching(health_juice, ENTITY_ID_PLAYER) then
+        has_motor = true;
+        has_repaired_motor = true;
+        has_well_part_map = true;
+        has_pump_gear = true;
+        
+        has_repaired_pump = true;
+
+        has_generator_part_map = true;
+        has_generator_part_0 = true;
+        has_generator_part_1 = true;
+        has_generator_part_2 = true;
+        has_repaired_generator = true;
+
+        has_health_juice_map = true;
+        has_health_juice = false;
+        has_repaired_health_machine = false;
+
+        scrapbot_location = SCRAPBOT_LOCATION_BROTHER;
+
+        load_scene "rom:/scenes/overworld.scene#health_juice";
     end
 end

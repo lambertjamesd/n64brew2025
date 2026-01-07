@@ -33,6 +33,7 @@ struct repair_scene {
 
     boolean_variable puzzle_complete;
     scene_entry_point exit_scene;
+    enum repair_variant variant;
 
     rspq_block_t* background_block;
 

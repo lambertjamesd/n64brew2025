@@ -1,0 +1,18 @@
+
+world_pause;
+
+interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, ENTITY_ID_SUBJECT;
+cam_look_npc ENTITY_ID_SUBJECT;
+
+if not has_repaired_health_machine then
+    say "This machine has health juice. Take some?";
+
+    has_health_juice = true;
+    cancel_timer;
+    start_timer 120, "rom:/scripts/health_juice_expire.script";
+else
+    say "You no longer need health juice.";
+end
+
+world_unpause;
+cam_return;

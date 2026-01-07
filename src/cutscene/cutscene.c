@@ -155,6 +155,10 @@ struct cutscene* cutscene_load(const char* filename) {
             case CUTSCENE_STEP_LOAD_SCENE:
                 step->data.load_scene.scene = string_load(file);
                 break;
+            case CUTSCENE_STEP_START_TIMER:
+                fread(&step->data.start_timer.time, 4, 1, file);
+                step->data.start_timer.cutscene = string_load(file);
+                break;
         }
     }
     
@@ -213,6 +217,9 @@ void cutscene_destroy(struct cutscene* cutscene) {
                 break;
             case CUTSCENE_STEP_LOAD_SCENE:
                 free(step->data.load_scene.scene);
+                break;
+            case CUTSCENE_STEP_START_TIMER:
+                free(step->data.start_timer.cutscene);
                 break;
             default:
                 break;

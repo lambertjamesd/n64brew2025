@@ -17,6 +17,7 @@
 #include "../collision/collision_scene.h"
 #include "../menu/map_menu.h"
 #include "../player/inventory.h"
+#include "cutscene_timer.h"
 #include <assert.h>
 
 #define MAX_QUEUED_CUTSCENES   4
@@ -348,6 +349,14 @@ void cutscene_runner_init_step(struct cutscene_active_entry* cutscene, struct cu
         }
         case CUTSCENE_STEP_DESPAWN: {
             entity_despawn(evaluation_context_pop(&cutscene->context));
+            break;
+        }
+        case CUTSCENE_STEP_START_TIMER: {
+            cutscene_timer_start(step->data.start_timer.time, step->data.start_timer.cutscene);
+            break;
+        }
+        case CUTSCENE_STEP_CANCEL_TIMER: {
+            cutscene_timer_cancel();
             break;
         }
     }

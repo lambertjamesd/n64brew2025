@@ -31,6 +31,12 @@
             "type": "door"
         },
         {
+            "name": "objects_health_juice_machine",
+            "description": "",
+            "mesh": "meshes/objects/health_juice_machine.blend#health_machine",
+            "type": "health_machine"
+        },
+        {
             "name": "objects_trigger_cube",
             "description": "",
             "mesh": "meshes/objects/trigger_cube.blend#Cube",

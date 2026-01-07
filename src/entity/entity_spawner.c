@@ -11,6 +11,7 @@
 #include "../entities/npc.h"
 #include "../entities/script_runner.h"
 #include "../entities/boost_pad.h"
+#include "../entities/health_machine.h"
 // include_list insert point
 
 #define ENTITY_DEFINITION(name, fields) [ENTITY_TYPE_ ## name] = { \
@@ -50,6 +51,7 @@ static struct entity_definition scene_entity_definitions[ENTITY_TYPE_count] = {
     ENTITY_DEFINITION(npc, fields_npc),
     ENTITY_DEFINITION(script_runner, fields_script_runner),
     ENTITY_DEFINITION(boost_pad, fields_empty),
+    ENTITY_DEFINITION(health_machine, fields_empty),
     // scene_entity_definitions insert point
 };
 

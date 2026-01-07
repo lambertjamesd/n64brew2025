@@ -18,6 +18,7 @@ enum entity_type_id {
     ENTITY_TYPE_npc,
     ENTITY_TYPE_script_runner,
     ENTITY_TYPE_boost_pad,
+    ENTITY_TYPE_health_machine,
     // type enum insert point
     
     ENTITY_TYPE_count,
@@ -112,9 +113,15 @@ struct trigger_cube_definition {
     struct Vector3 scale;
 };
 
+enum repair_variant {
+    REPAIR_VARIANT_OUTSIDE,
+    REPAIR_VARIANT_INSIDE,
+};
+
 struct repair_scene_definition {
     boolean_variable puzzle_complete;
     scene_entry_point exit_scene;
+    enum repair_variant variant;
 };
 
 struct repair_part_definition {
@@ -194,6 +201,11 @@ struct boost_pad_definition {
     struct Vector3 position;
     struct Quaternion rotation;
     boolean_variable is_on;
+};
+
+struct health_machine_definition {
+    struct Vector3 position;    
+    struct Vector2 rotation;
 };
 
 // definition insert point

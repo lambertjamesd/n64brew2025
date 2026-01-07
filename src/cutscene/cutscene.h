@@ -40,6 +40,8 @@ enum cutscene_step_type {
     CUTSCENE_STEP_SHOW_BOSS_HEALTH,
     CUTSCENE_STEP_LOAD_SCENE,
     CUTSCENE_STEP_DESPAWN,
+    CUTSCENE_STEP_START_TIMER,
+    CUTSCENE_STEP_CANCEL_TIMER,
 };
 
 typedef void (*cutscene_step_callback)(void* data);
@@ -149,6 +151,10 @@ union cutscene_step_data {
     struct {
         char* scene;
     } load_scene;
+    struct {
+        float time;
+        char* cutscene;
+    } start_timer;
 };
 
 struct cutscene_step {

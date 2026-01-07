@@ -256,6 +256,11 @@ void repair_scene_update(void* data) {
     }
 }
 
+static const char* backgrounds[] = {
+    [REPAIR_VARIANT_OUTSIDE] = "rom:/images/repair/background.sprite",
+    [REPAIR_VARIANT_INSIDE] = "rom:/images/repair/background-inside.sprite",
+};
+
 repair_scene_t* repair_scene_load(const char* filename) {
     repair_scene_t* result = malloc(sizeof(repair_scene_t));
 
@@ -293,11 +298,12 @@ repair_scene_t* repair_scene_load(const char* filename) {
     fread(&result->camera_fov, sizeof(float), 1, file);
     fread(&result->puzzle_complete, sizeof(boolean_variable), 1, file);
     result->exit_scene = file_read_string(file);
+    fread(&result->variant, 4, 1, file);
 
     fclose(file);
 
     material_load_file(&result->assets.cursor_material, "rom:/materials/repair/cursor.mat");
-    result->assets.background = sprite_load("rom:/images/repair/background.sprite");
+    result->assets.background = sprite_load(backgrounds[result->variant]);
 
     update_add(result, repair_scene_update, UPDATE_PRIORITY_PLAYER, UPDATE_LAYER_WORLD | UPDATE_LAYER_CUTSCENE);
 

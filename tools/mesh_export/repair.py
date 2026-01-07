@@ -87,12 +87,17 @@ def write_camera(camera, file: io.BufferedWriter):
     file.write(struct.pack('>ffff', rot.x, rot.y, rot.z, rot.w))
     file.write(struct.pack('>f', camera.data.angle_y))
 
+repair_variant = {
+    "REPAIR_VARIANT_OUTSIDE": 0,
+    "REPAIR_VARIANT_INSIDE": 1,
+}
 
 def write_scene_vars(repair_scene, boolean_enum: dict[str, int], file: io.BufferedWriter):
     write_boolean(boolean_enum, repair_scene['puzzle_complete'], file)
     str_bytes = repair_scene['exit_scene'].encode()
     file.write(len(str_bytes).to_bytes(1, 'big'))
     file.write(str_bytes)
+    file.write(repair_variant[repair_scene['variant']].to_bytes(4, 'big'))
 
 def process_scene():
     camera = None

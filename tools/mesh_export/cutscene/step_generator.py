@@ -39,6 +39,8 @@ CUTSCENE_STEP_CALLBACK = 28
 CUTSCENE_STEP_SHOW_BOSS_HEALTH = 29
 CUTSCENE_STEP_LOAD_SCENE = 30
 CUTSCENE_STEP_DESPAWN = 31
+CUTSCENE_STEP_START_TIMER = 32
+CUTSCENE_STEP_CANCEL_TIMER = 33
 
 class ParameterType():
     def __init__(self, name: str, is_static: bool):
@@ -80,6 +82,8 @@ _step_args = {
     "spawn": [ParameterType("entity_spawner", False)],
     "despawn": [ParameterType("entity_id", False)],
     "load_scene": [ParameterType("str", True)],
+    "start_timer": [ParameterType("float", True), ParameterType("str", True)],
+    "cancel_timer": [],
 }
 
 _step_ids = {
@@ -106,6 +110,8 @@ _step_ids = {
     "spawn": CUTSCENE_STEP_SPAWN,
     "load_scene": CUTSCENE_STEP_LOAD_SCENE,
     "despawn": CUTSCENE_STEP_DESPAWN,
+    "start_timer": CUTSCENE_STEP_START_TIMER,
+    "cancel_timer": CUTSCENE_STEP_CANCEL_TIMER,
 }
 
 _steps_that_need_idle = {

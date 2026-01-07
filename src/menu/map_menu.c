@@ -371,16 +371,20 @@ void map_render_title(struct menu_item* item) {
 void map_render_details(struct menu_item* item) {
     switch (item->type) {
         case MENU_ITEM_PART:
+            material_apply(assets.map_icon);
+
+            rdpq_sprite_blit(assets.icons[item->icon], MENU_X, MAP_Y, NULL);
+
             rdpq_text_printn(&(rdpq_textparms_t){
                     // .line_spacing = -3,
                     .align = ALIGN_LEFT,
                     .valign = VALIGN_TOP,
                     .width = 128,
                     .height = 128,
-                    .wrap = WRAP_NONE,
+                    .wrap = WRAP_WORD,
                 }, 
                 FONT_DIALOG, 
-                MENU_X, MAP_Y, 
+                MENU_X, MAP_Y + ICON_SIZE, 
                 item->data.part.description,
                 strlen(item->data.part.description)
             );
@@ -404,6 +408,58 @@ bool map_should_show_item(struct menu_item* item) {
 }
 
 #define FADE_IN_RATIO   0.3f
+
+enum inventory_item_type map_render_get_item_at(int xAt, int yAt) {
+    int x = 0;
+    int y = 0;
+    for (int i = 0; i < MENU_ITEM_COUNT; i += 1) {
+        struct menu_item* item = &menu_items[i];
+
+        if (!map_should_show_item(&menu_items[i])) {
+            continue;
+        }
+        
+        if (x == xAt && y == yAt) {
+            return item->inventory_item;
+        }
+        
+        x += ICON_SIZE;
+
+        if (x >= MAP_SIZE) {
+            x = 0;
+            y += ICON_SIZE;
+        }
+    }
+
+    return ITEM_TYPE_NONE;
+}
+
+bool map_render_get_position(enum menu_item_type type, int* xOut, int* yOut) {
+    int x = 0;
+    int y = 0;
+    for (int i = 0; i < MENU_ITEM_COUNT; i += 1) {
+        struct menu_item* item = &menu_items[i];
+
+        if (!map_should_show_item(&menu_items[i])) {
+            continue;
+        }
+        
+        if (item->inventory_item == map_menu.selected_item) {
+            *xOut = x;
+            *yOut = y;
+            return true;
+        }
+        
+        x += ICON_SIZE;
+
+        if (x >= MAP_SIZE) {
+            x = 0;
+            y += ICON_SIZE;
+        }
+    }
+
+    return false;
+}
 
 void map_render_items(float lerp_amount) {
     int x = 0;
@@ -586,6 +642,46 @@ void map_menu_animate_new_items(bool show_details) {
     };
 }
 
+void map_check_direction() {
+    static int prev_x;
+    static int prev_y;
+
+    joypad_inputs_t inputs = joypad_get_inputs(0);
+
+    int dx = 0;
+    int dy = 0;
+
+    if (inputs.stick_x > 40 && prev_x <= 40) {
+        dx = ICON_SIZE;
+    } else if (inputs.stick_x < -40 && prev_x >= -40) {
+        dx = -ICON_SIZE;
+    }
+
+    if (inputs.stick_y > 40 && prev_y <= 40) {
+        dy = -ICON_SIZE;
+    } else if (inputs.stick_y < -40 && prev_y >= -40) {
+        dy = ICON_SIZE;
+    }
+
+    prev_x = inputs.stick_x;
+    prev_y = inputs.stick_y;
+
+    if (dx == 0 && dy == 0) {
+        return;
+    }
+
+    int x, y;
+    map_render_get_position(map_menu.selected_item, &x, &y);
+
+    enum inventory_item_type new_selection = map_render_get_item_at(x + dx, y + dy);
+
+    if (new_selection == ITEM_TYPE_NONE) {
+        return;
+    }
+
+    map_menu.selected_item = new_selection;
+}
+
 void map_menu_update(void* data) {
     joypad_buttons_t pressed = joypad_get_buttons_pressed(0);
     joypad_inputs_t input = joypad_get_inputs(0);
@@ -600,6 +696,7 @@ void map_menu_update(void* data) {
                 map_menu_hide();
                 return;
             }
+            map_check_direction();
             if (pressed.a) {
                 map_menu_show_details();
             }
@@ -682,7 +779,7 @@ void map_menu_show_with_item(enum inventory_item_type item) {
 
     if (item != ITEM_TYPE_NONE) {
         map_menu.selected_item = item;
-    } else if (map_menu.selected_item == ITEM_TYPE_NONE) {
+    } else if (map_menu.selected_item == ITEM_TYPE_NONE || !map_find_selected_item()) {
         map_menu.selected_item = map_get_default_selection();
     }
 }
