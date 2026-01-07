@@ -10,7 +10,7 @@ if not has_repaired_health_machine then
     if ask_response() then
         has_health_juice = true;
         cancel_timer;
-        start_timer 10, "rom:/scripts/health_juice_expire.script";
+        start_timer 120, "rom:/scripts/health_juice_expire.script";
     end
 else
     say "You no longer need health juice.";
