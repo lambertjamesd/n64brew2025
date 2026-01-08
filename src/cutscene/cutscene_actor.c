@@ -51,8 +51,6 @@ void cutscene_actor_init(
     actor->animations.walk = animation_set_find_clip(actor->animation_set, "walk");
     actor->animations.run = animation_set_find_clip(actor->animation_set, "run");
 
-    debugf("anim count %d from %s\n", actor->animation_set->clip_count, animations_path);
-
     animator_init(&actor->animator, armature ? armature->bone_count : 0);
     actor->armature = armature;
     actor->target = gZeroVec;

@@ -270,7 +270,23 @@ struct overworld* overworld_load(const char* filename) {
     return result;
 }
 
+struct overworld_actor_tile** overworld_get_actor_tile_slot(struct overworld* overworld, int tile_x, int tile_y) {
+    return &overworld->loaded_actor_tiles[tile_x & 0x1][tile_y & 0x1];
+}
+
 void overworld_free(struct overworld* overworld) {
+    for (int y = 0; y < LOADED_TILE_ARRAY_SIZE; y += 1) {
+        for (int x = 0; x < LOADED_TILE_ARRAY_SIZE; x += 1) {
+            struct overworld_actor_tile** slot = overworld_get_actor_tile_slot(overworld, x, y);
+            
+            if (*slot) {
+                collision_scene_remove_static_mesh(&(*slot)->collider);
+                overworld_actor_tile_free(*slot);
+                *slot = NULL;
+            }
+        }
+    }
+
     for (int x = 0; x < 4; x += 1) {
         for (int y = 0; y < 4; y += 1) {
             if (overworld->loaded_tiles[x][y]) {
@@ -426,10 +442,6 @@ void overworld_check_tile_spawns(struct overworld* overworld, struct overworld_a
     tile->active_spawn_locations = end - tile->spawn_locations;
 }
 
-struct overworld_actor_tile** overworld_get_actor_tile_slot(struct overworld* overworld, int tile_x, int tile_y) {
-    return &overworld->loaded_actor_tiles[tile_x & 0x1][tile_y & 0x1];
-}
-
 void overworld_reset_spawn_location(struct overworld* overworld, struct overworld_actor* actor) {
     struct overworld_actor_tile** slot = overworld_get_actor_tile_slot(overworld, actor->tile_x, actor->tile_y);
 
@@ -498,20 +510,6 @@ void overworld_check_actor_despawn(struct overworld* overworld, struct Vector3* 
             prev = current;
         }
         current = next;
-    }
-}
-
-void overworld_despawn_all_tiles(struct overworld* overworld) {
-    for (int y = 0; y < LOADED_TILE_ARRAY_SIZE; y += 1) {
-        for (int x = 0; x < LOADED_TILE_ARRAY_SIZE; x += 1) {
-            struct overworld_actor_tile** slot = overworld_get_actor_tile_slot(overworld, x, y);
-            
-            if (*slot) {
-                collision_scene_remove_static_mesh(&(*slot)->collider);
-                overworld_actor_tile_free(*slot);
-                *slot = NULL;
-            }
-        }
     }
 }
 
