@@ -6,6 +6,7 @@
 #include "../render/render_scene.h"
 #include "../cutscene/cutscene.h"
 #include "../cutscene/cutscene_runner.h"
+#include "../time/time.h"
 
 struct repair_interaction_type_def {
     const char* mesh_name;
@@ -59,9 +60,12 @@ void repair_interact(struct interactable* interactable, entity_id from) {
     cutscene_builder_init(&builder);
 
     cutscene_builder_fade(&builder, FADE_COLOR_BLACK, 1.0f);
+    cutscene_builder_pause(&builder, true, false, UPDATE_LAYER_WORLD);
     cutscene_builder_delay(&builder, 1.0f);
     cutscene_builder_load_scene(&builder, repair->repair_scene);
     cutscene_builder_fade(&builder, FADE_COLOR_NONE, 1.0f);
+    cutscene_builder_delay(&builder, 1.0f);
+    cutscene_builder_pause(&builder, false, false, UPDATE_LAYER_WORLD);
 
     cutscene_runner_run(cutscene_builder_finish(&builder), 0, cutscene_runner_free_on_finish(), NULL, 0);
 }

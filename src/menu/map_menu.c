@@ -31,6 +31,7 @@ enum menu_icon_type {
     MENU_ICON_GEN_FAN_PART,
     MENU_ICON_GEN_STARTER_PART,
     MENU_ICON_GEN_BULB_PART,
+    MENU_ICON_NANO_VIAL_PART,
     MENU_ICON_MAP,
 
     MENU_ICON_TYPE_COUNT,
@@ -163,6 +164,18 @@ static struct menu_item menu_items[] = {
             },
         },
     },
+    {
+        .type = MENU_ITEM_PART,
+        .icon = MENU_ICON_NANO_VIAL_PART,
+        .inventory_item = ITEM_HEALTH_JUICE,
+        .hide_override = ITEM_HEALTH_MACHINE_FIXED,
+        .name = "Nano bots",
+        .data = {
+            .part = {
+                .description = "Medical nano bots used to treat wounds",
+            },
+        },
+    },
 };
 
 #define MENU_ITEM_COUNT      (sizeof(menu_items) / sizeof(*menu_items))
@@ -217,6 +230,7 @@ static const char* icon_files[MENU_ICON_TYPE_COUNT] = {
     [MENU_ICON_GEN_FAN_PART] = "rom:/images/parts/gen_fan.sprite",
     [MENU_ICON_GEN_STARTER_PART] = "rom:/images/parts/gen_starter.sprite",
     [MENU_ICON_GEN_BULB_PART] = "rom:/images/parts/gen_bulb.sprite",
+    [MENU_ICON_NANO_VIAL_PART] = "rom:/images/parts/nano_vial.sprite",
     [MENU_ICON_MAP] = "rom:/images/maps/dot_matrix_map_icon.sprite",
 };
 

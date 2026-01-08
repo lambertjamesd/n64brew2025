@@ -179,6 +179,11 @@ enum scrapbot_locations {
     SCRAPBOT_LOCATION_BROTHER,
 };
 
+enum samson_locations {
+    SAMSON_LOCATION_BED,
+    SAMSON_LOCATION_HEALED,
+};
+
 enum npc_type {
     NPC_TYPE_SCRAPBOT1,
     NPC_BROTHER,

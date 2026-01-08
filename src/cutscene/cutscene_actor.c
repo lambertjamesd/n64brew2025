@@ -51,6 +51,8 @@ void cutscene_actor_init(
     actor->animations.walk = animation_set_find_clip(actor->animation_set, "walk");
     actor->animations.run = animation_set_find_clip(actor->animation_set, "run");
 
+    debugf("anim count %d from %s\n", actor->animation_set->clip_count, animations_path);
+
     animator_init(&actor->animator, armature ? armature->bone_count : 0);
     actor->armature = armature;
     actor->target = gZeroVec;
@@ -73,6 +75,7 @@ void cutscene_actor_init(
     );
 
     actor->collider.collision_group = def->collision_group;
+    actor->collider.weight_class = WEIGHT_CLASS_HEAVY;
     actor->last_animator_events.all = 0;
 
     collision_scene_add(&actor->collider);

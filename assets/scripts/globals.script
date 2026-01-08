@@ -17,3 +17,4 @@ global has_health_juice: bool;
 global has_repaired_health_machine: bool;
 
 global scrapbot_location: i8;
+global samson_location: i8;

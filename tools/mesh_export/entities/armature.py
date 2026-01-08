@@ -371,10 +371,10 @@ class ArmatureData:
             return False
 
         for group in action.groups:
-            if not group.name in self.armature.bones:
-                return False
+            if group.name in self.armature.bones:
+                return True
             
-        return True
+        return False
     
     def generate_pose_data(self, settings: export_settings.ExportSettings) -> list[PackedArmatureData]:
         result: list[PackedArmatureData] = []

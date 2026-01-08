@@ -11,6 +11,7 @@
 #include "../cutscene/cutscene_runner.h"
 #include "../cutscene/expression_evaluate.h"
 #include "../config.h"
+#include "../cutscene/cutscene_timer.h"
 
 // WRLD
 #define EXPECTED_HEADER 0x57524C44
@@ -251,6 +252,7 @@ void repair_scene_update(void* data) {
 
     if (!scene->is_complete && is_complete) {
         scene->is_complete = is_complete;
+        cutscene_timer_cancel();
         repair_scene_exit_with_message(scene, "Repair complete");
         expression_set_bool(scene->puzzle_complete, true);
     }

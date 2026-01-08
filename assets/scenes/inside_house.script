@@ -8,10 +8,12 @@ global has_repaired_generator: bool;
 global has_health_juice_map: bool;
 
 scene characters_brother: entity_id;
+scene characters_brother_healed: entity_id;
 scene repairs_generator_broken: entity_id;
 scene medical_machine: entity_id;
 scene scrapbot: entity_id;
 scene near_med_machine: entity_id;
+scene bedside: entity_id;
 
 func room_house()
 
@@ -98,4 +100,37 @@ func on_exit_generator()
         show_item ITEM_HEALTH_JUICE_MAP;
         return;
     end
+end
+
+func on_exit_medical_machine()
+    if has_repaired_health_machine and samson_location == SAMSON_LOCATION_BED then
+        world_pause;
+        cam_look_npc scrapbot;
+        interact_with_npc INTERACTION_LOOK, scrapbot, medical_machine;
+        interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, scrapbot;
+        say "
+            The machine is functional again.
+
+            I will tend to his wounds now.
+        ";
+        samson_location = SAMSON_LOCATION_HEALED;
+        fade FADE_COLOR_BLACK, 0.5;
+        delay 1.5;
+        load_scene "rom:/scenes/inside_house.scene#samson_heal";
+    end
+end
+
+func on_samson_heal()
+    cam_look_npc characters_brother_healed;
+    fade FADE_COLOR_NONE, 0.5;
+    delay 0.5;
+
+    say "
+        Thank you Jax.
+
+        I wasn't sure if I was going to make it.
+    ";
+
+    world_unpause;
+    cam_return;
 end
