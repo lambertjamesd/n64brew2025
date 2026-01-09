@@ -103,6 +103,12 @@
             "type": "repair_interaction"
         },
         {
+            "name": "repairs_tablet_broken",
+            "description": "",
+            "mesh": "meshes/repairs/tablet_broken.blend#case",
+            "type": "repair_interaction"
+        },
+        {
             "name": "repairs_water_pump_broken",
             "description": "",
             "mesh": "meshes/repairs/water_pump_broken.blend#water_pump_broken",
@@ -118,7 +124,7 @@
             "name": "vehicles_bike",
             "description": "",
             "mesh": "meshes/vehicles/bike.blend#Motorcycle",
-            "type": "motorcycle"
+            "type": "motorcycle_spawner"
         },
         {
             "name": "vehicles_boost_pad_base",

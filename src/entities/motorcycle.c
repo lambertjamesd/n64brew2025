@@ -316,6 +316,7 @@ void motorcycle_update(void* data) {
         vector3Sub(&target_vel, vel, &accel);
 
         motorcycle->has_traction = vector3MoveTowards(vel, &target_vel, max_accel * scaled_time_step_inv, vel);
+        
         vel->y = vel->y * 0.8 + (target_height - min_height_offset) * fixed_time_step * HOVER_SPRING_STRENGTH;
     }
 }

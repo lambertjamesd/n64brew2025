@@ -10,6 +10,7 @@ scene gen_parts: entity_id;
 scene repair_generator: entity_id;
 scene health_juice: entity_id;
 scene health_juice_repair: entity_id;
+scene tablet_repair: entity_id;
 
 func room_default()
     world_unpause;
@@ -33,8 +34,16 @@ func room_default()
         has_health_juice = false;
         has_repaired_health_machine = false;
 
+        has_tablet_battery = false;
+        has_tablet_memory = false;
+        has_tablet_screen = false;
+        has_tablet_repaired_tablet = false;
+        has_tablet = false;
+
         scrapbot_location = SCRAPBOT_LOCATION_WELL;
         samson_location = SAMSON_LOCATION_BED;
+
+        is_riding_motorcycle = false;
 
         load_scene "rom:/scenes/intro.scene#default";
     elif are_touching(repair_well, ENTITY_ID_PLAYER) then
@@ -55,8 +64,16 @@ func room_default()
         has_health_juice = false;
         has_repaired_health_machine = false;
 
+        has_tablet_battery = false;
+        has_tablet_memory = false;
+        has_tablet_screen = false;
+        has_tablet_repaired_tablet = false;
+        has_tablet = false;
+
         scrapbot_location = SCRAPBOT_LOCATION_WELL;
         samson_location = SAMSON_LOCATION_BED;
+
+        is_riding_motorcycle = false;
 
         load_scene "rom:/scenes/overworld.scene#exit_repair_well";
     elif are_touching(gen_parts, ENTITY_ID_PLAYER) then
@@ -77,8 +94,16 @@ func room_default()
         has_health_juice = false;
         has_repaired_health_machine = false;
 
+        has_tablet_battery = false;
+        has_tablet_memory = false;
+        has_tablet_screen = false;
+        has_tablet_repaired_tablet = false;
+        has_tablet = false;
+
         scrapbot_location = SCRAPBOT_LOCATION_BROTHER;
         samson_location = SAMSON_LOCATION_BED;
+        
+        is_riding_motorcycle = false;
 
         load_scene "rom:/scenes/overworld.scene#gen_parts";
     elif are_touching(repair_generator, ENTITY_ID_PLAYER) then
@@ -99,8 +124,16 @@ func room_default()
         has_health_juice = false;
         has_repaired_health_machine = false;
 
+        has_tablet_battery = false;
+        has_tablet_memory = false;
+        has_tablet_screen = false;
+        has_tablet_repaired_tablet = false;
+        has_tablet = false;
+
         scrapbot_location = SCRAPBOT_LOCATION_BROTHER;
         samson_location = SAMSON_LOCATION_BED;
+        
+        is_riding_motorcycle = false;
 
         load_scene "rom:/scenes/inside_house.scene#default";
     elif are_touching(health_juice, ENTITY_ID_PLAYER) then
@@ -121,8 +154,16 @@ func room_default()
         has_health_juice = false;
         has_repaired_health_machine = false;
 
+        has_tablet_battery = false;
+        has_tablet_memory = false;
+        has_tablet_screen = false;
+        has_tablet_repaired_tablet = false;
+        has_tablet = false;
+
         scrapbot_location = SCRAPBOT_LOCATION_BROTHER;
         samson_location = SAMSON_LOCATION_BED;
+        
+        is_riding_motorcycle = false;
 
         load_scene "rom:/scenes/overworld.scene#health_juice";
     elif are_touching(health_juice_repair, ENTITY_ID_PLAYER) then
@@ -145,9 +186,47 @@ func room_default()
         start_timer 20, "rom:/scripts/health_juice_expire.script";
         has_repaired_health_machine = false;
 
+        has_tablet_battery = false;
+        has_tablet_memory = false;
+        has_tablet_screen = false;
+        has_tablet_repaired_tablet = false;
+        has_tablet = false;
+
         scrapbot_location = SCRAPBOT_LOCATION_BROTHER;
         samson_location = SAMSON_LOCATION_BED;
+        
+        is_riding_motorcycle = false;
 
         load_scene "rom:/scenes/inside_house.scene#health_machine";
+    elif are_touching(tablet_repair, ENTITY_ID_PLAYER) then
+        has_motor = true;
+        has_repaired_motor = true;
+        has_well_part_map = true;
+        has_pump_gear = true;
+        
+        has_repaired_pump = true;
+
+        has_generator_part_map = true;
+        has_generator_part_0 = true;
+        has_generator_part_1 = true;
+        has_generator_part_2 = true;
+        has_repaired_generator = true;
+
+        has_health_juice_map = true;
+        has_health_juice = true;
+        has_repaired_health_machine = true;
+
+        has_tablet_battery = true;
+        has_tablet_memory = true;
+        has_tablet_screen = true;
+        has_tablet_repaired_tablet = false;
+        has_tablet = false;
+
+        scrapbot_location = SCRAPBOT_LOCATION_BROTHER;
+        samson_location = SAMSON_LOCATION_HEALED;
+        
+        is_riding_motorcycle = false;
+
+        load_scene "rom:/scenes/inside_house.scene#tablet";
     end
 end

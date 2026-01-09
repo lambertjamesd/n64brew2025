@@ -20,6 +20,12 @@ mapping = {
     "has_health_juice_map": 'ITEM_HEALTH_JUICE_MAP',
     "has_health_juice": 'ITEM_HEALTH_JUICE',
     "has_repaired_health_machine": 'ITEM_HEALTH_MACHINE_FIXED',
+    
+    "has_tablet_battery": 'ITEM_TABLET_BATTERY',
+    "has_tablet_memory": 'ITEM_TABLET_MEMORY',
+    "has_tablet_screen": 'ITEM_TABLET_SCREEN',
+    "has_tablet_repaired_tablet": 'ITEM_TABLET_REPAIRED',
+    "has_tablet": 'ITEM_TABLET',
 
     "is_riding_motorcycle": "ITEM_RIDING_MOTORCYCLE",
 }

@@ -32,6 +32,9 @@ enum menu_icon_type {
     MENU_ICON_GEN_STARTER_PART,
     MENU_ICON_GEN_BULB_PART,
     MENU_ICON_NANO_VIAL_PART,
+    MENU_ICON_TABLET_BATTERY,
+    MENU_ICON_TABLET_MEMORY,
+    MENU_ICON_TABLET_SCREEN,
     MENU_ICON_MAP,
 
     MENU_ICON_TYPE_COUNT,
@@ -176,6 +179,42 @@ static struct menu_item menu_items[] = {
             },
         },
     },
+    {
+        .type = MENU_ITEM_PART,
+        .icon = MENU_ICON_TABLET_BATTERY,
+        .inventory_item = ITEM_TABLET_BATTERY,
+        .hide_override = ITEM_TABLET_REPAIRED,
+        .name = "Nuclear battery",
+        .data = {
+            .part = {
+                .description = "This battery still works years after the asteroid impact.",
+            },
+        },
+    },
+    {
+        .type = MENU_ITEM_PART,
+        .icon = MENU_ICON_TABLET_MEMORY,
+        .inventory_item = ITEM_TABLET_MEMORY,
+        .hide_override = ITEM_TABLET_REPAIRED,
+        .name = "Memory",
+        .data = {
+            .part = {
+                .description = "This is hard to come by",
+            },
+        },
+    },
+    {
+        .type = MENU_ITEM_PART,
+        .icon = MENU_ICON_TABLET_SCREEN,
+        .inventory_item = ITEM_TABLET_SCREEN,
+        .hide_override = ITEM_TABLET_REPAIRED,
+        .name = "Video screen",
+        .data = {
+            .part = {
+                .description = "This is the same model as the broken tablet",
+            },
+        },
+    },
 };
 
 #define MENU_ITEM_COUNT      (sizeof(menu_items) / sizeof(*menu_items))
@@ -231,6 +270,9 @@ static const char* icon_files[MENU_ICON_TYPE_COUNT] = {
     [MENU_ICON_GEN_STARTER_PART] = "rom:/images/parts/gen_starter.sprite",
     [MENU_ICON_GEN_BULB_PART] = "rom:/images/parts/gen_bulb.sprite",
     [MENU_ICON_NANO_VIAL_PART] = "rom:/images/parts/nano_vial.sprite",
+    [MENU_ICON_TABLET_BATTERY] = "rom:/images/parts/tablet_battery.sprite",
+    [MENU_ICON_TABLET_MEMORY] = "rom:/images/parts/tablet_memory.sprite",
+    [MENU_ICON_TABLET_SCREEN] = "rom:/images/parts/tablet_screen.sprite",
     [MENU_ICON_MAP] = "rom:/images/maps/dot_matrix_map_icon.sprite",
 };
 
