@@ -18,3 +18,5 @@ global has_repaired_health_machine: bool;
 
 global scrapbot_location: i8;
 global samson_location: i8;
+
+global is_riding_motorcycle: bool;

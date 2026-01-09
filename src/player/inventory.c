@@ -22,7 +22,7 @@ bool inventory_has_item(enum inventory_item_type item) {
     return evaluation_context_load(savefile_get_globals(), global->data_type, global->word_offset);
 }
 
-void inventory_give_item(enum inventory_item_type item) {
+void inventory_set_has_item(enum inventory_item_type item, bool value) {
     if (item >= ITEM_TYPE_COUNT || item == ITEM_TYPE_NONE) {
         return;
     }

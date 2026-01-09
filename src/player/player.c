@@ -18,6 +18,7 @@
 #include "../menu/map_menu.h"
 #include "../scene/scene.h"
 #include "../config.h"
+#include "inventory.h"
 
 #include "../effects/fade_effect.h"
 
@@ -203,6 +204,10 @@ void player_enter_vehicle(struct player* player, entity_id vehicle_id) {
     vehicle_enter(vehicle, ENTITY_ID_PLAYER);
     player->cutscene_actor.collider.collision_layers = 0;
     player_loop_animation(player, PLAYER_ANIMATION_RIDE_BIKE, 1.0f);
+
+    if (vehicle_id == ENTITY_ID_MOTORCYLE) {
+        inventory_set_has_item(ITEM_RIDING_MOTORCYCLE, true);
+    }
 }
 
 void player_exit_vehicle(struct player* player) {
@@ -404,6 +409,7 @@ void player_update_in_vehicle(struct player* player, struct contact* ground_cont
 
     if (!vehicle) {
         player_exit_vehicle(player);
+        inventory_set_has_item(ITEM_RIDING_MOTORCYCLE, false);
         return;
     }
 
@@ -418,6 +424,7 @@ void player_update_in_vehicle(struct player* player, struct contact* ground_cont
 
     if (pressed.b && vehicle->is_stopped) {
         player_exit_vehicle(player);
+        inventory_set_has_item(ITEM_RIDING_MOTORCYCLE, false);
     }
 }
 

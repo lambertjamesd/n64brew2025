@@ -20,6 +20,8 @@ mapping = {
     "has_health_juice_map": 'ITEM_HEALTH_JUICE_MAP',
     "has_health_juice": 'ITEM_HEALTH_JUICE',
     "has_repaired_health_machine": 'ITEM_HEALTH_MACHINE_FIXED',
+
+    "is_riding_motorcycle": "ITEM_RIDING_MOTORCYCLE",
 }
 
 data_type_mapping = {

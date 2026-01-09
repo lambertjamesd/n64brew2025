@@ -129,7 +129,7 @@ void cutscene_runner_init_step(struct cutscene_active_entry* cutscene, struct cu
             cutscene_runner.active_step_data.dialog.has_shown = false;
             break;
         case CUTSCENE_STEP_SHOW_ITEM:
-            inventory_give_item(step->data.show_item.item);
+            inventory_set_has_item(step->data.show_item.item, true);
             map_menu_show_with_item(step->data.show_item.item);
             break;
         case CUTSCENE_STEP_PAUSE:

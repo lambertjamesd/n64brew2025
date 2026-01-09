@@ -10,6 +10,7 @@ ask "The health juice has expired. Try again?";
 if ask_response() then
     fade FADE_COLOR_BLACK, 0.5;
     delay 0.5;
+    is_riding_motorcycle = false;
     load_scene "rom:/scenes/overworld.scene#health_juice";
     fade FADE_COLOR_NONE, 0.5;
 end

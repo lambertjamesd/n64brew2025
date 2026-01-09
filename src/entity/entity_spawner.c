@@ -12,6 +12,7 @@
 #include "../entities/script_runner.h"
 #include "../entities/boost_pad.h"
 #include "../entities/health_machine.h"
+#include "../entities/motorcycle_spawner.h"
 // include_list insert point
 
 #define ENTITY_DEFINITION(name, fields) [ENTITY_TYPE_ ## name] = { \
@@ -52,6 +53,7 @@ static struct entity_definition scene_entity_definitions[ENTITY_TYPE_count] = {
     ENTITY_DEFINITION(script_runner, fields_script_runner),
     ENTITY_DEFINITION(boost_pad, fields_empty),
     ENTITY_DEFINITION(health_machine, fields_empty),
+    ENTITY_DEFINITION(motorcycle_spawner, fields_empty),
     // scene_entity_definitions insert point
 };
 
@@ -94,35 +96,48 @@ void entity_add_reference(enum entity_type_id entity_type) {
     ++scene_entity_count[entity_type];
 }
 
-entity_id entity_spawn(enum entity_type_id type, void* definition) {
+bool entity_spawn_with_id(enum entity_type_id type, void* definition, enum fixed_entity_ids entity_id) {
     struct entity_definition* entity_def = entity_def_get(type);
-
-    if (!entity_def) {
-        return 0;
-    }
+    assert(entity_def);
 
     if (!entity_mapping.entries) {
         if (!hash_map_init(&entity_mapping, ENTITY_STARTING_CAPACITY)) {
-            return 0;
+            return false;
         }
     }
    
-    entity_id result = entity_id_new();
     void* entity = malloc(entity_def->entity_size + sizeof(struct entity_header));
     
-    if (!entity || !hash_map_set(&entity_mapping, result, entity)) {
+    if (!entity || !hash_map_set(&entity_mapping, entity_id, entity)) {
         free(entity);
-        return 0;
+        return false;
     }
 
     entity_add_reference(type);
 
     struct entity_header* header = entity;
     header->entity_def = entity_def;
-    header->id = result; 
+    header->id = entity_id; 
 
-    entity_def->init(header + 1, definition, result);
-    return result;
+    entity_def->init(header + 1, definition, entity_id);
+
+    return true;
+}
+
+entity_id entity_spawn(enum entity_type_id type, void* definition) {
+    entity_id result = entity_id_new();
+    if (entity_spawn_with_id(type, definition, result)) {
+        return result;
+    }
+    return 0;
+}
+
+bool entity_spawn_singleton(enum entity_type_id type, void* definition, enum fixed_entity_ids entity_id) {
+    if (hash_map_get(&entity_mapping, entity_id)) {
+        return false;
+    }
+
+    return entity_spawn_with_id(type, definition, entity_id);
 }
 
 void entity_remove_reference(enum entity_type_id entity_type) {

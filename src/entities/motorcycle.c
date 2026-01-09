@@ -8,6 +8,7 @@
 #include "../time/time.h"
 #include "../math/mathf.h"
 #include "../config.h"
+#include "../scene/scene.h"
 
 #define HOVER_SAG_AMOUNT        0.25f
 #define HOVER_SPRING_STRENGTH   (-GRAVITY_CONSTANT / HOVER_SAG_AMOUNT)
@@ -210,8 +211,30 @@ float motorycle_get_ground_height(motorcycle_t* motorcycle, float target_height,
     return min_height_offset;
 }
 
+#define MOTORCYCLE_CULL_DISTANCE    70.0f
+
+bool motorcycle_check_active(motorcycle_t* motorcycle) {
+    bool is_active = vector3DistSqrd(&motorcycle->transform.position, player_get_position(&current_scene->player)) < MOTORCYCLE_CULL_DISTANCE * MOTORCYCLE_CULL_DISTANCE;
+
+    if (is_active && !motorcycle->is_active) {
+        render_scene_init_add_renderable(&motorcycle->renderable, &motorcycle->transform, assets.mesh, 2.0f);
+        collision_scene_add(&motorcycle->collider);
+    } else if (!is_active && motorcycle->is_active) {
+        render_scene_remove_renderable(&motorcycle->renderable);
+        collision_scene_remove(&motorcycle->collider);
+    }
+
+    motorcycle->is_active = is_active;
+
+    return is_active;
+}
+
 void motorcycle_update(void* data) {
     motorcycle_t* motorcycle = (motorcycle_t*)data;
+
+    if (!motorcycle_check_active(motorcycle)) {
+        return;
+    }
 
     float current_speed = sqrtf(vector3MagSqrd(&motorcycle->collider.velocity));
 
@@ -308,6 +331,7 @@ void motorcycle_init(motorcycle_t* motorcycle, struct motorcycle_definition* def
     interactable_init(&motorcycle->interactable, entity_id, INTERACT_TYPE_RIDE, motorcycle_ride, motorcycle);
     
     motorcycle->has_traction = true;
+    motorcycle->is_active = true;
     motorcycle->boost_timer = 0.0f;
 
     for (int i = 0; i < CAST_POINT_COUNT; i += 1) {
@@ -318,8 +342,10 @@ void motorcycle_init(motorcycle_t* motorcycle, struct motorcycle_definition* def
 }
 
 void motorcycle_destroy(motorcycle_t* motorcycle) {
-    render_scene_remove_renderable(&motorcycle->renderable);
-    collision_scene_remove(&motorcycle->collider);
+    if (motorcycle->is_active) {
+        render_scene_remove_renderable(&motorcycle->renderable);
+        collision_scene_remove(&motorcycle->collider);
+    }
     interactable_destroy(&motorcycle->interactable);
     update_remove(motorcycle);
     vehicle_destroy(&motorcycle->vehicle);

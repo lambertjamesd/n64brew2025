@@ -19,6 +19,7 @@ enum entity_type_id {
     ENTITY_TYPE_script_runner,
     ENTITY_TYPE_boost_pad,
     ENTITY_TYPE_health_machine,
+    ENTITY_TYPE_motorcycle_spawner,
     // type enum insert point
     
     ENTITY_TYPE_count,
@@ -39,6 +40,11 @@ struct empty_definition {
 
 struct motorcycle_definition {
     struct Vector3 position;
+    struct Vector2 rotation;
+};
+
+struct motorcycle_spawner_definition {
+    struct Vector3 position;    
     struct Vector2 rotation;
 };
 
@@ -66,6 +72,8 @@ enum inventory_item_type {
     ITEM_HEALTH_JUICE_MAP,
     ITEM_HEALTH_JUICE,
     ITEM_HEALTH_MACHINE_FIXED,
+
+    ITEM_RIDING_MOTORCYCLE,
 
     ITEM_TYPE_COUNT,
 };

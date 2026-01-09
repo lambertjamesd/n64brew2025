@@ -77,6 +77,9 @@ void player_render(struct player* player, struct render_batch* batch);
 
 void player_destroy(struct player* player);
 
+void player_enter_vehicle(struct player* player, entity_id vehicle_id);
+
+
 static inline struct Vector3* player_get_position(struct player* player) {
     return &player->cutscene_actor.transform.position;
 }

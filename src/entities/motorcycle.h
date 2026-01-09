@@ -19,6 +19,7 @@ struct motorcycle {
     interactable_t interactable; 
     vehicle_t vehicle;
     bool has_traction;
+    bool is_active;
     
     float boost_timer;
 

@@ -1,11 +1,4 @@
 
-global has_repaired_motor: bool;
-
-scene door_open: bool;
-scene garage_door: entity_id;
-scene vehicles_bike: entity_id;
-scene garage_space: entity_id;
-
 func room_garage()
-    door_open = not are_touching(garage_space, ENTITY_ID_PLAYER);
+
 end
