@@ -8,6 +8,7 @@
 #include "../cutscene/expression_evaluate.h"
 #include "../cutscene/cutscene_runner.h"
 #include "../menu/map_menu.h"
+#include "../time/time.h"
 
 struct scene* current_scene;
 
@@ -165,7 +166,20 @@ void scene_update(void* data) {
 
     for (int i = 0; i < scene->loading_zone_count; i += 1) {
         if (box3DContainsPoint(&scene->loading_zones[i].bounding_box, &player_center)) {
-            scene_queue_next(scene->loading_zones[i].scene_name);
+            cutscene_builder_t cutscene;
+            cutscene_builder_init(&cutscene);
+            cutscene_builder_pause(&cutscene, true, false, UPDATE_LAYER_WORLD);
+            cutscene_builder_fade(&cutscene, FADE_COLOR_BLACK, 0.5f);
+            cutscene_builder_delay(&cutscene, 0.5f);
+            cutscene_builder_load_scene(&cutscene, scene->loading_zones[i].scene_name);
+            cutscene_builder_pause(&cutscene, false, false, UPDATE_LAYER_WORLD);
+            cutscene_builder_delay(&cutscene, 0.5f);
+            cutscene_builder_fade(&cutscene, FADE_COLOR_NONE, 0.5f);
+
+            cutscene_runner_run(cutscene_builder_finish(&cutscene), 0, cutscene_runner_free_on_finish(), NULL, 0);
+
+            // kinda hacky
+            scene->loading_zone_count = 0;
         }
     }
 

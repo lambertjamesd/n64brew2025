@@ -35,5 +35,5 @@ void inventory_set_has_item(enum inventory_item_type item, bool value) {
 
     assert(global->data_type);
 
-    evaluation_context_save(savefile_get_globals(), global->data_type, global->word_offset, true);
+    evaluation_context_save(savefile_get_globals(), global->data_type, global->word_offset, value);
 }

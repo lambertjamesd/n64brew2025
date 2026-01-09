@@ -448,7 +448,7 @@ void player_update(struct player* player) {
     }
 #endif
 
-    if (cutscene_actor_update(&player->cutscene_actor) || !update_has_layer(UPDATE_LAYER_WORLD)) {
+    if ((cutscene_actor_update(&player->cutscene_actor) || !update_has_layer(UPDATE_LAYER_WORLD)) && player->state != PLAYER_IN_VEHICLE) {
         return;
     }
 

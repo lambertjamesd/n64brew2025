@@ -53,7 +53,7 @@ void cutscene_ref_run_then_callback(cutscene_ref_t* ref, cutscene_finish_callbac
 
             if (fn_index != -1) {
                 cutscene_runner_run(current_scene->cutscene, fn_index, finish_callback, data, subject);
-            } else {
+            } else if (finish_callback) {
                 finish_callback(NULL, data);
             }
             break;
