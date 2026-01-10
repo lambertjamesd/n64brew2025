@@ -36,7 +36,7 @@ void armature_destroy(struct armature* armature);
 // this wont be needed once instancing is working
 void armature_def_apply(struct armature_definition* definition, T3DMat4FP* pose);
 
-T3DMat4* armature_build_pose(struct armature* armature, struct frame_memory_pool* pool);
+void armature_build_pose(struct armature* armature, T3DMat4* pose);
 
 void armature_bone_transform(struct armature* armature, int bone_index, struct Transform* result);
 

@@ -121,25 +121,22 @@ static quaternion_t relative_rotations[4] = {
 };
 
 void repair_scene_handle_grabbed_part(repair_scene_t* scene, joypad_inputs_t input, joypad_buttons_t pressed) {
+    int rotation_index = -1;
+
     if (pressed.c_up) {
-        quaternion_t new_rotation;
-        quatMultiply(&relative_rotations[0], &scene->grabbed_part->target_rotation, &new_rotation);
-        scene->grabbed_part->target_rotation = new_rotation;
+        rotation_index = 0;
+    } else if (pressed.c_right) {
+        rotation_index = 1;
+    } else if (pressed.c_down) {
+        rotation_index = 2;
+    } else if (pressed.c_left) {
+        rotation_index = 3;
     }
-    if (pressed.c_right) {
-        quaternion_t new_rotation;
-        quatMultiply(&relative_rotations[1], &scene->grabbed_part->target_rotation, &new_rotation);
-        scene->grabbed_part->target_rotation = new_rotation;
-    }
-    if (pressed.c_down) {
-        quaternion_t new_rotation;
-        quatMultiply(&relative_rotations[2], &scene->grabbed_part->target_rotation, &new_rotation);
-        scene->grabbed_part->target_rotation = new_rotation;
-    }
-    if (pressed.c_left) {
-        quaternion_t new_rotation;
-        quatMultiply(&relative_rotations[3], &scene->grabbed_part->target_rotation, &new_rotation);
-        scene->grabbed_part->target_rotation = new_rotation;
+
+    if (rotation_index != -1) {
+        quaternion_t rot;
+        quatMultiply(&relative_rotations[rotation_index], &scene->grabbed_part->target_rotation, &rot);
+        scene->grabbed_part->target_rotation = rot;
     }
 
     vector3_t up;

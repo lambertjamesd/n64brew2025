@@ -105,13 +105,7 @@ void armature_def_apply(struct armature_definition* definition, T3DMat4FP* pose)
     data_cache_hit_writeback_invalidate(pose, sizeof(T3DMat4FP) * definition->bone_count);
 }
 
-T3DMat4* armature_build_pose(struct armature* armature, struct frame_memory_pool* pool) {
-    T3DMat4* pose = frame_malloc(pool, sizeof(T3DMat4) * armature->bone_count);
-
-    if (!pose) {
-        return NULL;
-    }
-
+void armature_build_pose(struct armature* armature, T3DMat4* pose) {
     uint8_t* parent_linkage = armature->definition->parent_linkage;
 
     for(int i = 0; i < armature->bone_count; i++) {
@@ -127,8 +121,6 @@ T3DMat4* armature_build_pose(struct armature* armature, struct frame_memory_pool
             matrixMul(pose[parent_index].m, tmp, pose[i].m);
         }
     }
-
-    return pose;
 }
 
 void armature_bone_transform(struct armature* armature, int bone_index, struct Transform* result) {

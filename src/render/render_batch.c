@@ -34,22 +34,24 @@ struct render_batch_element* render_batch_add(struct render_batch* batch) {
     return result;
 }
 
-T3DMat4FP* render_batch_build_pose(T3DMat4* pose, int bone_count) {
-    if (!pose) {
+T3DMat4FP* render_batch_build_pose(T3DMat4* pose, int bone_count, frame_memory_pool_t* pool) {
+    T3DMat4FP* result = frame_malloc(pool, sizeof(T3DMat4FP) * bone_count);
+
+    if (!result) {
         return NULL;
     }
 
+    result = UncachedAddr(result);
+
     T3DMat4* end = pose + bone_count;
+    T3DMat4FP* out = result;
 
     for(T3DMat4* curr = pose; curr < end; curr += 1) {
-        T3DMat4FP tmp;
-        t3d_mat4_to_fixed(&tmp, curr);
-        *((T3DMat4FP*)curr) = tmp;
+        t3d_mat4_to_fixed(out, curr);
+        ++out;
     }
 
-    data_cache_hit_writeback_invalidate(pose, sizeof(T3DMat4) * bone_count);
-
-    return (T3DMat4FP*)pose;
+    return result;
 }
 
 void render_batch_relative_mtx(struct render_batch* batch, mat4x4 into) {
@@ -139,9 +141,10 @@ struct render_batch_element* render_batch_add_tmesh(
 
     if (armature) {
         if (armature->bone_count) {
-            T3DMat4* pose = armature_build_pose(armature, batch->pool);
+            T3DMat4 pose[armature->bone_count];
+            armature_build_pose(armature, pose);
     
-            T3DMat4FP* pose_fp = render_batch_build_pose(pose, armature->bone_count);
+            T3DMat4FP* pose_fp = render_batch_build_pose(pose, armature->bone_count, batch->pool);
             
             attr->type = ELEMENT_ATTR_POSE;
             attr->offset = 0;
