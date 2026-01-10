@@ -15,12 +15,17 @@ scene scrapbot: entity_id;
 scene near_med_machine: entity_id;
 scene bedside: entity_id;
 
-func room_house()
+scene did_injure: bool;
 
+func room_house()
+    if not did_injure and samson_location == SAMSON_LOCATION_BED then
+        npc_animate characters_brother, "injured", true;
+        did_injure = true;
+    end
 end
 
 func on_enter()
-    npc_animate characters_brother, "injured", true;
+
 end
 
 func on_brother_talk()

@@ -417,7 +417,7 @@ void cutscene_runner_cancel_step(struct cutscene_active_entry* cutscene, struct 
 }
 
 void cutscene_runner_start(struct cutscene* cutscene, int function_index, cutscene_finish_callback finish_callback, void* data, entity_id subject) {
-    if (function_index < 0 || function_index >= cutscene->function_count) {
+    if (function_index < 0 || function_index >= cutscene->function_count || cutscene->functions[function_index].step_count == 0) {
         if (finish_callback) {
             finish_callback(cutscene, data);
         }
