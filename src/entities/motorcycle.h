@@ -8,6 +8,8 @@
 #include "../collision/dynamic_object.h"
 #include "../entity/interactable.h"
 #include "../collision/cast_point.h"
+#include "../render/animation_clip.h"
+#include "../render/animator.h"
 #include "vehicle.h"
 
 #define CAST_POINT_COUNT 4
@@ -15,6 +17,8 @@
 struct motorcycle {
     transform_sa_t transform;
     renderable_t renderable;
+    animator_t animator;
+    animation_set_t* animations;
     dynamic_object_t collider;
     interactable_t interactable; 
     vehicle_t vehicle;

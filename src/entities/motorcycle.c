@@ -10,6 +10,7 @@
 #include "../config.h"
 #include "../scene/scene.h"
 #include "../player/inventory.h"
+#include "../resource/animation_cache.h"
 
 #define HOVER_SAG_AMOUNT        0.25f
 #define HOVER_SPRING_STRENGTH   (-GRAVITY_CONSTANT / HOVER_SAG_AMOUNT)
@@ -243,6 +244,8 @@ void motorcycle_update(void* data) {
         return;
     }
 
+    animator_update(&motorcycle->animator, &motorcycle->renderable.armature, scaled_time_step);
+
     float current_speed = sqrtf(vector3MagSqrd(&motorcycle->collider.velocity));
 
     float target_height = motorcycle_hover_height(motorcycle, current_speed) + HOVER_SAG_AMOUNT;
@@ -346,6 +349,8 @@ void motorcycle_init(motorcycle_t* motorcycle, struct motorcycle_definition* def
     transformSaInit(&motorcycle->transform, &definition->position, &definition->rotation, 1.0f);
     render_scene_init_add_renderable(&motorcycle->renderable, &motorcycle->transform, assets.mesh, 2.0f);
     dynamic_object_init(entity_id, &motorcycle->collider, &collider_type, COLLISION_LAYER_TANGIBLE, &motorcycle->transform.position, &motorcycle->transform.rotation);
+    animator_init(&motorcycle->animator, motorcycle->renderable.armature.bone_count);
+    motorcycle->animations = animation_cache_load("rom:/meshes/vehicles/bike.anim");
     vehicle_init(&motorcycle->vehicle, &motorcycle->transform, &vehicle_def, entity_id);
     collision_scene_add(&motorcycle->collider);
     update_add(motorcycle, motorcycle_update, UPDATE_PRIORITY_PHYICS, UPDATE_LAYER_WORLD | UPDATE_LAYER_CUTSCENE);
@@ -364,6 +369,7 @@ void motorcycle_init(motorcycle_t* motorcycle, struct motorcycle_definition* def
     }
 
     motorcycle_check_for_mount(motorcycle);
+    animator_run_clip(&motorcycle->animator, animation_set_find_clip(motorcycle->animations, "idle"), 0.0f, true);
 }
 
 void motorcycle_destroy(motorcycle_t* motorcycle) {
@@ -374,6 +380,8 @@ void motorcycle_destroy(motorcycle_t* motorcycle) {
     interactable_destroy(&motorcycle->interactable);
     update_remove(motorcycle);
     vehicle_destroy(&motorcycle->vehicle);
+    animator_destroy(&motorcycle->animator);
+    animation_cache_release(motorcycle->animations);
     
     for (int i = 0; i < CAST_POINT_COUNT; i += 1) {
         collision_scene_remove_cast_point(&motorcycle->cast_points[i]);
