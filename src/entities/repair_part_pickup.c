@@ -117,6 +117,8 @@ void repair_part_pickup_update(void* data) {
 }
 
 void repair_part_pickup_init(repair_part_pickup_t* part, struct repair_part_pickup_definition* definition, entity_id entity_id) {
+    transformSaInit(&part->transform, &definition->position, &definition->rotation, 1.0f);
+
     if (expression_get_bool(definition->has_part)) {
         part->is_active = false;
         return;
@@ -128,7 +130,6 @@ void repair_part_pickup_init(repair_part_pickup_t* part, struct repair_part_pick
 
     repair_part_type_def_t* def = &types[definition->part_type];
 
-    transformSaInit(&part->transform, &definition->position, &definition->rotation, 1.0f);
 
     renderable_single_axis_init(&part->renderable, &part->transform, def->mesh_name);
     render_scene_add_renderable(&part->renderable, 1.0f);

@@ -41,7 +41,7 @@ void load_scene_or_repair(const char* filename) {
 }
 
 
-void setup() {\
+void setup() {
     debug_init_isviewer();
     // rdpq_debug_start();
     savefile_new();
@@ -59,7 +59,7 @@ void setup() {\
 #endif
 
     // scene_queue_next("rom:/scenes/overworld_accuracy_test.scene");
-    // scene_queue_next("rom:/scenes/overwrorld.scene");
+    // scene_queue_next("rom:/scenes/overworld.scene#water_pump_parts");
     // scene_queue_next("rom:/repair/motorycle_engine.repair");
     // scene_queue_next("rom:/scenes/garage.scene#defualt");
     // scene_queue_next("rom:/scenes/inside_house.scene#defualt");
