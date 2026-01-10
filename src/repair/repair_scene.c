@@ -305,6 +305,7 @@ repair_scene_t* repair_scene_load(const char* filename) {
     fclose(file);
 
     material_load_file(&result->assets.cursor_material, "rom:/materials/repair/cursor.mat");
+    material_load_file(&result->assets.missing_part_material, "rom:/materials/repair/part_missing.mat");
     result->assets.background = sprite_load(backgrounds[result->variant]);
 
     update_add(result, repair_scene_update, UPDATE_PRIORITY_PLAYER, UPDATE_LAYER_WORLD | UPDATE_LAYER_CUTSCENE);
@@ -343,6 +344,7 @@ void repair_scene_destroy(repair_scene_t* scene) {
     update_remove(scene);
 
     material_release(&scene->assets.cursor_material);
+    material_release(&scene->assets.missing_part_material);
     sprite_free(scene->assets.background);
 
     tmesh_release(&scene->static_meshes);

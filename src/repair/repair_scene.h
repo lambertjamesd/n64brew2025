@@ -10,12 +10,13 @@
 #include "../math/vector2.h"
 #include "../render/material.h"
 
-struct repar_scene_assets {
+struct repair_scene_assets {
     sprite_t* background;
     material_t cursor_material;
+    material_t missing_part_material;
 };
 
-typedef struct repar_scene_assets repar_scene_assets_t;
+typedef struct repair_scene_assets repair_scene_assets_t;
 
 struct repair_scene {
     tmesh_t static_meshes;
@@ -29,7 +30,7 @@ struct repair_scene {
     repair_part_t* grabbed_part;
     repair_part_t* hovered_part;
 
-    repar_scene_assets_t assets;
+    repair_scene_assets_t assets;
 
     boolean_variable puzzle_complete;
     scene_entry_point exit_scene;

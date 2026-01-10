@@ -13,6 +13,18 @@ func settlement_loop()
     end
 end
 
+func exit_garage()
+    world_pause;
+    cam_animate "exit_garage";
+    interact_with_npc INTERACTION_LOOK, water_pump_scrapbot, ENTITY_ID_PLAYER;
+    npc_animate water_pump_scrapbot, "get_attention", true;
+    cam_wait;
+    cam_return;
+    cam_wait;
+    world_unpause;
+    idle_npc water_pump_scrapbot;
+end
+
 func well_scrapbot()
     world_pause;
     interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, water_pump_scrapbot;
@@ -27,7 +39,7 @@ func well_scrapbot()
         ";
         interact_with_npc INTERACTION_LOOK, water_pump_scrapbot, repairs_water_pump_broken;
         npc_wait water_pump_scrapbot;
-        say "However, the well was damaged in the storm and needs new parts.";
+        say "However, the well was damaged in last night's raid and needs new parts.";
         cam_animate "see_river"; 
         interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, towards_river;
         interact_with_npc INTERACTION_LOOK, water_pump_scrapbot, towards_river;

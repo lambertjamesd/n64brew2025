@@ -14,6 +14,7 @@ SENSOR_SIZE = 36
 
 import entities.tiny3d_mesh_writer
 import entities.mesh
+import entities.material_extract
 import entities.export_settings
 import cutscene.variable_layout
 
@@ -75,7 +76,13 @@ def write_parts(parts: dict, part_starts: dict, boolean_enum: dict[str, int], se
         mesh_list: entities.mesh.mesh_list = entities.mesh.mesh_list(base_transform @ obj.matrix_world.inverted())
         mesh_list.append(obj)
         mesh_data = mesh_list.determine_mesh_data()
-        entities.tiny3d_mesh_writer.write_mesh(mesh_data, None, [], settings, file)
+        part_settings = settings.copy()
+
+        if len(mesh_data) == 1 and entities.material_extract.material_can_extract(mesh_data[0].mat):
+            part_settings.default_material_name = entities.material_extract.material_romname(mesh_data[0].mat)
+            part_settings.default_material = entities.material_extract.load_material_with_name(mesh_data[0].mat)
+
+        entities.tiny3d_mesh_writer.write_mesh(mesh_data, None, [], part_settings, file)
 
         write_raycast_mesh(obj.data, file)
         write_boolean(boolean_enum, obj['has_part'], file)

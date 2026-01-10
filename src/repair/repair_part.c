@@ -2,6 +2,7 @@
 
 #include "../collision/raycast.h"
 #include "../cutscene/expression_evaluate.h"
+#include "repair_scene.h"
 
 #define REALLY_FAR  10000000.0f
 
@@ -41,8 +42,10 @@ void repair_part_destroy(repair_part_t* part) {
 }
 
 void repair_part_render(repair_part_t* part, struct frame_memory_pool* pool) {
-    if (!part->is_present) {
-        return;
+    if (part->is_present) {
+        material_apply(part->mesh.material);
+    } else {
+        material_apply(&current_repair_scene->assets.missing_part_material);
     }
 
     T3DMat4FP* mtx_fp = frame_pool_get_transformfp(pool);

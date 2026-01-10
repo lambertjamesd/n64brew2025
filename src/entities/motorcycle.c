@@ -342,7 +342,7 @@ void motorcycle_init(motorcycle_t* motorcycle, struct motorcycle_definition* def
     dynamic_object_init(entity_id, &motorcycle->collider, &collider_type, COLLISION_LAYER_TANGIBLE, &motorcycle->transform.position, &motorcycle->transform.rotation);
     vehicle_init(&motorcycle->vehicle, &motorcycle->transform, &vehicle_def, entity_id);
     collision_scene_add(&motorcycle->collider);
-    update_add(motorcycle, motorcycle_update, UPDATE_PRIORITY_PHYICS, UPDATE_LAYER_WORLD);
+    update_add(motorcycle, motorcycle_update, UPDATE_PRIORITY_PHYICS, UPDATE_LAYER_WORLD | UPDATE_LAYER_CUTSCENE);
     
     interactable_init(&motorcycle->interactable, entity_id, INTERACT_TYPE_RIDE, motorcycle_ride, motorcycle);
     
