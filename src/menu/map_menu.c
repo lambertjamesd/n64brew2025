@@ -36,6 +36,7 @@ enum menu_icon_type {
     MENU_ICON_TABLET_MEMORY,
     MENU_ICON_TABLET_SCREEN,
     MENU_ICON_MAP,
+    MENU_ICON_NOTE,
 
     MENU_ICON_TYPE_COUNT,
 };
@@ -101,6 +102,17 @@ static struct menu_item menu_items[] = {
         .data = {
             .map = {
                 .image_filename = "rom:/images/maps/health_juice_map.sprite",
+            },
+        },
+    },
+    {
+        .type = MENU_ITEM_PART,
+        .icon = MENU_ICON_NOTE,
+        .inventory_item = ITEM_TABLET_NOTE,
+        .name = "Tablet parts",
+        .data = {
+            .part = {
+                .description = "To find tablet parts:\n\nWin a race\nFind a waterfall\nSearch the dunes",
             },
         },
     },
@@ -274,6 +286,7 @@ static const char* icon_files[MENU_ICON_TYPE_COUNT] = {
     [MENU_ICON_TABLET_MEMORY] = "rom:/images/parts/tablet_memory.sprite",
     [MENU_ICON_TABLET_SCREEN] = "rom:/images/parts/tablet_screen.sprite",
     [MENU_ICON_MAP] = "rom:/images/maps/dot_matrix_map_icon.sprite",
+    [MENU_ICON_NOTE] = "rom:/images/maps/note.sprite",
 };
 
 static vector2_t player_cursor_points[3] = {

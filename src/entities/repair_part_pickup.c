@@ -59,6 +59,15 @@ static repair_part_type_def_t types[REPAIR_PART_COUNT] = {
             .max_stable_slope = 0.219131191f,
         }
     },
+    [REPAIR_PART_NOTE] = {
+        .mesh_name = "rom:/meshes/parts/note.tmesh",
+        .collider = {
+            BOX_COLLIDER(0.2f, 0.2f, 0.2f),
+            .center = {0.0f, 0.2f, 0.0f},
+            .friction = 0.5,
+            .max_stable_slope = 0.219131191f,
+        }
+    },
 };
 
 void repair_part_pickup_common_init() {

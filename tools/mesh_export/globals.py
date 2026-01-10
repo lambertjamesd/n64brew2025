@@ -21,6 +21,7 @@ mapping = {
     "has_health_juice": 'ITEM_HEALTH_JUICE',
     "has_repaired_health_machine": 'ITEM_HEALTH_MACHINE_FIXED',
     
+    "has_tablet_note": 'ITEM_TABLET_NOTE',
     "has_tablet_battery": 'ITEM_TABLET_BATTERY',
     "has_tablet_memory": 'ITEM_TABLET_MEMORY',
     "has_tablet_screen": 'ITEM_TABLET_SCREEN',
