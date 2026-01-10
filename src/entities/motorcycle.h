@@ -18,6 +18,7 @@ struct motorcycle {
     dynamic_object_t collider;
     interactable_t interactable; 
     vehicle_t vehicle;
+    vector3_t last_ground_location;
     bool has_traction;
     bool is_active;
     

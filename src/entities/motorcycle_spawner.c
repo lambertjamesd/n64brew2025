@@ -7,10 +7,6 @@
 void motorcycle_spawner_init(motorcycle_spawner_t* motorcycle_spawner, struct motorcycle_spawner_definition* definition, entity_id entity_id) {
     entity_spawn_singleton(ENTITY_TYPE_motorcycle, definition, ENTITY_ID_MOTORCYLE);
     motorcycle_spawner->position = definition->position;
-
-    if (inventory_has_item(ITEM_RIDING_MOTORCYCLE) && current_scene->player.state != PLAYER_IN_VEHICLE) {
-        player_enter_vehicle(&current_scene->player, ENTITY_ID_MOTORCYLE);
-    }
 }
 
 void motorcycle_spawner_destroy(motorcycle_spawner_t* motorcycle_spawner, struct motorcycle_spawner_definition* definition) {

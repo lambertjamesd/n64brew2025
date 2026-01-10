@@ -9,6 +9,7 @@
 #include "../math/mathf.h"
 #include "../config.h"
 #include "../scene/scene.h"
+#include "../player/inventory.h"
 
 #define HOVER_SAG_AMOUNT        0.25f
 #define HOVER_SPRING_STRENGTH   (-GRAVITY_CONSTANT / HOVER_SAG_AMOUNT)
@@ -229,6 +230,12 @@ bool motorcycle_check_active(motorcycle_t* motorcycle) {
     return is_active;
 }
 
+void motorcycle_check_for_mount(motorcycle_t* motorcycle) {
+    if (inventory_has_item(ITEM_RIDING_MOTORCYCLE) && current_scene->player.state != PLAYER_IN_VEHICLE) {
+        player_enter_vehicle(&current_scene->player, ENTITY_ID_MOTORCYLE);
+    }
+}
+
 void motorcycle_update(void* data) {
     motorcycle_t* motorcycle = (motorcycle_t*)data;
 
@@ -300,6 +307,13 @@ void motorcycle_update(void* data) {
     vector3_t ground_normal = (vector3_t){};
     float min_height_offset = motorycle_get_ground_height(motorcycle, target_height, &ground_normal);
 
+    if (motorcycle->collider.hit_kill_plane) {
+        motorcycle->collider.velocity = gZeroVec;
+        motorcycle->transform.position = motorcycle->last_ground_location;
+        motorcycle->collider.hit_kill_plane = 0;
+        motorcycle_check_for_mount(motorcycle);
+    }
+
     if (min_height_offset < target_height) {
         vector3_t* vel = &motorcycle->collider.velocity;
 
@@ -309,6 +323,7 @@ void motorcycle_update(void* data) {
         vector3ProjectPlane(&target_vel, &ground_normal, &target_vel);
         vector3Normalize(&target_vel, &target_vel);
         vector3Scale(&target_vel, &target_vel, current_speed);
+        motorcycle->last_ground_location = motorcycle->transform.position;
 
         float max_accel = motorcycle->has_traction ? MAX_TURN_ACCEL : DRIFT_ACCEL;
 
@@ -334,12 +349,15 @@ void motorcycle_init(motorcycle_t* motorcycle, struct motorcycle_definition* def
     motorcycle->has_traction = true;
     motorcycle->is_active = true;
     motorcycle->boost_timer = 0.0f;
+    motorcycle->last_ground_location = definition->position;
 
     for (int i = 0; i < CAST_POINT_COUNT; i += 1) {
         vector3_t cast_point;
         transformSaTransformPoint(&motorcycle->transform, &local_cast_points[i], &cast_point);
         collision_scene_add_cast_point(&motorcycle->cast_points[i], &cast_point);
     }
+
+    motorcycle_check_for_mount(motorcycle);
 }
 
 void motorcycle_destroy(motorcycle_t* motorcycle) {
