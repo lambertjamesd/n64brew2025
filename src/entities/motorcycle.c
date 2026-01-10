@@ -317,6 +317,8 @@ void motorcycle_update(void* data) {
     if (min_height_offset < target_height) {
         vector3_t* vel = &motorcycle->collider.velocity;
 
+        float prev_y = vel->y;
+
         vector3_t target_vel;
         vector2ToLookDir(&motorcycle->transform.rotation, &target_vel);
         vector3Normalize(&ground_normal, &ground_normal);
@@ -330,9 +332,13 @@ void motorcycle_update(void* data) {
         vector3_t accel;
         vector3Sub(&target_vel, vel, &accel);
 
-        motorcycle->has_traction = vector3MoveTowards(vel, &target_vel, max_accel * scaled_time_step_inv, vel);
+        motorcycle->has_traction = vector3MoveTowards(vel, &target_vel, 2.0f * max_accel * scaled_time_step, vel);
         
-        vel->y = vel->y * 0.8 + (target_height - min_height_offset) * fixed_time_step * HOVER_SPRING_STRENGTH;
+        if (vector3Dot(&ground_normal, vel) < 0.0f) {
+            vel->y = vel->y * 0.8 + (target_height - min_height_offset) * fixed_time_step * HOVER_SPRING_STRENGTH;
+        } else {
+            vel->y = prev_y;
+        }
     }
 }
 
