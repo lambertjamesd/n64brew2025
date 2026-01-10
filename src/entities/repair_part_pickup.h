@@ -15,7 +15,9 @@ struct repair_part_pickup {
     interactable_t interactable;
     boolean_variable has_part;
     enum repair_part_type part_type;
-    bool is_active: 1;
+    float beep_timer;
+    bool is_active;
+    bool has_tracker;
 };
 
 typedef struct repair_part_pickup repair_part_pickup_t;

@@ -28,8 +28,8 @@ struct repair_part {
 
     boolean_variable has_part;
 
-    bool is_connected: 1;
-    bool is_present: 1;
+    bool is_connected;
+    bool is_present;
 };
 
 typedef struct repair_part repair_part_t;

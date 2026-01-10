@@ -34,7 +34,6 @@ void repair_part_load(repair_part_t* part, FILE* file) {
     part->target_rotation = part->transform.rotation;
     part->is_connected = false;
     part->is_present = expression_get_bool(part->has_part);
-
 }
 
 void repair_part_destroy(repair_part_t* part) {

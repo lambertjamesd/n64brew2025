@@ -12,6 +12,7 @@ void audio_player_update();
 audio_id audio_play_2d(wav64_t* wav, float volume, float pan, float pitch_shift, int16_t priority);
 audio_id audio_play_3d(wav64_t* wav, float volume, struct Vector3* pos, struct Vector3* vel, float pitch_shift, int16_t priority);
 
+void audio_cancel(wav64_t* wav);
 void audio_update_position(audio_id id, struct Vector3* pos, struct Vector3* vel);
 void audio_update_listener(struct Vector3* pos, struct Vector3* right, struct Vector3* velocity);
 

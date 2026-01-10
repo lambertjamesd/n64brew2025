@@ -174,6 +174,7 @@ struct repair_part_pickup_definition {
     struct Vector2 rotation;
     enum repair_part_type part_type;
     boolean_variable has_part;
+    bool has_tracker;
 };
 
 enum door_type {
