@@ -461,24 +461,14 @@ void cutscene_runner_check_queue() {
     queue_entry->cutscene = NULL;
 }
 
-void cutscene_runner_update(void* data) {
-    if (!cutscene_runner_is_running()) {
-        return;
-    }
-
+void cutscene_runner_step_instruction() {
     struct cutscene_active_entry* active_cutscene = &cutscene_runner.active_cutscenes[cutscene_runner.current_cutscene];
-
-    struct cutscene_step* step = &active_cutscene->function->steps[active_cutscene->current_instruction];
-
-    if (!cutscene_runner_update_step(active_cutscene, step)) {
-        return;
-    }
 
     active_cutscene->current_instruction += 1;
 
     while (cutscene_runner.current_cutscene >= 0) {
         active_cutscene = &cutscene_runner.active_cutscenes[cutscene_runner.current_cutscene];
-        step = &active_cutscene->function->steps[active_cutscene->current_instruction];
+        struct cutscene_step* step = &active_cutscene->function->steps[active_cutscene->current_instruction];
 
         if (active_cutscene->current_instruction < active_cutscene->function->step_count) {
             cutscene_runner_init_step(active_cutscene, step);
@@ -494,6 +484,26 @@ void cutscene_runner_update(void* data) {
     }
 
     cutscene_runner_check_queue();
+}
+
+#define MAX_SCRIPT_TIME             5000
+#define MAX_INSTRUCTIONS_PER_FRAME  20
+
+void cutscene_runner_update(void* data) {
+    uint64_t start_time = get_ticks_us();
+    int i = 0;
+
+    while (cutscene_runner_is_running() && get_ticks_us() - start_time < MAX_SCRIPT_TIME && i < MAX_INSTRUCTIONS_PER_FRAME) {
+        struct cutscene_active_entry* active_cutscene = &cutscene_runner.active_cutscenes[cutscene_runner.current_cutscene];
+        struct cutscene_step* step = &active_cutscene->function->steps[active_cutscene->current_instruction];
+    
+        if (!cutscene_runner_update_step(active_cutscene, step)) {
+            return;
+        }
+        cutscene_runner_step_instruction();
+        i += 1;
+    }
+
 }
 
 void cutscene_runner_render(void* data) {
