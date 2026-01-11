@@ -184,6 +184,7 @@ void scene_update(void* data) {
     }
 
     if (scene->overworld) {
+        data_cache_writeback_invalidate_all();
         overworld_check_loaded_tiles(scene->overworld);
         overworld_check_collider_tiles(scene->overworld, player_get_position(&scene->player));
     }
