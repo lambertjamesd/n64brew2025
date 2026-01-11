@@ -31,6 +31,8 @@ struct repair_part {
     bool is_connected;
     bool is_present;
     bool prevent_rotation;
+    int8_t depends_on;
+    int8_t blocks;
 };
 
 typedef struct repair_part repair_part_t;

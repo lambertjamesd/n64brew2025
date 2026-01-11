@@ -31,6 +31,9 @@ void repair_part_load(repair_part_t* part, FILE* file) {
     fread(part->collider.indices, sizeof(int16_t), 3 * part->collider.triangle_count, file);
 
     fread(&part->has_part, sizeof(boolean_variable), 1, file);
+    fread(&part->prevent_rotation, 1, 1, file);
+    fread(&part->depends_on, 1, 1, file);
+    fread(&part->blocks, 1, 1, file);
 
     part->target_rotation = part->transform.rotation;
     part->is_connected = false;

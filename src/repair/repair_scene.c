@@ -165,6 +165,8 @@ void repair_scene_check_drop(repair_scene_t* scene) {
 
     screen_coords_from_position(&scene->camera_transform, scene->camera_fov, &grabbed_part->transform.position, &scene->screen_cursor);
 
+    int grabbed_index = scene->grabbed_part - scene->repair_parts;
+    int depends_on = scene->grabbed_part->depends_on;
     scene->grabbed_part = NULL;
 
     if (fabsf(quatDot(&grabbed_part->transform.rotation, &grabbed_part->end_rotation)) < 0.9f) {
@@ -183,6 +185,19 @@ void repair_scene_check_drop(repair_scene_t* scene) {
     vector3AddScaled(&grabbed_part->transform.position, &ray_check.dir, target_distance - actual_distnace, &pos_check);
 
     if (vector3DistSqrd(&pos_check, &grabbed_part->end_position) > DROP_TOLERNACE * DROP_TOLERNACE) {
+        return;
+    }
+    
+
+    for (int i = 0; i < scene->repair_part_count; i += 1) {
+        repair_part_t* other_part = &scene->repair_parts[i];
+
+        if (other_part->blocks == grabbed_index && !other_part->is_connected) {
+            return;
+        }
+    }
+
+    if (depends_on != -1 && !scene->repair_parts[depends_on].is_connected) {
         return;
     }
 

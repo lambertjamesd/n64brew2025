@@ -57,6 +57,8 @@ def write_boolean(boolean_enum: dict[str, int], name: str, file: io.BufferedWrit
 def write_parts(parts: dict, part_starts: dict, boolean_enum: dict[str, int], settings: entities.export_settings.ExportSettings, file: io.BufferedWriter):
     file.write(len(parts).to_bytes(2, 'big'))
 
+    item_index = list(parts.values())
+
     for name, obj in parts.items():
         if not name in part_starts:
             print(f"missing staring point for {name}")
@@ -86,6 +88,22 @@ def write_parts(parts: dict, part_starts: dict, boolean_enum: dict[str, int], se
 
         write_raycast_mesh(obj.data, file)
         write_boolean(boolean_enum, obj['has_part'], file)
+        prevent_rotation = 1 if 'prevent_rotation' in obj and obj['prevent_rotation'] else 0
+        file.write(prevent_rotation.to_bytes(1, 'big'))
+        depends_on = 0xFF
+
+        if 'depends_on' in obj and obj['depends_on'] in item_index:
+            depends_on = item_index.index(obj['depends_on'])
+
+        file.write(depends_on.to_bytes(1, 'big'))
+        
+        blocks = 0xFF
+
+        if 'blocks' in obj and obj['blocks'] in item_index:
+            blocks = item_index.index(obj['blocks'])
+
+        file.write(blocks.to_bytes(1, 'big'))
+
 
 def write_camera(camera, file: io.BufferedWriter):
     camera_transform = base_transform @ camera.matrix_world

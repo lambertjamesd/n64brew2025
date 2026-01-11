@@ -2,7 +2,6 @@
 * fix generator repair minigame
 * motorcyle respawn on out of bounds
 * fix clipping through ground
-* pressing start keeps state of highlighted map
 * animator glitching out
 * auto rotate boost pads
 * speed up scripting
@@ -16,5 +15,4 @@
 * make it more obvious the generator is the second repair, maybe don't focus on the healing machine
 * have boost highways be more direct
 * part repair minigames should have obvious attachment points
-* implement forced order of inserting parts
 * check for memory leaks
