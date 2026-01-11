@@ -30,6 +30,7 @@ struct repair_part {
 
     bool is_connected;
     bool is_present;
+    bool prevent_rotation;
 };
 
 typedef struct repair_part repair_part_t;

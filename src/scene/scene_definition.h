@@ -141,6 +141,7 @@ struct repair_scene_definition {
 
 struct repair_part_definition {
     boolean_variable has_part;
+    bool prevent_rotation;
 };
 
 enum repair_type {

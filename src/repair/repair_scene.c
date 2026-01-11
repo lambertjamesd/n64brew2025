@@ -133,7 +133,7 @@ void repair_scene_handle_grabbed_part(repair_scene_t* scene, joypad_inputs_t inp
         rotation_index = 3;
     }
 
-    if (rotation_index != -1) {
+    if (rotation_index != -1 && !scene->grabbed_part->prevent_rotation) {
         quaternion_t rot;
         quatMultiply(&relative_rotations[rotation_index], &scene->grabbed_part->target_rotation, &rot);
         scene->grabbed_part->target_rotation = rot;

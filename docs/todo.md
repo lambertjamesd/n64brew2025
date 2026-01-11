@@ -14,8 +14,7 @@
 * A north indicator to paper maps
 * Mark home on map
 * make it more obvious the generator is the second repair, maybe don't focus on the healing machine
-* edge map tiles aren't loading
 * have boost highways be more direct
 * part repair minigames should have obvious attachment points
-* prevent rotation of medical machine parts during repair
 * implement forced order of inserting parts
+* check for memory leaks
