@@ -812,7 +812,6 @@ void map_menu_show_with_item(enum inventory_item_type item) {
     assets.selection_cursor = material_cache_load("rom:/materials/menu/selection_cursor.mat");
     
     map_menu.details_image = NULL;
-    map_menu.state = MAP_MENU_LIST;
 
     bool has_new = false;
     bool should_show_details = false;
@@ -827,6 +826,16 @@ void map_menu_show_with_item(enum inventory_item_type item) {
 
             has_new = true;
             break;
+        }
+    }
+
+    if (item != ITEM_TYPE_NONE) {
+        map_menu.state = MAP_MENU_LIST;
+    } else if (map_menu.state == MAP_MENU_DETAILS) {
+        struct menu_item* selected = map_find_selected_item();
+
+        if (selected && selected->type == MENU_ITEM_MAP) {
+            map_menu.details_image = sprite_load(selected->data.map.image_filename);
         }
     }
 
