@@ -13,6 +13,7 @@ import entities.mesh_collider
 import entities.tiny3d_mesh_writer
 import entities.mesh_optimizer
 import entities.material_extract
+import entities.material
 import entities.entry_point
 import entities.particles
 from entities.entities import ObjectEntry
@@ -106,6 +107,51 @@ def process_linked_object(obj: bpy.types.Object, mesh: bpy.types.Mesh, definitio
 
     return ObjectEntry(obj, type, definitions[def_type_name], room_index)
 
+class meshes_with_material:
+    def __init__(self, meshes: list[entities.mesh.mesh_data], material, material_name: str):
+        self.meshes = meshes
+        self.material = material
+        self.material_name = material_name
+
+class room_static_meshes:
+    def __init__(self):
+        self.mesh_with_material: list[entities.mesh.mesh_data] = []
+        self.none_meshes: list[entities.mesh.mesh_data] = []
+
+    def add_mesh(self, mesh: entities.mesh.mesh_data):
+        name = entities.material_extract.material_romname(mesh.mat)
+
+        if name == None:
+            self.none_meshes.append(mesh)
+        else:
+            self.mesh_with_material.append(mesh)
+
+    def generate_meshes(self) -> list[meshes_with_material]:
+        result = []
+
+        for mesh in self.mesh_with_material:
+            result.append(meshes_with_material(
+                [mesh], 
+                entities.material_extract.load_material_with_name(mesh.mat), 
+                entities.material_extract.material_romname(mesh.mat)
+            ))
+
+        if len(self.none_meshes) > 0:
+            result.append(meshes_with_material(
+                self.none_meshes, 
+                entities.material.Material(), 
+                'rom:/materials/default.mat'
+            ))
+
+        return result
+    
+    def mesh_count(self) -> int:
+        if len(self.none_meshes) > 0:
+            return len(self.mesh_with_material) + 1
+        return len(self.mesh_with_material)
+
+
+
 def write_static(scene: Scene, base_transform: mathutils.Matrix, room_collection: entities.room.room_collection, file):
     settings = entities.export_settings.ExportSettings()
 
@@ -120,16 +166,21 @@ def write_static(scene: Scene, base_transform: mathutils.Matrix, room_collection
     for entry in scene.static:
         mesh_list_for_rooms[room_collection.get_obj_room_index(entry.obj)].append(entry.obj)
 
-    meshes_for_rooms = list(map(lambda x: x.determine_mesh_data(), mesh_list_for_rooms))
+    meshes_for_rooms: list[list[entities.mesh.mesh_data]] = list(map(lambda x: x.determine_mesh_data(), mesh_list_for_rooms))
+    room_static_list: list[room_static_meshes] = []
 
-    for i in range(len(meshes_for_rooms)):
-        meshes_for_rooms[i] = list(map(lambda x: entities.mesh_optimizer.remove_duplicates(x), meshes_for_rooms[i]))
+    for meshes in meshes_for_rooms:
+        room_static = room_static_meshes()
 
-    meshes = []
+        for mesh in meshes:
+            room_static.add_mesh(entities.mesh_optimizer.remove_duplicates(mesh))
 
-    for room_meshes in meshes_for_rooms:
-        for mesh in room_meshes:
-            meshes.append(mesh)
+        room_static_list.append(room_static)
+
+    meshes: list[meshes_with_material] = []
+
+    for room_meshes in room_static_list:
+        meshes += room_meshes.generate_meshes()
 
     file.write(len(meshes).to_bytes(2, 'big'))
 
@@ -137,18 +188,19 @@ def write_static(scene: Scene, base_transform: mathutils.Matrix, room_collection
         # this signals the mesh should be embedded
         file.write(b'\0')
 
-        settings.default_material_name = entities.material_extract.material_romname(mesh.mat)
-        settings.default_material = entities.material_extract.load_material_with_name(mesh.mat)
+        settings.default_material_name = mesh.material_name
+        settings.default_material = mesh.material
 
-        entities.tiny3d_mesh_writer.write_mesh([mesh], None, [], settings, file)
+        entities.tiny3d_mesh_writer.write_mesh(mesh.meshes, None, [], settings, file)
 
     room_count = len(meshes_for_rooms)
     file.write(room_count.to_bytes(2, 'big'))
     index_start = 0
 
-    for room_meshes in meshes_for_rooms:
-        file.write(struct.pack('>HH', index_start, index_start + len(room_meshes)))
-        index_start += len(room_meshes)
+    for room_meshes in room_static_list:
+        room_mesh_count = room_meshes.mesh_count()
+        file.write(struct.pack('>HH', index_start, index_start + room_mesh_count))
+        index_start += room_mesh_count
 
 def write_particles(scene: Scene, base_transform: mathutils.Matrix, room_collection: entities.room.room_collection, file):
     room_to_particle: list[list[entities.particles.Particles]] = []

@@ -47,8 +47,8 @@ static repair_interaction_type_def_t types[REPAIR_COUNT] = {
     [REPAIR_TABLET] = {
         .mesh_name = "rom:/meshes/repairs/tablet_broken.tmesh",
         .collider = {
-            BOX_COLLIDER(0.5f, 0.5f, 0.5f),
-            .center = {0.0f, 0.5f, 0.0f},
+            BOX_COLLIDER(0.5f, 0.1f, 0.5f),
+            .center = {0.0f, 0.1f, 0.0f},
         }
     },
 };
