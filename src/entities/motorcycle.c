@@ -14,10 +14,10 @@
 
 #define HOVER_SAG_AMOUNT        0.25f
 #define HOVER_SPRING_STRENGTH   (-GRAVITY_CONSTANT / HOVER_SAG_AMOUNT)
+#define STOPPED_SPEED_THESHOLD  8.0f
 
 #define ACCEL_RATE              20.0f
 #define BOOST_ACCEL_RATE        50.0f
-#define BACKUP_SPEED            -5.0f
 #define DRIVE_SPEED             35.0f
 #define BOOST_SPEED             60.0f
 #define MAX_TURN_RATE           2.0f
@@ -181,7 +181,7 @@ float motorcycle_target_speed(motorcycle_t* motorcycle, joypad_inputs_t input) {
     if (input.btn.a) {
         return motorcycle->boost_timer > 0.0f ? BOOST_SPEED : DRIVE_SPEED;
     } else if (input.btn.b) {
-        return input.stick_y > -20 ? 0.0f : BACKUP_SPEED;
+        return 0.0f;
     } else {
         return 0.99f * sqrtf(vector3MagSqrd2D(&motorcycle->collider.velocity));
     }
@@ -305,7 +305,7 @@ void motorcycle_update(void* data) {
         current_speed = mathfMoveTowards(current_speed, 0.0f, fixed_time_step * ACCEL_RATE);
     }
 
-    motorcycle->vehicle.is_stopped = vector3MagSqrd2D(&motorcycle->collider.velocity) < 0.01f && input.stick_y > -20;
+    motorcycle->vehicle.is_stopped = vector3MagSqrd2D(&motorcycle->collider.velocity) < STOPPED_SPEED_THESHOLD * STOPPED_SPEED_THESHOLD;
 
     vector3_t ground_normal = (vector3_t){};
     float min_height_offset = motorycle_get_ground_height(motorcycle, target_height, &ground_normal);

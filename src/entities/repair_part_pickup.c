@@ -95,24 +95,24 @@ void repair_part_interact(struct interactable* interactable, entity_id from) {
     entity_despawn(interactable->id);
 }
 
-#define CLOSE_BEEP_INTERVAL   0.3f
-#define FAR_BEEP_INTERVAL   4.0f
-#define MAX_BEEP_DISTANCE   70.0f
+#define CLOSE_BEEP_INTERVAL     0.2f
+#define FAR_BEEP_INTERVAL       1.5f
+#define MAX_BEEP_DISTANCE       70.0f
 
-#define CLOSE_FREQ          1.3f
-#define FAR_FREQ            0.7f
+#define CLOSE_FREQ              1.3f
+#define FAR_FREQ                0.7f
 
 void repair_part_pickup_update(void* data) {
     repair_part_pickup_t* part = (repair_part_pickup_t*)data;
+    float distance = sqrtf(vector3DistSqrd(&part->transform.position, player_get_position(&current_scene->player)));
+    float lerp = distance * (1.0f / MAX_BEEP_DISTANCE);
+    float beep_threshold = mathfLerp(CLOSE_BEEP_INTERVAL, FAR_BEEP_INTERVAL, lerp);
 
-    if (part->beep_timer <= 0.0f) {
-        float distance = sqrtf(vector3DistSqrd(&part->transform.position, player_get_position(&current_scene->player)));
-        float lerp = distance * (1.0f / MAX_BEEP_DISTANCE);
-
+    if (part->beep_timer >= beep_threshold) {
         audio_play_2d(&assets.beacon_beep, 0.3f, 0.0f, mathfLerp(CLOSE_FREQ, FAR_FREQ, lerp), 0);
-        part->beep_timer = mathfLerp(CLOSE_BEEP_INTERVAL, FAR_BEEP_INTERVAL, lerp);
+        part->beep_timer = 0.0f;
     } else {
-        part->beep_timer -= scaled_time_step;
+        part->beep_timer += scaled_time_step;
     }
 }
 
@@ -126,7 +126,7 @@ void repair_part_pickup_init(repair_part_pickup_t* part, struct repair_part_pick
     part->is_active = true;
     part->has_part = definition->has_part;
     part->has_tracker = definition->has_tracker;
-    part->beep_timer = 0.0f;
+    part->beep_timer = FAR_BEEP_INTERVAL;
 
     repair_part_type_def_t* def = &types[definition->part_type];
 

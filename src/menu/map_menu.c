@@ -265,8 +265,8 @@ struct map_menu {
 
 #define MENU_X                  (SCREEN_WD - MAP_X - MAP_SIZE)
 
-#define BRUSH_HALF_SIZE         6
-#define BLUR_RADIUS             2
+#define BRUSH_HALF_SIZE         12
+#define BLUR_RADIUS             6
 
 #define ICON_SIZE               32
 
@@ -290,13 +290,13 @@ static const char* icon_files[MENU_ICON_TYPE_COUNT] = {
 };
 
 static vector2_t player_cursor_points[3] = {
-    {0.0f, 3.0f},
-    {2.0f, -3.0f},
-    {-2.0f, -3.0f},
+    {0.0f, 4.0f},
+    {2.5f, -4.0f},
+    {-2.5f, -4.0f},
 };
 
 #define TAN_HORZ 0.93361004861225457857f
-#define VIEW_DEPTH  10.0f
+#define VIEW_DEPTH  14.0f
 
 static vector2_t camera_cursor_points[3] = {
     {0.0f, 0.0f},
@@ -384,12 +384,12 @@ void map_render_minimap(int map_x, int map_y) {
     vector2Negate(&cam_rot, &cam_rot);
     struct view_vertex cursor_points[3];
     for (int i = 0; i < 3; i += 1) {
-        menu_transform_point(&player_cursor_points[i], &cam_rot, &screen_pos, &cursor_points[i].pos);
+        menu_transform_point(&camera_cursor_points[i], &cam_rot, &screen_pos, &cursor_points[i].pos);
         cursor_points[i].pos.x += map_x;
         cursor_points[i].pos.y += map_y;
         cursor_points[i].col = (vector4_t){
-            0.5f, 0.5f, 0.0f,
-            i == 0 ? 0.75f : 0.0f
+            1.0f, 1.0f, 0.0f,
+            i == 0 ? 0.5f : 0.0f
         };
     }
     rdpq_triangle(
