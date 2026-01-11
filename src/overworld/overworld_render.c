@@ -173,8 +173,8 @@ struct overworld_tile_slice overworld_step(struct overworld* overworld, struct o
 
     int max_int = (int)ceilf(max_x);
 
-    if (max_int >= overworld->tile_x) {
-        max_int = overworld->tile_x - 1;
+    if (max_int > overworld->tile_x) {
+        max_int = overworld->tile_x;
     }
 
     return (struct overworld_tile_slice){
