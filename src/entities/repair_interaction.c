@@ -39,6 +39,7 @@ static repair_interaction_type_def_t types[REPAIR_COUNT] = {
     },
     [REPAIR_GENERATOR] = {
         .mesh_name = "rom:/meshes/repairs/generator_broken.tmesh",
+        .repaired_mesh_name = "rom:/meshes/repairs/generator_fixed.tmesh",
         .collider = {
             BOX_COLLIDER(0.6f, 0.6f, 1.0f),
             .center = {0.0f, 0.6f, 0.0f},
@@ -46,6 +47,7 @@ static repair_interaction_type_def_t types[REPAIR_COUNT] = {
     },
     [REPAIR_MEDICAL_DEVICE] = {
         .mesh_name = "rom:/meshes/repairs/medical_machine_broken.tmesh",
+        .repaired_mesh_name = "rom:/meshes/repairs/medical_machine_broken.tmesh",
         .collider = {
             CYLINDER_COLLIDER(0.5f, 0.5f),
             .center = {0.0f, 0.5f, 0.0f},
@@ -104,7 +106,6 @@ void repair_interaction_init(repair_interaction_t* repair, struct repair_interac
         animator_run_clip(&repair->animator, animation_set_find_clip(repair->animations, "idle"), 0.0f, true);
         update_add(repair, repair_interaction_update, UPDATE_PRIORITY_EFFECTS, UPDATE_LAYER_WORLD);
     } else {
-        interactable_init(&repair->interactable, entity_id, INTERACT_TYPE_REPAIR, repair_interact, repair);
         repair->animations = NULL;
     }
 
@@ -117,6 +118,10 @@ void repair_interaction_init(repair_interaction_t* repair, struct repair_interac
 
     repair->repair_type = definition->repair_type;
     repair->repair_scene = definition->repair_scene;
+
+    if (!repair->is_repaired) {
+        interactable_init(&repair->interactable, entity_id, INTERACT_TYPE_REPAIR, repair_interact, repair);
+    }
 }
 
 void repair_interaction_destroy(repair_interaction_t* repair) {
@@ -128,7 +133,9 @@ void repair_interaction_destroy(repair_interaction_t* repair) {
         animator_destroy(&repair->animator);
         animation_cache_release(repair->animations);
         update_remove(repair);
-    } else {
+    } 
+    
+    if (!repair->is_repaired) {
         interactable_destroy(&repair->interactable);
     }
 }
