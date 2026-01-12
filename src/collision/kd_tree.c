@@ -113,7 +113,7 @@ bool kd_tree_shadow_cast(kd_tree_t* tree, struct Vector3* starting_point, struct
                 for (int i = curr->leaf.triangle_offset; i < max_index; i += 1) {
                     struct mesh_shadow_cast_result check;
                     if (mesh_triangle_shadow_cast(tree->indices[i], tree->vertices, starting_point, &check)) {
-                        if (!has_hit || result->y > check.y) {
+                        if (!has_hit || check.y > result->y) {
                             *result = check;
                             has_hit = true;
                         }

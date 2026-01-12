@@ -12,9 +12,14 @@ scene health_juice: entity_id;
 scene health_juice_repair: entity_id;
 scene tablet_repair: entity_id;
 
+scene did_reset: bool = false;
+
 func room_default()
-    world_unpause;
-    cam_return;
+    if not did_reset then
+        world_unpause;
+        cam_return;
+        did_reset = true;
+    end
 
     if are_touching(intro, ENTITY_ID_PLAYER) then
         has_motor = false;

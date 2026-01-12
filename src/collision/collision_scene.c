@@ -628,7 +628,7 @@ bool collision_scene_shadow_cast(struct Vector3* starting_point, struct mesh_sha
     for (int collider_index = 0; collider_index < g_scene.mesh_collider_count; collider_index += 1) {
         struct mesh_shadow_cast_result mesh_result;
         if (mesh_collider_shadow_cast(g_scene.mesh_colliders[collider_index], starting_point, &mesh_result)) {
-            if (!did_hit || result->y > mesh_result.y) {
+            if (!did_hit || mesh_result.y > result->y) {
                 *result = mesh_result;
                 did_hit = true;
             }

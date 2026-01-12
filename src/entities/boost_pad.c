@@ -93,6 +93,19 @@ void boost_pad_init(boost_pad_t* boost_pad, struct boost_pad_definition* definit
     transformInit(&boost_pad->transform, &definition->position, &definition->rotation, &gOneVec);
     transformSaInit(&boost_pad->transform_sa, &definition->position, &gRight2, 1.0f);
 
+    struct mesh_shadow_cast_result shadow_cast;
+    vector3_t cast_from = definition->position;
+    cast_from.y += 0.5f;
+    if (collision_scene_shadow_cast(&cast_from, &shadow_cast)) {
+        boost_pad->transform.position.y = shadow_cast.y;
+        boost_pad->transform_sa.position.y = shadow_cast.y;
+        vector3Normalize(&shadow_cast.normal, &shadow_cast.normal);
+
+        vector3_t forward;
+        vector3ProjectPlane(&gForward, &shadow_cast.normal, &forward);
+        quatLook(&forward, &shadow_cast.normal, &boost_pad->transform.rotation);
+    }
+
     render_scene_add(&boost_pad->transform.position, 2.5f, boost_pad_render, boost_pad);
 
     boost_pad->is_on = definition->is_on == VARIABLE_DISCONNECTED || expression_get_bool(definition->is_on);
