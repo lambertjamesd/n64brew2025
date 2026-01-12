@@ -12,6 +12,7 @@
 #include "../cutscene/expression_evaluate.h"
 #include "../config.h"
 #include "../cutscene/cutscene_timer.h"
+#include "../util/input.h"
 
 // WRLD
 #define EXPECTED_HEADER 0x57524C44
@@ -147,13 +148,13 @@ void repair_scene_handle_grabbed_part(repair_scene_t* scene, joypad_inputs_t inp
     vector3AddScaled(
         &scene->grabbed_part->transform.position, 
         &right,
-        input.stick_x * OBJECT_SPEED * (1.0f / 80.0f) * fixed_time_step,
+        input_handle_deadzone(input.stick_x) * OBJECT_SPEED * (1.0f / 80.0f) * fixed_time_step,
         &scene->grabbed_part->transform.position
     );
     vector3AddScaled(
         &scene->grabbed_part->transform.position, 
         &up,
-        input.stick_y * OBJECT_SPEED * (1.0f / 80.0f) * fixed_time_step,
+        input_handle_deadzone(input.stick_y) * OBJECT_SPEED * (1.0f / 80.0f) * fixed_time_step,
         &scene->grabbed_part->transform.position
     );
 }

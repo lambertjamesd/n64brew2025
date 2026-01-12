@@ -2,9 +2,7 @@
 * fix generator repair minigame
 * motorcyle respawn on out of bounds
 * fix clipping through ground
-* auto rotate boost pads
 * driving up steep hills feels bad
-* deadzone for joystick
 * give hover indication repair part location and orientation is correct
 * well repair needs to be reworked
 * camera control tutorial

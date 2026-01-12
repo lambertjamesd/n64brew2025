@@ -19,6 +19,7 @@ void repair_part_load(repair_part_t* part, FILE* file) {
     fread(&part->end_rotation, sizeof(rot), 1, file);
 
     tmesh_load(&part->mesh, file);
+    tmesh_load(&part->solid_mesh, file);
 
     uint16_t vertex_count;
     fread(&vertex_count, sizeof(vertex_count), 1, file);
@@ -43,6 +44,10 @@ void repair_part_load(repair_part_t* part, FILE* file) {
 
 void repair_part_destroy(repair_part_t* part) {
     tmesh_release(&part->mesh);
+    tmesh_release(&part->solid_mesh);
+
+    free(part->collider.vertices);
+    free(part->collider.indices);
 }
 
 void repair_part_render(repair_part_t* part, struct frame_memory_pool* pool) {
@@ -57,7 +62,11 @@ void repair_part_render(repair_part_t* part, struct frame_memory_pool* pool) {
     transformToWorldMatrix(&part->transform, mtx.m);
     t3d_mat4_to_fixed(mtx_fp, &mtx);
     t3d_matrix_push(mtx_fp);
-    rspq_block_run(part->mesh.block);
+    if (part->is_present) {
+        rspq_block_run(part->mesh.block);
+    } else {
+        rspq_block_run(part->solid_mesh.block);
+    }
     t3d_matrix_pop(1);
 }
 

@@ -20,6 +20,7 @@ typedef struct repair_collider repair_collider_t;
 struct repair_part {
     transform_t transform;
     tmesh_t mesh;
+    tmesh_t solid_mesh;
     repair_collider_t collider;
     quaternion_t target_rotation;
 

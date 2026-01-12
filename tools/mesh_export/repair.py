@@ -86,6 +86,15 @@ def write_parts(parts: dict, part_starts: dict, boolean_enum: dict[str, int], se
 
         entities.tiny3d_mesh_writer.write_mesh(mesh_data, None, [], part_settings, file)
 
+        solid_mesh = entities.mesh.mesh_data(mesh_data[0].mat)
+        part_settings.default_material_name = entities.material_extract.material_romname(mesh_data[0].mat)
+        part_settings.default_material = entities.material_extract.load_material_with_name(mesh_data[0].mat)
+
+        for entry in mesh_data:
+            solid_mesh.append_mesh_data(entry)
+            
+        entities.tiny3d_mesh_writer.write_mesh([solid_mesh], None, [], part_settings, file)
+
         write_raycast_mesh(obj.data, file)
         write_boolean(boolean_enum, obj['has_part'], file)
         prevent_rotation = 1 if 'prevent_rotation' in obj and obj['prevent_rotation'] else 0
