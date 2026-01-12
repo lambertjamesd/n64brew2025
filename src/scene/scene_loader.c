@@ -16,6 +16,7 @@
 #include "../util/memory_stream.h"
 #include "../effects/area_title.h"
 #include "../render/defs.h"
+#include "../audio/audio.h"
 
 #include "../collision/collision_scene.h"
 
@@ -337,6 +338,13 @@ struct scene* scene_load(const char* filename) {
 
     cutscene_ref_run_then_destroy(&starting_cutscene, 0);
 
+    if (scene->overworld) {
+        scene->music = wav64_load("rom:/sounds/music/desert_daydreams.wav64", NULL);
+        scene->music_id = audio_play_2d(scene->music, 1.0f, 0.0f, 1.0f, 1);
+    } else {
+        scene->music = NULL;
+    }
+
     return scene;
 }
 
@@ -419,6 +427,11 @@ void scene_release(struct scene* scene) {
     }
     free(scene->scene_vars);
     expression_set_scene_variables(NULL);
+
+    if (scene->music) {
+        audio_cancel(scene->music);
+        wav64_close(scene->music);
+    }
 
     free(scene);
 

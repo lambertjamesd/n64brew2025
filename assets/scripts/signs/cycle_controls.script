@@ -1,0 +1,11 @@
+sign_start;
+
+say "
+    This motor I found should fix the hover cycle.
+
+    The hover bike accelerates with A and slows down with B.
+
+    You get off by pressed B while stopped.
+";
+
+sign_end;

@@ -20,6 +20,7 @@ enum entity_type_id {
     ENTITY_TYPE_boost_pad,
     ENTITY_TYPE_health_machine,
     ENTITY_TYPE_motorcycle_spawner,
+    ENTITY_TYPE_sign,
     // type enum insert point
     
     ENTITY_TYPE_count,
@@ -232,6 +233,17 @@ struct boost_pad_definition {
 struct health_machine_definition {
     struct Vector3 position;    
     struct Vector2 rotation;
+};
+
+enum sign_type {
+    SIGN_TYPE_WALL_POSTER,
+};
+
+struct sign_definition {
+    struct Vector3 position;
+    struct Vector2 rotation;
+    enum sign_type sign_type;
+    script_location message;
 };
 
 // definition insert point

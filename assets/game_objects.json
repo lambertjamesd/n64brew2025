@@ -37,6 +37,12 @@
             "type": "health_machine"
         },
         {
+            "name": "objects_text_poster",
+            "description": "",
+            "mesh": "meshes/objects/text_poster.blend#text_poster",
+            "type": "sign"
+        },
+        {
             "name": "objects_trigger_cube",
             "description": "",
             "mesh": "meshes/objects/trigger_cube.blend#Cube",

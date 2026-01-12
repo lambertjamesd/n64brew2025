@@ -11,7 +11,7 @@ void cutscene_ref_init_null(cutscene_ref_t* ref) {
 }
 
 void cutscene_ref_init(cutscene_ref_t* ref, const char* name) {
-    if (name == NULL) {
+    if (name == NULL || *name == '\0') {
         ref->type = CUTSCENE_REF_NONE;
     } else if (strncmp("rom:/", name, strlen("rom:/")) == 0) {
         ref->type = CUTSCENE_REF_DIRECT;

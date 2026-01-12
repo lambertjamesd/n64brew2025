@@ -14,6 +14,7 @@
 #include "../particles/static_particles.h"
 #include "../cutscene/cutscene.h"
 #include "../menu/hud.h"
+#include "../audio/audio.h"
 
 struct static_entity {
     struct tmesh tmesh;
@@ -127,6 +128,9 @@ struct scene {
     char* string_table;
     char* scene_vars;
     bool can_pause;
+
+    wav64_t* music;
+    audio_id music_id;
 
     struct camera_animation_list camera_animations;
 };

@@ -1,0 +1,8 @@
+sign_start;
+cam_look_npc ENTITY_ID_SUBJECT;
+
+say "
+    Press start to see your inventory and world map.
+";
+
+sign_end;

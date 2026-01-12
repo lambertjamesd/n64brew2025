@@ -124,8 +124,8 @@ _steps_that_need_idle = {
 }
 
 _aliases: dict[str, Alias] = {
-    "sign_start": Alias("pause true, false; look_at_subject;"),
-    "sign_end": Alias("pause false, false;"),
+    "sign_start": Alias("pause true, false; look_at_subject; cam_look_npc ENTITY_ID_SUBJECT;"),
+    "sign_end": Alias("pause false, false; cam_return;"),
     "world_pause": Alias("pause true, false;"),
     "world_unpause": Alias("pause false, false;"),
 }

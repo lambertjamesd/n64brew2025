@@ -1,0 +1,9 @@
+sign_start;
+
+say "
+    The raiders are getting more desparate.
+
+    We need to be careful.
+";
+
+sign_end;

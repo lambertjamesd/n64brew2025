@@ -13,6 +13,7 @@
 #include "../entities/boost_pad.h"
 #include "../entities/health_machine.h"
 #include "../entities/motorcycle_spawner.h"
+#include "../entities/sign.h"
 // include_list insert point
 
 #define ENTITY_DEFINITION(name, fields) [ENTITY_TYPE_ ## name] = { \
@@ -42,6 +43,11 @@ static struct entity_field_type_location fields_script_runner[] = {
     { .offset = offsetof(struct script_runner_definition, target), .type = ENTITY_FIELD_TYPE_STRING },
 };
 
+static struct entity_field_type_location fields_sign_runner[] = {
+    { .offset = offsetof(struct sign_definition, message), .type = ENTITY_FIELD_TYPE_STRING },
+};
+
+
 static struct entity_definition scene_entity_definitions[ENTITY_TYPE_count] = {
     ENTITY_DEFINITION(empty, fields_empty),
     ENTITY_DEFINITION(trigger_cube, fields_empty),
@@ -54,6 +60,7 @@ static struct entity_definition scene_entity_definitions[ENTITY_TYPE_count] = {
     ENTITY_DEFINITION(boost_pad, fields_empty),
     ENTITY_DEFINITION(health_machine, fields_empty),
     ENTITY_DEFINITION(motorcycle_spawner, fields_empty),
+    ENTITY_DEFINITION(sign, fields_sign_runner),
     // scene_entity_definitions insert point
 };
 

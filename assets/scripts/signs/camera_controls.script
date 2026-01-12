@@ -1,0 +1,7 @@
+sign_start;
+
+say "
+    You can use the C buttons to move the camera around.
+";
+
+sign_end;

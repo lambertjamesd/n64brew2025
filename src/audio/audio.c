@@ -289,3 +289,14 @@ void audio_update_listener(struct Vector3* pos, struct Vector3* right, struct Ve
     listener.right = *right;
     listener.velocity = *velocity;
 }
+
+void audio_cancel(wav64_t* wav) {
+    for (int i = 0; i < MAX_ACTIVE_SOUNDS; i += 1) {
+        active_sound_t* sound = &active_sounds[i];
+
+        if (sound->wav == wav) {
+            mixer_ch_stop(i);
+            sound->wav = NULL;
+        }
+    }
+}
