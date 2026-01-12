@@ -159,6 +159,7 @@ struct repair_interaction_definition {
     struct Vector2 rotation;
     enum repair_type repair_type;
     scene_entry_point repair_scene;
+    boolean_variable is_repaired;
 };
 
 enum repair_part_type {

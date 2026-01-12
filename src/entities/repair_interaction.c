@@ -7,9 +7,14 @@
 #include "../cutscene/cutscene.h"
 #include "../cutscene/cutscene_runner.h"
 #include "../time/time.h"
+#include "../cutscene/expression_evaluate.h"
+#include "../resource/animation_cache.h"
+#include "../time/time.h"
 
 struct repair_interaction_type_def {
     const char* mesh_name;
+    const char* repaired_mesh_name;
+    const char* repaired_mesh_anim;
     dynamic_object_type_t collider;
 };
 
@@ -25,6 +30,8 @@ static repair_interaction_type_def_t types[REPAIR_COUNT] = {
     },
     [REPAIR_WELL] = {
         .mesh_name = "rom:/meshes/repairs/water_pump_broken.tmesh",
+        .repaired_mesh_name = "rom:/meshes/repairs/water_pump_fixed.tmesh",
+        .repaired_mesh_anim = "rom:/meshes/repairs/water_pump_fixed.anim",
         .collider = {
             BOX_COLLIDER(0.9f, 1.6f, 1.0f),
             .center = {0.0f, 0.8f, 0.0f},
@@ -77,20 +84,36 @@ void repair_interact(struct interactable* interactable, entity_id from) {
     cutscene_runner_run(cutscene_builder_finish(&builder), 0, cutscene_runner_free_on_finish(), NULL, 0);
 }
 
+void repair_interaction_update(void *data) {
+    repair_interaction_t* repair = (repair_interaction_t*)data;
+    animator_update(&repair->animator, &repair->renderable.armature, scaled_time_step);
+}
+
 void repair_interaction_init(repair_interaction_t* repair, struct repair_interaction_definition* definition, entity_id entity_id) {
     repair_interaction_type_def_t* def = &types[definition->repair_type];
 
     transformSaInit(&repair->transform, &definition->position, &definition->rotation, 1.0f);
 
-    renderable_single_axis_init(&repair->renderable, &repair->transform, def->mesh_name);
+    repair->is_repaired = expression_get_bool(definition->is_repaired);
+    
+    renderable_single_axis_init(&repair->renderable, &repair->transform, repair->is_repaired ? def->repaired_mesh_name : def->mesh_name);
+
+    if (repair->is_repaired && def->repaired_mesh_anim) {
+        animator_init(&repair->animator, repair->renderable.armature.bone_count);
+        repair->animations = animation_cache_load(def->repaired_mesh_anim);
+        animator_run_clip(&repair->animator, animation_set_find_clip(repair->animations, "idle"), 0.0f, true);
+        update_add(repair, repair_interaction_update, UPDATE_PRIORITY_EFFECTS, UPDATE_LAYER_WORLD);
+    } else {
+        interactable_init(&repair->interactable, entity_id, INTERACT_TYPE_REPAIR, repair_interact, repair);
+        repair->animations = NULL;
+    }
+
     render_scene_add_renderable(&repair->renderable, 2.0f);
 
     dynamic_object_init(entity_id, &repair->collider, &def->collider, COLLISION_LAYER_TANGIBLE, &repair->transform.position, &repair->transform.rotation);
     repair->collider.weight_class = WEIGHT_CLASS_SUPER_HEAVY;
     repair->collider.is_fixed = true;
     collision_scene_add(&repair->collider);
-
-    interactable_init(&repair->interactable, entity_id, INTERACT_TYPE_REPAIR, repair_interact, repair);
 
     repair->repair_type = definition->repair_type;
     repair->repair_scene = definition->repair_scene;
@@ -100,5 +123,12 @@ void repair_interaction_destroy(repair_interaction_t* repair) {
     render_scene_remove(&repair->renderable);
     renderable_destroy(&repair->renderable);
     collision_scene_remove(&repair->collider);
-    interactable_destroy(&repair->interactable);
+
+    if (repair->animations) {
+        animator_destroy(&repair->animator);
+        animation_cache_release(repair->animations);
+        update_remove(repair);
+    } else {
+        interactable_destroy(&repair->interactable);
+    }
 }

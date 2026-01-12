@@ -8,15 +8,19 @@
 #include "../render/renderable.h"
 #include "../collision/dynamic_object.h"
 #include "../entity/interactable.h"
+#include "../render/animator.h"
+#include "../render/animation_clip.h"
 
 struct repair_interaction {
     transform_sa_t transform;
     renderable_t renderable;
+    animator_t animator;
+    animation_set_t* animations;
     dynamic_object_t collider;
     interactable_t interactable;
     enum repair_type repair_type;
     scene_entry_point repair_scene;
-    boolean_variable is_repaired;
+    bool is_repaired;
 };
 
 typedef struct repair_interaction repair_interaction_t;
