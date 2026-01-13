@@ -37,9 +37,9 @@ void box3DExtendDirection(struct Box3D* a, struct Vector3* direction, struct Box
     }
 
     if (direction->y > 0.0) {
-        out->max.z += direction->y;
+        out->max.y += direction->y;
     } else {
-        out->min.z += direction->y;
+        out->min.y += direction->y;
     }
 
     if (direction->z > 0.0) {
