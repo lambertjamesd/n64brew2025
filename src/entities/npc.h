@@ -9,6 +9,7 @@
 #include "../cutscene/cutscene.h"
 #include "../cutscene/cutscene_actor.h"
 #include "../cutscene/cutscene_reference.h"
+#include "../effects/drop_shadow.h"
 
 struct npc_information {
     char* mesh;
@@ -23,6 +24,7 @@ struct npc {
     struct renderable renderable;
     struct interactable interactable;
     cutscene_ref_t talk_to_cutscene;
+    drop_shadow_t drop_shadow;
 };
 
 void npc_init(struct npc* npc, struct npc_definition* definiton, entity_id id);

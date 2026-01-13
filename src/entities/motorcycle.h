@@ -10,6 +10,7 @@
 #include "../collision/cast_point.h"
 #include "../render/animation_clip.h"
 #include "../render/animator.h"
+#include "../effects/drop_shadow.h"
 #include "vehicle.h"
 
 #define CAST_POINT_COUNT 4
@@ -23,6 +24,7 @@ struct motorcycle {
     interactable_t interactable; 
     vehicle_t vehicle;
     vector3_t last_ground_location;
+    drop_shadow_t drop_shadow;
     bool has_traction;
     bool is_active;
     

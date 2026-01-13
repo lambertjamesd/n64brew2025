@@ -82,6 +82,8 @@ void npc_init(struct npc* npc, struct npc_definition* definiton, entity_id id) {
     } else {
         cutscene_ref_init_null(&npc->talk_to_cutscene);
     }
+
+    drop_shadow_init(&npc->drop_shadow, &npc->cutscene_actor.collider, "rom:/meshes/effects/drop-shadow.tmesh");
 }
 
 void npc_destroy(struct npc* npc) {
@@ -93,6 +95,7 @@ void npc_destroy(struct npc* npc) {
         interactable_destroy(&npc->interactable);
         cutscene_ref_destroy(&npc->talk_to_cutscene);
     }
+    drop_shadow_destroy(&npc->drop_shadow);
 }
 
 void npc_common_init() {

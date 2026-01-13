@@ -551,6 +551,8 @@ void player_init(struct player* player, struct player_definition* definition, st
     );
     collision_scene_add_trigger(&player->vision);
     player_loop_animation(player, PLAYER_ANIMATION_IDLE, 1.0f);
+
+    drop_shadow_init(&player->drop_shadow, &player->cutscene_actor.collider, "rom:/meshes/effects/drop-shadow.tmesh");
 }
 
 void player_destroy(struct player* player) {
@@ -565,4 +567,5 @@ void player_destroy(struct player* player) {
     collision_scene_remove_trigger(&player->vision);
 
     player_unload_sound(player);
+    drop_shadow_destroy(&player->drop_shadow);
 }

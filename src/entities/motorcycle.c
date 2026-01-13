@@ -370,6 +370,7 @@ void motorcycle_init(motorcycle_t* motorcycle, struct motorcycle_definition* def
 
     motorcycle_check_for_mount(motorcycle);
     animator_run_clip(&motorcycle->animator, animation_set_find_clip(motorcycle->animations, "idle"), 0.0f, true);
+    drop_shadow_init(&motorcycle->drop_shadow, &motorcycle->collider, "rom:/meshes/effects/bike-shadow.tmesh");
 }
 
 void motorcycle_destroy(motorcycle_t* motorcycle) {
@@ -382,6 +383,7 @@ void motorcycle_destroy(motorcycle_t* motorcycle) {
     vehicle_destroy(&motorcycle->vehicle);
     animator_destroy(&motorcycle->animator);
     animation_cache_release(motorcycle->animations);
+    drop_shadow_destroy(&motorcycle->drop_shadow);
     
     for (int i = 0; i < CAST_POINT_COUNT; i += 1) {
         collision_scene_remove_cast_point(&motorcycle->cast_points[i]);

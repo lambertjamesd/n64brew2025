@@ -11,6 +11,7 @@
 #include "../render/animator.h"
 #include "../cutscene/cutscene_actor.h"
 #include "../entity/interactable.h"
+#include "../effects/drop_shadow.h"
 
 #include "../entity/health.h"
 #include "../entity/interactable.h"
@@ -67,6 +68,7 @@ struct player {
 
     enum player_state state;
     union state_data state_data;
+    drop_shadow_t drop_shadow;
 };
 
 typedef struct player player_t;
