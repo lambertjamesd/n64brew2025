@@ -1,7 +1,6 @@
 
 * fix generator repair minigame
 * motorcyle respawn on out of bounds
-* fix clipping through ground
 * driving up steep hills feels bad
 * give hover indication repair part location and orientation is correct
 * well repair needs to be reworked
