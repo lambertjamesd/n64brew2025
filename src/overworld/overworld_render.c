@@ -204,7 +204,7 @@ int overworld_lod_1_direction_idnex(int dx, int dy) {
     return dy > 0 ? 3 : 2;
 }
 
-void overworld_render_lod_1_entries(struct overworld_lod0* lod0, int camera_x, int camera_z) {
+void overworld_render_lod_1_entries(struct overworld_lod0* lod0, int camera_x, int camera_z, T3DMat4FP* mtx, T3DMat4FP* skybox_mtx) {
     struct overworld_lod0_sort_entry order[lod0->entry_count];
 
     struct overworld_lod0_entry* end = lod0->entries + lod0->entry_count;
@@ -212,7 +212,7 @@ void overworld_render_lod_1_entries(struct overworld_lod0* lod0, int camera_x, i
     for (struct overworld_lod0_entry* curr = lod0->entries; curr < end; curr += 1, entry += 1) {
         int dx = (int)curr->x - camera_x;
         int dy = (int)curr->z - camera_z;
-        entry->priority = ((dx * dx + dy * dy) >> 2) - ((uint32_t)(curr->priority) << 30);
+        entry->priority = ((dx * dx + dy * dy) >> 2) - ((uint32_t)(curr->priority) << 24);
         
         entry->mesh = &curr->meshes[overworld_lod_1_direction_idnex(dx, dy)];
     }
@@ -221,6 +221,8 @@ void overworld_render_lod_1_entries(struct overworld_lod0* lod0, int camera_x, i
 
     struct material* mat = NULL;
 
+    T3DMat4FP* curr_mtx = NULL;
+
     for (int i = 0; i < lod0->entry_count; i += 1) {
         struct tmesh* mesh = order[i].mesh;
 
@@ -228,9 +230,27 @@ void overworld_render_lod_1_entries(struct overworld_lod0* lod0, int camera_x, i
             material_apply(mesh->material);
             mat = mesh->material;
         }
+
+        T3DMat4FP* use_mtx = (order[i].priority >> 24) < 100 ? skybox_mtx : mtx;
+
+        if (use_mtx != curr_mtx) {
+            if (curr_mtx) {
+                t3d_matrix_pop(1);
+            }
+            
+            t3d_matrix_push(use_mtx);
+            curr_mtx = use_mtx;
+        }
+
         rspq_block_run(mesh->block);
     }
+
+    if (curr_mtx) {
+        t3d_matrix_pop(1);
+    }
 }
+
+#define CENTER_SCALE    0.01f
 
 void overworld_render_lod_1(struct overworld* overworld, struct Camera* camera, T3DViewport* prev_viewport, struct frame_memory_pool* pool) {
     T3DViewport* new_viewport = frame_malloc(pool, sizeof(T3DViewport));
@@ -275,17 +295,22 @@ void overworld_render_lod_1(struct overworld* overworld, struct Camera* camera, 
     mtx.m[1][1] = STATIC_WORLD_SCALE;
     mtx.m[2][2] = STATIC_WORLD_SCALE;
 
-    int camera_x = -(int)mtx.m[3][0];
-    int camera_z = -(int)mtx.m[3][2];
+    int camera_x = -(int)(mtx.m[3][0] * CENTER_SCALE);
+    int camera_z = -(int)(mtx.m[3][2] * CENTER_SCALE);
 
     rdpq_sync_pipe();
     rdpq_mode_zbuf(false, false);
 
     T3DMat4FP* mtx_fp = UncachedAddr(frame_malloc(pool, sizeof(T3DMat4FP)));
     t3d_mat4_to_fixed_3x4(mtx_fp, &mtx);
-    t3d_matrix_push(mtx_fp);
-    overworld_render_lod_1_entries(&overworld->lod0, camera_x, camera_z);
-    t3d_matrix_pop(1);
+    
+    T3DMat4FP* skybox_mtx = UncachedAddr(frame_malloc(pool, sizeof(T3DMat4FP)));
+    mtx.m[3][0] = 0.0f;
+    mtx.m[3][1] = 0.0f;
+    mtx.m[3][2] = 0.0f;
+    t3d_mat4_to_fixed_3x4(skybox_mtx, &mtx);
+
+    overworld_render_lod_1_entries(&overworld->lod0, camera_x, camera_z, mtx_fp, skybox_mtx);
 
     rdpq_sync_pipe();
     rdpq_mode_zbuf(true, true);

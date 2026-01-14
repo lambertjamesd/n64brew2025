@@ -28,6 +28,9 @@
 // EXPR
 #define EXPECTED_CONDITION_HEADER 0x45585052
 
+// MMRG
+#define MINIMAP_RANGE_HEADER 0x4D4D5247
+
 bool scene_load_check_condition(FILE* file) {
     struct expression expression;
     int header;
@@ -59,6 +62,9 @@ void scene_load_static_particles(scene_t* scene, int room_count, FILE* file) {
 }
 
 void scene_load_minimap(scene_t* scene, FILE* file) {
+    int header;
+    fread(&header, 4, 1, file);
+    assert(MINIMAP_RANGE_HEADER == header);
     fread(&scene->minimap_min, sizeof(vector2_t), 1, file);
     fread(&scene->minimap_max, sizeof(vector2_t), 1, file);
 }

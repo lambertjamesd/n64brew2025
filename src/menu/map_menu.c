@@ -308,8 +308,8 @@ void map_get_position(vector3_t* world_pos, vector2_t* map_pos) {
     float width = current_scene->minimap_max.x - current_scene->minimap_min.x;
     float height = current_scene->minimap_max.y - current_scene->minimap_min.y;
 
-    map_pos->x = (MAP_SIZE * (world_pos->x - current_scene->minimap_min.x) / width);
-    map_pos->y = (MAP_SIZE * (1.0f - (world_pos->z - current_scene->minimap_min.y) / height));
+    map_pos->x = fabsf(width) < 0.001f ? 0.0f : (MAP_SIZE * (world_pos->x - current_scene->minimap_min.x) / width);
+    map_pos->y = fabsf(height) < 0.001f ? 0.0f : (MAP_SIZE * (1.0f - (world_pos->z - current_scene->minimap_min.y) / height));
 
 }
 
