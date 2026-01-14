@@ -402,6 +402,9 @@ class Tex():
     def rom_filename(self) -> str:
         if not self.filename:
             return ""
+        
+        if not self.filename.startswith('assets'):
+            raise Exception('filename should be relative')
 
         return f"rom:{self.filename[len('assets'):-len('.png')]}.sprite"
         
