@@ -540,6 +540,8 @@ def write_minimap_range(scene_rotation: mathutils.Matrix, file):
     minimap_min = mathutils.Vector()
     minimap_max = mathutils.Vector()
 
+    file.write('MMRG'.encode())
+
     if 'minimap_min' in bpy.data.objects:
         final_transform = scene_rotation @ bpy.data.objects['minimap_min'].matrix_world
         minimap_min = final_transform @ mathutils.Vector()

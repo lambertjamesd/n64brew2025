@@ -169,7 +169,7 @@ def generate_lod0(lod_1_objects: list[bpy.types.Object], subdivisions: int, sett
     lod_1_settings.fog_scale = 1 / subdivisions
 
     scaled_transform = mathutils.Matrix.Scale(1 / subdivisions, 4) @ base_transform
-    center_scale = settings.world_scale
+    center_scale = settings.world_scale * 0.01
 
     all_meshes: list[tuple[mesh.mesh_data, int, int, int]] = []
 
@@ -185,6 +185,9 @@ def generate_lod0(lod_1_objects: list[bpy.types.Object], subdivisions: int, sett
             digit_prefix_length += 1
 
         priority = int(obj.name[0: digit_prefix_length]) if digit_prefix_length > 0 else 0
+
+        if not 'skybox' in obj.name:
+            priority += 100
 
         all_meshes += map(lambda mesh: (mesh, int(center.x), int(center.z), priority), mesh_list.determine_mesh_data(None))
 
