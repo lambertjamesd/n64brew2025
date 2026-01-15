@@ -19,6 +19,7 @@ struct Vector3u8 {
 extern struct Vector3 gRight;
 extern struct Vector3 gUp;
 extern struct Vector3 gForward;
+extern struct Vector3 gBackward;
 extern struct Vector3 gZeroVec;
 extern struct Vector3 gOneVec;
 

@@ -4,6 +4,7 @@
 #include "../math/mathf.h"
 #include "overworld_private.h"
 #include "../render/defs.h"
+#include "../math/vector2s16.h"
 
 static int edge_deltas[] = {0x1, 0x2, 0x4};
 
@@ -196,7 +197,7 @@ int overworld_entry_sort(const void* a, const void* b) {
     return (int)(b_entry->priority - a_entry->priority);
 }
 
-int overworld_lod_1_direction_idnex(int dx, int dy) {
+int overworld_lod_1_direction_index(int dx, int dy) {
     if (abs(dx) > abs(dy)) {
         return dx > 0 ? 1 : 0;
     }
@@ -204,26 +205,73 @@ int overworld_lod_1_direction_idnex(int dx, int dy) {
     return dy > 0 ? 3 : 2;
 }
 
-void overworld_render_lod_1_entries(struct overworld_lod0* lod0, int camera_x, int camera_z, T3DMat4FP* mtx, T3DMat4FP* skybox_mtx) {
+#define UNIT_SCALE  2000
+
+void overworld_create_2d_clipping_planes(quaternion_t* camera_rotation, float tan_fov, float aspect_ratio, vector2s16_t* output) {
+    vector2_t normal;
+
+    normal.x = tan_fov * aspect_ratio;
+    normal.y = 1.0f;
+
+    vector2Rotate90(&normal, &normal);
+    vector2Normalize(&normal, &normal);
+
+    vector3_t camera_forward;
+    quatMultVector(camera_rotation, &gBackward, &camera_forward);
+    vector2_t camera_rotation_2d;
+    vector2LookDir(&camera_rotation_2d, &camera_forward);
+
+    for (int i = 0; i < 2; i += 1) {
+        vector2_t rotated;
+        vector2ComplexMul(&normal, &camera_rotation_2d, &rotated);
+        output[i].x = (int16_t)(UNIT_SCALE * rotated.x);
+        output[i].y = (int16_t)(UNIT_SCALE * rotated.y);
+    
+        normal.x = -normal.x;
+    }
+}
+
+#define CULL_TOLERANCE      800000
+
+void overworld_render_lod_1_entries(struct overworld_lod0* lod0, int camera_x, int camera_z, T3DMat4FP* mtx, T3DMat4FP* skybox_mtx, vector2s16_t* clipping_planes) {
     struct overworld_lod0_sort_entry order[lod0->entry_count];
 
     struct overworld_lod0_entry* end = lod0->entries + lod0->entry_count;
     struct overworld_lod0_sort_entry* entry = order;
-    for (struct overworld_lod0_entry* curr = lod0->entries; curr < end; curr += 1, entry += 1) {
-        int dx = (int)curr->x - camera_x;
-        int dy = (int)curr->z - camera_z;
-        entry->priority = ((dx * dx + dy * dy) >> 2) - ((uint32_t)(curr->priority) << 24);
+    for (struct overworld_lod0_entry* curr = lod0->entries; curr < end; curr += 1) {
+        vector2s16_t delta = {
+            .x = curr->x - camera_x,
+            .y = curr->z - camera_z
+        };
+
+        bool should_cull = false;
+
+        for (int plane = 0; curr->priority >= 100 && plane < 2; plane += 1) {
+            if (vector2s16Dot(&delta, &clipping_planes[plane]) > CULL_TOLERANCE) {
+                should_cull = true;
+                break;
+            }
+        }
+
+        if (should_cull) {
+            continue;
+        }
+
+        entry->priority = (((int)delta.x * (int)delta.x + (int)delta.y * (int)delta.y) >> 2) - ((uint32_t)(curr->priority) << 24);
         
-        entry->mesh = &curr->meshes[overworld_lod_1_direction_idnex(dx, dy)];
+        entry->mesh = &curr->meshes[overworld_lod_1_direction_index(delta.x, delta.y)];
+        entry += 1;
     }
 
-    qsort(order, lod0->entry_count, sizeof(struct overworld_lod0_sort_entry), overworld_entry_sort);
+    int final_count = entry - order;
+
+    qsort(order, final_count, sizeof(struct overworld_lod0_sort_entry), overworld_entry_sort);
 
     struct material* mat = NULL;
 
     T3DMat4FP* curr_mtx = NULL;
 
-    for (int i = 0; i < lod0->entry_count; i += 1) {
+    for (int i = 0; i < final_count; i += 1) {
         struct tmesh* mesh = order[i].mesh;
 
         if (mat != mesh->material) {
@@ -250,7 +298,7 @@ void overworld_render_lod_1_entries(struct overworld_lod0* lod0, int camera_x, i
     }
 }
 
-#define CENTER_SCALE    0.01f
+#define CENTER_SCALE    0.5f
 
 void overworld_render_lod_1(struct overworld* overworld, struct Camera* camera, T3DViewport* prev_viewport, struct frame_memory_pool* pool) {
     T3DViewport* new_viewport = frame_malloc(pool, sizeof(T3DViewport));
@@ -310,7 +358,9 @@ void overworld_render_lod_1(struct overworld* overworld, struct Camera* camera, 
     mtx.m[3][2] = 0.0f;
     t3d_mat4_to_fixed_3x4(skybox_mtx, &mtx);
 
-    overworld_render_lod_1_entries(&overworld->lod0, camera_x, camera_z, mtx_fp, skybox_mtx);
+    vector2s16_t clipping_planes[2];
+    overworld_create_2d_clipping_planes(&camera->transform.rotation, tan_fov, aspect_ratio, clipping_planes);
+    overworld_render_lod_1_entries(&overworld->lod0, camera_x, camera_z, mtx_fp, skybox_mtx, clipping_planes);
 
     rdpq_sync_pipe();
     rdpq_mode_zbuf(true, true);

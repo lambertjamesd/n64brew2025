@@ -6,6 +6,7 @@
 struct Vector3 gRight = {1.0f, 0.0f, 0.0f};
 struct Vector3 gUp = {0.0f, 1.0f, 0.0f};
 struct Vector3 gForward = {0.0f, 0.0f, 1.0f};
+struct Vector3 gBackward = {0.0f, 0.0f, 1.0f};
 struct Vector3 gZeroVec = {0.0f, 0.0f, 0.0f};
 struct Vector3 gOneVec = {1.0f, 1.0f, 1.0f};
 
