@@ -57,6 +57,14 @@ audio_id audio_next_id(int channel) {
     return result;
 }
 
+static inline int audio_sound_step(active_sound_t* curr) {
+    if (curr->wav && curr->wav->wave.channels > 1) {
+        return 2;
+    }
+
+    return 1;
+}
+
 void audio_active_sound_init(active_sound_t* active_sound) {
     active_sound->wav = NULL;
     active_sound->is_3d = false;
@@ -93,7 +101,7 @@ audio_id audio_find_available_sound(int16_t priority) {
     active_sound_t* best = NULL;
     int best_index = -1;
 
-    for (int i = 0; i < MAX_ACTIVE_SOUNDS; i += 1) {
+    for (int i = 0; i < MAX_ACTIVE_SOUNDS; i += audio_sound_step(&active_sounds[i])) {
         active_sound_t* curr = &active_sounds[i];
 
         if (curr->priority > priority) {
@@ -170,7 +178,9 @@ audio_id audio_play_2d(wav64_t* wav, float volume, float pan, float pitch_shift,
     }
 
     int channel = audio_channel_from_id(audio_id);
-    active_sound_ids[channel] = audio_id;
+    for (int offset = 0; offset < wav->wave.channels; offset += 1) {
+        active_sound_ids[channel + offset] = audio_id;
+    }
 
     active_sound_t* sound = &active_sounds[channel];
     sound->priority = priority;
@@ -192,7 +202,9 @@ audio_id audio_play_3d(wav64_t* wav, float volume, struct Vector3* pos, struct V
     }
     
     int channel = audio_channel_from_id(audio_id);
-    active_sound_ids[channel] = audio_id;
+    for (int offset = 0; offset < wav->wave.channels; offset += 1) {
+        active_sound_ids[channel + offset] = audio_id;
+    }
 
     active_sound_t* sound = &active_sounds[channel];
     sound->priority = priority;
@@ -207,6 +219,11 @@ audio_id audio_play_3d(wav64_t* wav, float volume, struct Vector3* pos, struct V
     audio_process_3d(sound, channel);
     
     return audio_id;
+}
+
+bool audio_is_playing(audio_id id) {
+    int channel = audio_channel_from_id(id);
+    return active_sound_ids[channel] == id;
 }
 
 struct audio_sample {
@@ -238,13 +255,18 @@ short audio_sample_reverb(short current_output, short input, short* prev_lowpass
 }
 
 void audio_player_update() {
-    for (int i = 0; i < MAX_ACTIVE_SOUNDS; i += 1) {
+    for (int i = 0; i < MAX_ACTIVE_SOUNDS; i += audio_sound_step(&active_sounds[i])) {
         if (!active_sound_ids[i]) {
             continue;
         }
 
         if (!mixer_ch_playing(i)) {
             active_sound_ids[i] = 0;
+            wav64_t* wav = active_sounds[i].wav;
+            for (int offset = 0; wav && offset < wav->wave.channels; offset += 1) {
+                active_sound_ids[i + offset] = 0;
+            }
+            active_sounds[i].wav = NULL;
             continue;
         }
         

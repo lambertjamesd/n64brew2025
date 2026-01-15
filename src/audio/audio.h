@@ -1,6 +1,7 @@
 #ifndef __AUDIO_AUDIO_H__
 
 #include <stdint.h>
+#include <stdbool.h>
 #include <libdragon.h>
 #include "../math/vector3.h"
 
@@ -11,6 +12,7 @@ void audio_player_update();
 
 audio_id audio_play_2d(wav64_t* wav, float volume, float pan, float pitch_shift, int16_t priority);
 audio_id audio_play_3d(wav64_t* wav, float volume, struct Vector3* pos, struct Vector3* vel, float pitch_shift, int16_t priority);
+bool audio_is_playing(audio_id id);
 
 void audio_cancel(wav64_t* wav);
 void audio_update_position(audio_id id, struct Vector3* pos, struct Vector3* vel);

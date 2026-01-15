@@ -204,6 +204,9 @@ void scene_update(void* data) {
         scene->can_pause = false;
     }
     
+    if (scene->music && !audio_is_playing(scene->music_id)) {
+        scene->music_id = audio_play_2d(scene->music, 1.0f, 0.0f, 1.0f, 1);
+    }
 }
 
 void scene_queue_next(char* scene_name) {
