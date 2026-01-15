@@ -123,7 +123,7 @@ func on_exit_generator()
         fade FADE_COLOR_NONE, 0.5;
 
         say "
-            You should be able to aquire parts near the old mountain mines.
+            You should be able to aquire parts in the sand dunes to the north west.
             
             I will stay here and do what I can with the fresh water you helped procure.
 

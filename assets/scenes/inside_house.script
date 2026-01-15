@@ -42,7 +42,7 @@ func on_enter()
 
             You will need to bring back more health juice.
 
-            Here is a map where you can find some.
+            Here is a map where you can find some south east of here.
         ";
         world_unpause;
         cam_return;
