@@ -12,6 +12,8 @@ def determine_tex_delta(start: material.Tex | None, end: material.Tex | None) ->
 
     if start.filename == end.filename:
         result.filename = None
+
+    if start.palette_data == end.palette_data:
         result.palette_data = None
 
     if start.frames == end.frames:
