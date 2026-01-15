@@ -14,6 +14,7 @@
 #include "../entities/health_machine.h"
 #include "../entities/motorcycle_spawner.h"
 #include "../entities/sign.h"
+#include "../entities/checkpoint.h"
 // include_list insert point
 
 #define ENTITY_DEFINITION(name, fields) [ENTITY_TYPE_ ## name] = { \
@@ -61,6 +62,7 @@ static struct entity_definition scene_entity_definitions[ENTITY_TYPE_count] = {
     ENTITY_DEFINITION(health_machine, fields_empty),
     ENTITY_DEFINITION(motorcycle_spawner, fields_empty),
     ENTITY_DEFINITION(sign, fields_sign_runner),
+    ENTITY_DEFINITION(checkpoint, fields_empty),
     // scene_entity_definitions insert point
 };
 

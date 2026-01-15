@@ -21,6 +21,7 @@ enum entity_type_id {
     ENTITY_TYPE_health_machine,
     ENTITY_TYPE_motorcycle_spawner,
     ENTITY_TYPE_sign,
+    ENTITY_TYPE_checkpoint,
     // type enum insert point
     
     ENTITY_TYPE_count,
@@ -244,6 +245,19 @@ struct sign_definition {
     struct Vector2 rotation;
     enum sign_type sign_type;
     script_location message;
+};
+
+enum checkpoint_type {
+    CHECKPOINT_FINISH,
+    CHECKPOINT_MIDDLE,
+
+    CHECKPOINT_TYPE_COUNT,
+};
+
+struct checkpoint_definition {
+    struct Vector3 position;
+    struct Vector2 rotation;
+    enum checkpoint_type checkpoint_type;
 };
 
 // definition insert point

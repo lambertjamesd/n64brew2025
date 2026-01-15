@@ -37,6 +37,18 @@
             "type": "health_machine"
         },
         {
+            "name": "objects_race_checkpoint",
+            "description": "",
+            "mesh": "meshes/objects/race_checkpoint.blend#Cube",
+            "type": "checkpoint"
+        },
+        {
+            "name": "objects_race_start+finish",
+            "description": "",
+            "mesh": "meshes/objects/race_start+finish.blend#Cube",
+            "type": "checkpoint"
+        },
+        {
             "name": "objects_text_poster",
             "description": "",
             "mesh": "meshes/objects/text_poster.blend#text_poster",
