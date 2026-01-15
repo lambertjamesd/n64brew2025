@@ -6,6 +6,7 @@ scene repairs_water_pump_broken: entity_id;
 scene towards_river: entity_id;
 scene water_pump_scrapbot: entity_id;
 scene house_entrance: entity_id;
+scene generator_scrapbot: entity_id;
 
 func settlement_loop()
     if not has_pump_gear and not has_well_part_map then
@@ -109,4 +110,37 @@ func exit_repair_well()
         npc_wait water_pump_scrapbot;
         despawn water_pump_scrapbot;
     end
+end
+
+func on_exit_generator()
+    if scrapbot_location == SCRAPBOT_LOCATION_GENERATOR and not has_generator_part_map then
+        delay 0.5;
+        world_pause;
+        interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, generator_scrapbot;
+        interact_with_npc INTERACTION_LOOK, generator_scrapbot, ENTITY_ID_PLAYER;
+        cam_look_npc generator_scrapbot;
+
+        fade FADE_COLOR_NONE, 0.5;
+
+        say "
+            You should be able to aquire parts near the old mountain mines.
+            
+            I will stay here and do what I can with the fresh water you helped procure.
+
+            This map will aid you in finding the generator parts.
+        ";
+        world_unpause;
+        cam_return;
+        has_generator_part_map = true;
+        show_item ITEM_GENERATOR_PART_MAP;
+        scrapbot_location = SCRAPBOT_LOCATION_BROTHER;
+        interact_with_npc INTERACTION_LOOK_MOVE, generator_scrapbot, house_entrance;
+        npc_wait generator_scrapbot;
+        despawn generator_scrapbot;
+        return;
+    end
+end
+
+func generator_scrapbot()
+
 end

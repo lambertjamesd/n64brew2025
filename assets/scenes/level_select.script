@@ -144,7 +144,7 @@ func room_default()
         
         is_riding_motorcycle = false;
 
-        load_scene "rom:/scenes/inside_house.scene#default";
+        load_scene "rom:/scenes/overworld.scene#generator";
     elif are_touching(health_juice, ENTITY_ID_PLAYER) then
         has_motor = true;
         has_repaired_motor = true;

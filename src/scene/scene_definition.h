@@ -200,6 +200,7 @@ struct door_definition {
 enum scrapbot_locations {
     SCRAPBOT_LOCATION_WELL,
     SCRAPBOT_LOCATION_BROTHER,
+    SCRAPBOT_LOCATION_GENERATOR,
 };
 
 enum samson_locations {

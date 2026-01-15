@@ -25,61 +25,6 @@ func room_house()
 end
 
 func on_enter()
-
-end
-
-func on_brother_talk()
-    world_pause;
-    say "It hurts";
-    world_unpause;
-end
-
-func on_robot_talk()
-    world_pause;
-    interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, ENTITY_ID_SUBJECT;
-    interact_with_npc INTERACTION_LOOK, ENTITY_ID_SUBJECT, ENTITY_ID_PLAYER;
-    cam_look_npc ENTITY_ID_SUBJECT;
-
-    if not has_generator_part_map then
-        say "
-            There is a problem.
-
-            The medical machine has lost power.
-        ";
-        cam_look_npc repairs_generator_broken;
-        say "
-            The generator needs to be repaired.
-
-            You should be able to aquire parts near the old mountain mines.
-            
-            I will stay here and do what I can with the fresh water you helped procure.
-
-            This map will aid you in finding the generator parts.
-        ";
-        world_unpause;
-        cam_return;
-        has_generator_part_map = true;
-        show_item ITEM_GENERATOR_PART_MAP;
-        return;
-    elif has_generator_part_0 and has_generator_part_1 and has_generator_part_2 then
-        if has_repaired_generator then
-            say "Use the map to locate more health juice for the machine";
-        else
-            say "
-                The medical machine is back online.
-
-                You need to follow that new map I gave to get more health juice.
-            ";
-        end
-    else
-        say "After you aquire the parts return here to fix the generator";
-    end
-
-    world_unpause;
-    cam_return;
-end
-
-func on_exit_generator()
     if has_repaired_generator and not has_health_juice_map then
         cam_animate "power_back";
         world_pause;
@@ -105,6 +50,55 @@ func on_exit_generator()
         show_item ITEM_HEALTH_JUICE_MAP;
         return;
     end
+end
+
+func on_brother_talk()
+    world_pause;
+    say "It hurts";
+    world_unpause;
+end
+
+func on_robot_talk()
+    world_pause;
+    interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, ENTITY_ID_SUBJECT;
+    interact_with_npc INTERACTION_LOOK, ENTITY_ID_SUBJECT, ENTITY_ID_PLAYER;
+    cam_look_npc ENTITY_ID_SUBJECT;
+
+    if not has_generator_part_map then
+        say "
+            There is a problem.
+
+            The medical machine has lost power.
+        ";
+        say "
+            The generator needs to be repaired.
+
+            Follow me outside.
+        ";
+
+        scrapbot_location = SCRAPBOT_LOCATION_GENERATOR;
+        fade FADE_COLOR_BLACK, 0.5;
+        delay 0.5;
+        world_unpause;
+        cam_return;
+        load_scene "rom:/scenes/overworld.scene#generator";
+        return;
+    elif has_generator_part_0 and has_generator_part_1 and has_generator_part_2 then
+        if has_repaired_generator then
+            say "Use the map to locate more health juice for the machine";
+        else
+            say "
+                The medical machine is back online.
+
+                You need to follow that new map I gave to get more health juice.
+            ";
+        end
+    else
+        say "After you aquire the parts return here to fix the generator";
+    end
+
+    world_unpause;
+    cam_return;
 end
 
 func on_exit_medical_machine()

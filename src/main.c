@@ -59,7 +59,7 @@ void setup() {
 #endif
 
     // scene_queue_next("rom:/scenes/overworld_accuracy_test.scene");
-    scene_queue_next("rom:/scenes/overworld.scene");
+    // scene_queue_next("rom:/scenes/overworld.scene");
     // scene_queue_next("rom:/repair/motorycle_engine.repair");
     // scene_queue_next("rom:/scenes/garage.scene#defualt");
     // scene_queue_next("rom:/scenes/inside_house.scene#defualt");
