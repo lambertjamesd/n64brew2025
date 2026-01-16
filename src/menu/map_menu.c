@@ -112,7 +112,40 @@ static struct menu_item menu_items[] = {
         .name = "Tablet parts",
         .data = {
             .part = {
-                .description = "To find tablet parts:\n\nWin a race\nFind a waterfall\nSearch the dunes",
+                .description = "Scrapbot found where parts could be located to repair the tablet.",
+            },
+        },
+    },
+    {
+        .type = MENU_ITEM_MAP,
+        .icon = MENU_ICON_MAP,
+        .inventory_item = ITEM_TABLET_NOTE,
+        .name = "Battery",
+        .data = {
+            .map = {
+                .image_filename = "rom:/images/maps/battery_location.sprite",
+            },
+        },
+    },
+    {
+        .type = MENU_ITEM_MAP,
+        .icon = MENU_ICON_MAP,
+        .inventory_item = ITEM_TABLET_NOTE,
+        .name = "Memory",
+        .data = {
+            .map = {
+                .image_filename = "rom:/images/maps/memory_location.sprite",
+            },
+        },
+    },
+    {
+        .type = MENU_ITEM_MAP,
+        .icon = MENU_ICON_MAP,
+        .inventory_item = ITEM_TABLET_NOTE,
+        .name = "Screen",
+        .data = {
+            .map = {
+                .image_filename = "rom:/images/maps/screen_location.sprite",
             },
         },
     },

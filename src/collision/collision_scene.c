@@ -451,8 +451,6 @@ void collision_scene_collide() {
 
     collision_scene_collide_dynamic(prev_pos);
 
-    entity_id kill_entity = 0;
-
     for (int i = 0; i < g_scene.count; ++i) {
         struct collision_scene_element* element = &g_scene.elements[i];
 
@@ -493,7 +491,6 @@ void collision_scene_collide() {
         }
 
         if (object->position->y < g_scene.kill_plane) {
-            kill_entity = object->entity_id;
             object->position->y = g_scene.kill_plane;
             object->velocity.y = 0.0f;
             object->hit_kill_plane = 1;
@@ -516,12 +513,6 @@ void collision_scene_collide() {
             curr->normal = gZeroVec;
             curr->surface_type = SURFACE_TYPE_NONE;
         }
-    }
-
-    // kill the entity outide the loop since despawing an entity
-    // could mess with the element list
-    if (kill_entity) {
-        entity_despawn(kill_entity);
     }
 }
 

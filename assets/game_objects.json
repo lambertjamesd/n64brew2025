@@ -91,6 +91,24 @@
             "type": "repair_part_pickup"
         },
         {
+            "name": "parts_tablet_battery",
+            "description": "",
+            "mesh": "meshes/parts/tablet_battery.blend#battery",
+            "type": "repair_part_pickup"
+        },
+        {
+            "name": "parts_tablet_memory",
+            "description": "",
+            "mesh": "meshes/parts/tablet_memory.blend#memory",
+            "type": "repair_part_pickup"
+        },
+        {
+            "name": "parts_tablet_screen",
+            "description": "",
+            "mesh": "meshes/parts/tablet_screen.blend#screen",
+            "type": "repair_part_pickup"
+        },
+        {
             "name": "parts_water_pump_gear",
             "description": "",
             "mesh": "meshes/parts/water_pump_gear.blend#gear",
