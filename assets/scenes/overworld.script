@@ -122,6 +122,10 @@ func on_exit_generator()
 
         fade FADE_COLOR_NONE, 0.5;
 
+        say "Here is the broken generator";
+        
+        cam_animate "sand_dune_focus";
+
         say "
             You should be able to aquire parts in the sand dunes to the north west.
             

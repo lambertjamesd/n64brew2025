@@ -160,6 +160,10 @@ bool cutscene_actor_update(struct cutscene_actor* actor) {
                     use_clip = actor->animations.run;
                     target_move_speed = actor->def->run_speed;
                 }
+
+                if (target_move_speed == 0.0f) {
+                    target_move_speed = 1.0f;
+                }
     
                 if (!animator_is_running_clip(&actor->animator, use_clip)) {
                     animator_run_clip(&actor->animator, use_clip, 0.0f, true);

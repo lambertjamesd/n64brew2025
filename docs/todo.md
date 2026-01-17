@@ -2,6 +2,7 @@
 * fix generator repair minigame
 * motorcyle respawn on out of bounds
 * driving up steep hills feels bad
+* push motorcyle up hill without clipping
 * give hover indication repair part location and orientation is correct
 * well repair needs to be reworked
 * camera control tutorial

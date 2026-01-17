@@ -91,6 +91,12 @@
             "type": "repair_part_pickup"
         },
         {
+            "name": "parts_tablet",
+            "description": "",
+            "mesh": "meshes/parts/tablet.blend#tablet",
+            "type": "repair_part_pickup"
+        },
+        {
             "name": "parts_tablet_battery",
             "description": "",
             "mesh": "meshes/parts/tablet_battery.blend#battery",

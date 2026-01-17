@@ -14,8 +14,11 @@ scene medical_machine: entity_id;
 scene scrapbot: entity_id;
 scene near_med_machine: entity_id;
 scene bedside: entity_id;
+scene repairs_tablet_broken: entity_id;
+scene corner: entity_id;
 
 scene did_injure: bool;
+scene is_samson_sad: bool;
 
 func room_house()
     if not did_injure and samson_location == SAMSON_LOCATION_BED then
@@ -60,8 +63,77 @@ end
 
 func on_brother_talk()
     world_pause;
-    say "It hurts";
+
+    if has_given_tablet then
+        cam_look_npc ENTITY_ID_SUBJECT;
+        interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, ENTITY_ID_SUBJECT;
+        interact_with_npc INTERACTION_LOOK, ENTITY_ID_SUBJECT, ENTITY_ID_PLAYER;
+
+        say "
+            Things are going to be okay.
+
+            Thank you jax.
+        ";
+    elif has_tablet and not has_given_tablet then
+        cam_look_npc ENTITY_ID_SUBJECT;
+        interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, ENTITY_ID_SUBJECT;
+        interact_with_npc INTERACTION_LOOK, ENTITY_ID_SUBJECT, ENTITY_ID_PLAYER;
+
+        has_given_tablet = true;
+
+        say "
+            What is this?
+
+            ...
+
+            You fixed that old broken tablet.
+
+            Is that mom and dad?
+
+            I remember now. They wouldn't want me to lose hope like this.
+
+            We can make it Jax. I know we can if we stick together.
+
+            Thank you jax.
+        ";
+
+        fade FADE_COLOR_BLACK, 2.0;
+        delay 2.5;
+
+        say "Repair complete";
+
+        delay 1.0;
+
+        say "
+            Created by team Ultrarare
+
+            James Lambert
+            Pyr0xene
+            SapphireOnze
+
+            terzdesign
+            kaelin
+
+            Thank you for playing
+        ";
+        
+        fade FADE_COLOR_NONE, 2.0;
+    elif samson_location == SAMSON_LOCATION_HEALED then
+        if is_samson_sad then
+            say "It hurts";
+        else
+            say "
+                I don't remember what mom and dad looked like anymore.
+
+                Are we doomed?    
+            ";
+        end
+    else
+        say "It hurts";
+    end
+
     world_unpause;
+    cam_return;
 end
 
 func on_robot_talk()
@@ -127,13 +199,47 @@ end
 
 func on_samson_heal()
     cam_look_npc characters_brother_healed;
+    interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, characters_brother_healed;
+    interact_with_npc INTERACTION_LOOK, characters_brother_healed, ENTITY_ID_PLAYER;
+    interact_with_npc INTERACTION_LOOK, scrapbot, characters_brother_healed;
     fade FADE_COLOR_NONE, 0.5;
     delay 0.5;
 
     say "
         Thank you Jax.
 
-        I wasn't sure if I was going to make it.
+        I wasn't sure if I was going to make it
+
+        ...
+
+        but maybe we are just delaying the inevitable.
+
+        It has been so hard since mom and dad died. I don't think I remember what their faces look like anymore.
+
+        I need to be alone for a minute.
+    ";
+
+    npc_set_speed characters_brother_healed, 2.0;
+    interact_with_npc INTERACTION_LOOK_MOVE, characters_brother_healed, corner;
+    is_samson_sad = true;
+    delay 2.0;
+    cam_look_npc scrapbot;
+
+    interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, scrapbot;
+    interact_with_npc INTERACTION_LOOK, scrapbot, ENTITY_ID_PLAYER;
+    cam_look_npc scrapbot;
+    npc_wait scrapbot;
+
+    say "You saved his life but it appears his spirit is still broken";
+    
+    interact_with_npc INTERACTION_LOOK, ENTITY_ID_PLAYER, repairs_tablet_broken;
+    interact_with_npc INTERACTION_LOOK, scrapbot, repairs_tablet_broken;
+    cam_look_npc repairs_tablet_broken;
+
+    say "
+        I finished searching potential locations where you may find parts to repair your old tablet
+
+        Perhaps that will have something to cheer samson up
     ";
 
     world_unpause;

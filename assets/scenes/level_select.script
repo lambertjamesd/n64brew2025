@@ -45,6 +45,7 @@ func room_default()
         has_tablet_screen = false;
         has_tablet_repaired_tablet = false;
         has_tablet = false;
+        has_given_tablet = false;
 
         scrapbot_location = SCRAPBOT_LOCATION_WELL;
         samson_location = SAMSON_LOCATION_BED;
@@ -76,6 +77,7 @@ func room_default()
         has_tablet_screen = false;
         has_tablet_repaired_tablet = false;
         has_tablet = false;
+        has_given_tablet = false;
 
         scrapbot_location = SCRAPBOT_LOCATION_WELL;
         samson_location = SAMSON_LOCATION_BED;
@@ -107,6 +109,7 @@ func room_default()
         has_tablet_screen = false;
         has_tablet_repaired_tablet = false;
         has_tablet = false;
+        has_given_tablet = false;
 
         scrapbot_location = SCRAPBOT_LOCATION_BROTHER;
         samson_location = SAMSON_LOCATION_BED;
@@ -138,6 +141,7 @@ func room_default()
         has_tablet_screen = false;
         has_tablet_repaired_tablet = false;
         has_tablet = false;
+        has_given_tablet = false;
 
         scrapbot_location = SCRAPBOT_LOCATION_BROTHER;
         samson_location = SAMSON_LOCATION_BED;
@@ -169,6 +173,7 @@ func room_default()
         has_tablet_screen = false;
         has_tablet_repaired_tablet = false;
         has_tablet = false;
+        has_given_tablet = false;
 
         scrapbot_location = SCRAPBOT_LOCATION_BROTHER;
         samson_location = SAMSON_LOCATION_BED;
@@ -202,6 +207,7 @@ func room_default()
         has_tablet_screen = false;
         has_tablet_repaired_tablet = false;
         has_tablet = false;
+        has_given_tablet = false;
 
         scrapbot_location = SCRAPBOT_LOCATION_BROTHER;
         samson_location = SAMSON_LOCATION_BED;
@@ -233,6 +239,7 @@ func room_default()
         has_tablet_screen = true;
         has_tablet_repaired_tablet = false;
         has_tablet = false;
+        has_given_tablet = false;
 
         scrapbot_location = SCRAPBOT_LOCATION_BROTHER;
         samson_location = SAMSON_LOCATION_HEALED;
