@@ -148,3 +148,21 @@ end
 func generator_scrapbot()
 
 end
+
+func main_menu()
+    world_pause;
+    fade FADE_COLOR_NONE, 1;
+    cam_animate "main_menu";
+    delay 1;
+    show_main_menu;
+    cam_wait;
+    cam_animate "main_menu";
+    cam_wait;
+    cam_animate "main_menu";
+    cam_wait;
+    world_unpause;
+end
+
+func main_menu_loop()
+
+end

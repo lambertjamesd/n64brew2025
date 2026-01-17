@@ -17,6 +17,7 @@
 #include "../collision/collision_scene.h"
 #include "../menu/map_menu.h"
 #include "../player/inventory.h"
+#include "../menu/main_menu.h"
 #include "cutscene_timer.h"
 #include <assert.h>
 
@@ -358,6 +359,10 @@ void cutscene_runner_init_step(struct cutscene_active_entry* cutscene, struct cu
         }
         case CUTSCENE_STEP_CANCEL_TIMER: {
             cutscene_timer_cancel();
+            break;
+        }
+        case CUTSCENE_SETP_SHOW_MAIN_MENU: {
+            main_menu_show();
             break;
         }
     }

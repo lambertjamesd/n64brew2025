@@ -146,6 +146,10 @@ void hud_render_compass(struct hud* hud) {
 }
 
 void hud_render(void *data) {
+    if (!update_has_layer(UPDATE_LAYER_WORLD)) {
+        return;
+    }
+
     hud_render_interaction_preview(data);
     hud_render_compass(data);
 }

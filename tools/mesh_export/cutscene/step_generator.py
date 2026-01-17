@@ -42,6 +42,7 @@ CUTSCENE_STEP_DESPAWN = 31
 CUTSCENE_STEP_START_TIMER = 32
 CUTSCENE_STEP_CANCEL_TIMER = 33
 CUTSCENE_STEP_ASK = 34
+CUTSCENE_SETP_SHOW_MAIN_MENU = 35
 
 class ParameterType():
     def __init__(self, name: str, is_static: bool):
@@ -86,6 +87,7 @@ _step_args = {
     "load_scene": [ParameterType("str", True)],
     "start_timer": [ParameterType("float", True), ParameterType("str", True)],
     "cancel_timer": [],
+    "show_main_menu": [],
 }
 
 _step_ids = {
@@ -115,6 +117,7 @@ _step_ids = {
     "despawn": CUTSCENE_STEP_DESPAWN,
     "start_timer": CUTSCENE_STEP_START_TIMER,
     "cancel_timer": CUTSCENE_STEP_CANCEL_TIMER,
+    "show_main_menu": CUTSCENE_SETP_SHOW_MAIN_MENU,
 }
 
 _steps_that_need_idle = {
