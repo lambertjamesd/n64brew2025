@@ -25,12 +25,31 @@ struct npc_information npc_information[] = {
             },
         },
     },
-    [NPC_BROTHER] = {
+    [NPC_BROTHER_HURT] = {
         .mesh = "rom:/meshes/characters/brother.tmesh",
         .animations = "rom:/meshes/characters/brother.anim",
         .actor = {
             .eye_level = 1.81147f,
             .move_speed = 2.5f,
+            .rotate_speed = 2.0f,
+            .collision_layers = COLLISION_LAYER_TANGIBLE | COLLISION_LAYER_LIGHTING_TANGIBLE | COLLISION_LAYER_Z_TARGET,
+            .collider = {
+                CAPSULE_COLLIDER(0.3f, 0.45f),
+                // about a 40 degree slope
+                .max_stable_slope = 0.219131191f,
+                .friction = 0.5f,
+                .bounce = 0.1f,
+                .center = {0.0f, 0.75f, 0.0f},
+            },
+            .idle = "injured",
+        },
+    },
+    [NPC_BROTHER] = {
+        .mesh = "rom:/meshes/characters/brother.tmesh",
+        .animations = "rom:/meshes/characters/brother.anim",
+        .actor = {
+            .eye_level = 1.81147f,
+            .move_speed = 4.0f,
             .rotate_speed = 2.0f,
             .collision_layers = COLLISION_LAYER_TANGIBLE | COLLISION_LAYER_LIGHTING_TANGIBLE | COLLISION_LAYER_Z_TARGET,
             .collider = {

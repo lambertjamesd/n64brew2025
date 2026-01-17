@@ -47,7 +47,7 @@ void cutscene_actor_init(
 ) {
     actor->transform = *transform;
     actor->animation_set = animations_path ? animation_cache_load(animations_path) : NULL;
-    actor->animations.idle = animation_set_find_clip(actor->animation_set, "idle");
+    actor->animations.idle = animation_set_find_clip(actor->animation_set, def->idle ? def->idle : "idle");
     actor->animations.walk = animation_set_find_clip(actor->animation_set, "walk");
     actor->animations.run = animation_set_find_clip(actor->animation_set, "run");
 

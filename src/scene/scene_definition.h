@@ -179,6 +179,7 @@ enum repair_part_type {
     REPAIR_PART_TABLET_MEMORY,
     REPAIR_PART_TABLET_SCREEN,
     REPAIR_PART_TABLET,
+    REPAIR_PART_MONEY,
     REPAIR_PART_COUNT,
 };
 
@@ -187,6 +188,7 @@ struct repair_part_pickup_definition {
     struct Vector2 rotation;
     enum repair_part_type part_type;
     boolean_variable has_part;
+    integer_variable count;
     bool has_tracker;
 };
 
@@ -218,6 +220,7 @@ enum samson_locations {
 
 enum npc_type {
     NPC_TYPE_SCRAPBOT1,
+    NPC_BROTHER_HURT,
     NPC_BROTHER,
 };
 

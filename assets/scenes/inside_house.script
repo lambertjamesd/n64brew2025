@@ -17,15 +17,9 @@ scene bedside: entity_id;
 scene repairs_tablet_broken: entity_id;
 scene corner: entity_id;
 
-scene did_injure: bool;
 scene is_samson_sad: bool;
 
 func room_house()
-    if not did_injure and samson_location == SAMSON_LOCATION_BED then
-        npc_animate characters_brother, "injured", true;
-        did_injure = true;
-    end
-
     if has_tablet_note and not has_tablet_battery_map then
         has_tablet_battery_map = true;
         has_tablet_memory_map = true;
@@ -239,7 +233,7 @@ func on_samson_heal()
     say "
         I finished searching potential locations where you may find parts to repair your old tablet
 
-        Perhaps that will have something to cheer samson up
+        Perhaps it will have something from life before the impact to cheer samson up
     ";
 
     world_unpause;

@@ -35,6 +35,7 @@ struct cutscene_actor_def {
     struct dynamic_object_type collider;
     uint16_t collision_layers;
     uint16_t collision_group;
+    const char* idle;
 };
 
 typedef struct cutscene_actor_def cutscene_actor_def_t;
