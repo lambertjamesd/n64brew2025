@@ -227,8 +227,8 @@ void repair_scene_update(void* data) {
     joypad_inputs_t input = joypad_get_inputs(0);
     joypad_buttons_t pressed = joypad_get_buttons_pressed(0);
 
-    scene->screen_cursor.x += input.stick_x * (CURSOR_SPEED / 80) * fixed_time_step;
-    scene->screen_cursor.y -= input.stick_y * (CURSOR_SPEED / 80) * fixed_time_step;
+    scene->screen_cursor.x += input_handle_deadzone(input.stick_x) * (CURSOR_SPEED / 80) * fixed_time_step;
+    scene->screen_cursor.y -= input_handle_deadzone(input.stick_y) * (CURSOR_SPEED / 80) * fixed_time_step;
 
     scene->screen_cursor.x = clampf(scene->screen_cursor.x, 0.0f, 320.0f);
     scene->screen_cursor.y = clampf(scene->screen_cursor.y, 0.0f, 240.0f);

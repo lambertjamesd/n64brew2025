@@ -4,7 +4,7 @@
 #define DEADZONE        8
 #define FIXED_BIT_SIZE  23
 
-#define SCALAR          (DEADZONE * (1 << FIXED_BIT_SIZE) / (MAX_RANGE - DEADZONE))
+#define SCALAR          (MAX_RANGE * (1 << FIXED_BIT_SIZE) / (MAX_RANGE - DEADZONE))
 
 int input_handle_deadzone(int input) {
     if (input > DEADZONE) {
