@@ -25,8 +25,12 @@ mapping = {
     "has_tablet_battery": 'ITEM_TABLET_BATTERY',
     "has_tablet_memory": 'ITEM_TABLET_MEMORY',
     "has_tablet_screen": 'ITEM_TABLET_SCREEN',
+    "has_tablet_battery_map": 'ITEM_TABLET_BATTERY_MAP',
+    "has_tablet_memory_map": 'ITEM_TABLET_MEMORY_MAP',
+    "has_tablet_screen_map": 'ITEM_TABLET_SCREEN_MAP',
     "has_tablet_repaired_tablet": 'ITEM_TABLET_REPAIRED',
     "has_tablet": 'ITEM_TABLET',
+    "has_given_tablet": 'ITEM_GIVEN_TABLET',
 
     "is_riding_motorcycle": "ITEM_RIDING_MOTORCYCLE",
 }

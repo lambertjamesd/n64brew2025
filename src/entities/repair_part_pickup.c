@@ -81,7 +81,7 @@ static repair_part_type_def_t types[REPAIR_PART_COUNT] = {
         .mesh_name = "rom:/meshes/parts/tablet_battery.tmesh",
         .collider = {
             BOX_COLLIDER(0.1f, 0.1f, 0.2f),
-            .center = {0.0f, 0.2f, 0.0f},
+            .center = {0.0f, 0.0f, 0.0f},
             .friction = 0.5,
             .max_stable_slope = 0.219131191f,
         }
@@ -90,7 +90,7 @@ static repair_part_type_def_t types[REPAIR_PART_COUNT] = {
         .mesh_name = "rom:/meshes/parts/tablet_memory.tmesh",
         .collider = {
             BOX_COLLIDER(0.2f, 0.1f, 0.2f),
-            .center = {0.0f, 0.2f, 0.0f},
+            .center = {0.0f, 0.0f, 0.0f},
             .friction = 0.5,
             .max_stable_slope = 0.219131191f,
         }
@@ -99,7 +99,17 @@ static repair_part_type_def_t types[REPAIR_PART_COUNT] = {
         .mesh_name = "rom:/meshes/parts/tablet_screen.tmesh",
         .collider = {
             BOX_COLLIDER(0.3f, 0.1f, 0.3f),
-            .center = {0.0f, 0.2f, 0.0f},
+            .center = {0.0f, 0.0f, 0.0f},
+            .friction = 0.5,
+            .max_stable_slope = 0.219131191f,
+        }
+    },
+    
+    [REPAIR_PART_TABLET] = {
+        .mesh_name = "rom:/meshes/parts/tablet.tmesh",
+        .collider = {
+            BOX_COLLIDER(0.3f, 0.1f, 0.3f),
+            .center = {0.0f, 0.0f, 0.0f},
             .friction = 0.5,
             .max_stable_slope = 0.219131191f,
         }

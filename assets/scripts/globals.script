@@ -18,10 +18,15 @@ global has_repaired_health_machine: bool;
 
 global has_tablet_note: bool;
 global has_tablet_battery: bool;
+global has_tablet_battery_map: bool;
 global has_tablet_memory: bool;
+global has_tablet_memory_map: bool;
 global has_tablet_screen: bool;
+global has_tablet_screen_map: bool;
 global has_tablet_repaired_tablet: bool;
 global has_tablet: bool;
+
+global has_given_tablet: bool;
 
 global scrapbot_location: i8;
 global samson_location: i8;

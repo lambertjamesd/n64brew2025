@@ -35,8 +35,10 @@ enum menu_icon_type {
     MENU_ICON_TABLET_BATTERY,
     MENU_ICON_TABLET_MEMORY,
     MENU_ICON_TABLET_SCREEN,
+    MENU_ICON_TABLET,
     MENU_ICON_MAP,
     MENU_ICON_NOTE,
+    MENU_ICON_IMAGE,
 
     MENU_ICON_TYPE_COUNT,
 };
@@ -118,8 +120,8 @@ static struct menu_item menu_items[] = {
     },
     {
         .type = MENU_ITEM_MAP,
-        .icon = MENU_ICON_MAP,
-        .inventory_item = ITEM_TABLET_NOTE,
+        .icon = MENU_ICON_IMAGE,
+        .inventory_item = ITEM_TABLET_BATTERY_MAP,
         .name = "Battery",
         .data = {
             .map = {
@@ -129,8 +131,8 @@ static struct menu_item menu_items[] = {
     },
     {
         .type = MENU_ITEM_MAP,
-        .icon = MENU_ICON_MAP,
-        .inventory_item = ITEM_TABLET_NOTE,
+        .icon = MENU_ICON_IMAGE,
+        .inventory_item = ITEM_TABLET_MEMORY_MAP,
         .name = "Memory",
         .data = {
             .map = {
@@ -140,8 +142,8 @@ static struct menu_item menu_items[] = {
     },
     {
         .type = MENU_ITEM_MAP,
-        .icon = MENU_ICON_MAP,
-        .inventory_item = ITEM_TABLET_NOTE,
+        .icon = MENU_ICON_IMAGE,
+        .inventory_item = ITEM_TABLET_SCREEN_MAP,
         .name = "Screen",
         .data = {
             .map = {
@@ -260,6 +262,18 @@ static struct menu_item menu_items[] = {
             },
         },
     },
+    {
+        .type = MENU_ITEM_PART,
+        .icon = MENU_ICON_TABLET,
+        .inventory_item = ITEM_TABLET,
+        .hide_override = ITEM_GIVEN_TABLET,
+        .name = "Tablet",
+        .data = {
+            .part = {
+                .description = "This tablet has memories of life before the world ended",
+            },
+        },
+    },
 };
 
 #define MENU_ITEM_COUNT      (sizeof(menu_items) / sizeof(*menu_items))
@@ -318,8 +332,10 @@ static const char* icon_files[MENU_ICON_TYPE_COUNT] = {
     [MENU_ICON_TABLET_BATTERY] = "rom:/images/parts/tablet_battery.sprite",
     [MENU_ICON_TABLET_MEMORY] = "rom:/images/parts/tablet_memory.sprite",
     [MENU_ICON_TABLET_SCREEN] = "rom:/images/parts/tablet_screen.sprite",
+    [MENU_ICON_TABLET] = "rom:/images/parts/tablet.sprite",
     [MENU_ICON_MAP] = "rom:/images/maps/dot_matrix_map_icon.sprite",
     [MENU_ICON_NOTE] = "rom:/images/maps/note.sprite",
+    [MENU_ICON_IMAGE] = "rom:/images/maps/image_icon.sprite",
 };
 
 static vector2_t player_cursor_points[3] = {

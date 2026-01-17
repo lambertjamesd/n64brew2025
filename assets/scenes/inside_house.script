@@ -22,6 +22,12 @@ func room_house()
         npc_animate characters_brother, "injured", true;
         did_injure = true;
     end
+
+    if has_tablet_note and not has_tablet_battery_map then
+        has_tablet_battery_map = true;
+        has_tablet_memory_map = true;
+        has_tablet_screen_map = true;
+    end
 end
 
 func on_enter()
