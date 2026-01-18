@@ -21,7 +21,7 @@ bool expression_get_bool(boolean_variable variable) {
     if (SCENE_VARIABLE_FLAG & variable) {
         return evaluation_context_load(scene_variables, DATA_TYPE_BOOL, variable ^ SCENE_VARIABLE_FLAG);
     } else {
-        return evaluation_context_load(savefile_get_globals(), DATA_TYPE_BOOL, variable);
+        return evaluation_context_load(savefile_get_globals(GLOBAL_ACCESS_MODE_READ), DATA_TYPE_BOOL, variable);
     }
 }
 
@@ -33,7 +33,7 @@ void expression_set_bool(boolean_variable variable, bool value) {
     if (SCENE_VARIABLE_FLAG & variable) {
         evaluation_context_save(scene_variables, DATA_TYPE_BOOL, variable ^ SCENE_VARIABLE_FLAG, value);
     } else {
-        evaluation_context_save(savefile_get_globals(), DATA_TYPE_BOOL, variable, value);
+        evaluation_context_save(savefile_get_globals(GLOBAL_ACCESS_MODE_WRITE), DATA_TYPE_BOOL, variable, value);
     }
 }
 
@@ -47,7 +47,7 @@ int expression_get_integer(integer_variable variable) {
     if (SCENE_VARIABLE_FLAG & variable) {
         return evaluation_context_load(scene_variables, type, variable & INT_OFFSET_MASK);
     } else {
-        return evaluation_context_load(savefile_get_globals(), type, variable & INT_OFFSET_MASK);
+        return evaluation_context_load(savefile_get_globals(GLOBAL_ACCESS_MODE_READ), type, variable & INT_OFFSET_MASK);
     }
 }
 
@@ -61,7 +61,7 @@ void expression_set_integer(integer_variable variable, int value) {
     if (SCENE_VARIABLE_FLAG & variable) {
         evaluation_context_save(scene_variables, type, variable & INT_OFFSET_MASK, value);
     } else {
-        evaluation_context_save(savefile_get_globals(), type, variable & INT_OFFSET_MASK, value);
+        evaluation_context_save(savefile_get_globals(GLOBAL_ACCESS_MODE_WRITE), type, variable & INT_OFFSET_MASK, value);
     }
 }
 
@@ -93,7 +93,7 @@ void expression_evaluate(struct evaluation_context* context, struct expression* 
                 // this avoids alignment issues
                 memcpy(&data, current, sizeof(union expression_data));
 
-                evaluation_context_push(context, evaluation_context_load(savefile_get_globals(), data.load_variable.data_type, data.load_variable.word_offset));
+                evaluation_context_push(context, evaluation_context_load(savefile_get_globals(GLOBAL_ACCESS_MODE_READ), data.load_variable.data_type, data.load_variable.word_offset));
                 current += sizeof(union expression_data);
                 break;
             case EXPRESSION_TYPE_LOAD_LITERAL:

@@ -3,6 +3,13 @@
 
 void savefile_new();
 
-void* savefile_get_globals();
+enum global_access_mode {
+    GLOBAL_ACCESS_MODE_READ,
+    GLOBAL_ACCESS_MODE_WRITE,
+};
+
+typedef enum global_access_mode global_access_mode_t;
+
+void* savefile_get_globals(global_access_mode_t mode);
 
 #endif

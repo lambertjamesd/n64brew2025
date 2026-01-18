@@ -179,7 +179,7 @@ void cutscene_runner_init_step(struct cutscene_active_entry* cutscene, struct cu
             struct evaluation_context* context = &cutscene->context;
 
             evaluation_context_save(
-                savefile_get_globals(),
+                savefile_get_globals(GLOBAL_ACCESS_MODE_WRITE),
                 step->data.store_variable.data_type,
                 step->data.store_variable.word_offset,
                 evaluation_context_pop(context)

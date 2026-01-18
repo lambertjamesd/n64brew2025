@@ -4,6 +4,8 @@
 #include <malloc.h>
 
 static void* current_savefile;
+static bool needs_save;
+static uint16_t globals_size;
 
 void savefile_unload() {
     free(current_savefile); 
@@ -23,6 +25,9 @@ void savefile_new() {
     fclose(file);
 }
 
-void* savefile_get_globals() {
+void* savefile_get_globals(global_access_mode_t mode) {
+    if (mode == GLOBAL_ACCESS_MODE_WRITE) {
+        needs_save = true;
+    }
     return current_savefile;
 }

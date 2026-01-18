@@ -8,6 +8,7 @@
 #include "../time/time.h"
 #include "../fonts/fonts.h"
 #include "../scene/scene.h"
+#include "../render/defs.h"
 #include "../effects/fade_effect.h"
 
 struct main_menu {
@@ -19,6 +20,7 @@ struct main_menu {
     
     int selected_item;
     float go_timer;
+    float intro_timer;
 };
 
 static struct main_menu main_menu;
@@ -31,10 +33,47 @@ static struct main_menu main_menu;
 #define TEXT_LINE_0_Y       130
 #define TEXT_LINE_SPACING   20
 
+#define SLIDE_IN_TIME       0.25f
+#define FLASH_TIME          0.5f
+
+#define INTRO_TIME          (SLIDE_IN_TIME + FLASH_TIME)
+
 void main_menu_render(void* data) {
     material_apply(main_menu.title_material);
-    rdpq_sprite_blit(main_menu.title_band, 0, TITLE_Y + BAND_OFFSET, NULL);
-    rdpq_sprite_blit(main_menu.title, TITLE_X, TITLE_Y, NULL);
+
+    int flash_alpha = 0;
+
+    if (main_menu.intro_timer > FLASH_TIME) {
+        rdpq_set_prim_color((color_t){255, 255, 255, 255});
+    } else if (main_menu.intro_timer > 0.0f) {
+        flash_alpha = ((int)((255.0f / FLASH_TIME) * main_menu.intro_timer));
+        rdpq_set_prim_color((color_t){flash_alpha, flash_alpha, flash_alpha, 255});
+    }
+
+    float slide_amount = 0.0f;
+
+    if (main_menu.intro_timer > FLASH_TIME) {
+        slide_amount = (main_menu.intro_timer - FLASH_TIME) * (1.0f / SLIDE_IN_TIME);
+    }
+
+    rdpq_blitparms_t band_params = (rdpq_blitparms_t){
+        .scale_y = main_menu.intro_timer > FLASH_TIME ? (1.0f - slide_amount) : 1.0f,
+    };
+    if (slide_amount < 0.99f) {
+        rdpq_sprite_blit(main_menu.title_band, 0, TITLE_Y + BAND_OFFSET, &band_params);
+    }
+    rdpq_sprite_blit(main_menu.title, TITLE_X + slide_amount * SCREEN_WD, TITLE_Y, NULL);
+
+    if (main_menu.intro_timer > FLASH_TIME) {
+        return;
+    }
+
+    if (flash_alpha) {
+        material_apply(solid_primitive_material);
+        rdpq_set_prim_color((color_t){255, 255, 255, flash_alpha});
+        
+        rdpq_texture_rectangle(TILE0, 0, 0, SCREEN_WD, SCREEN_HT, 0, 0);
+    }
 
     menu_common_render_background(100, 120, 120, 60);
 
@@ -105,6 +144,10 @@ void main_menu_update(void *data) {
             scene_queue_next("rom:/scenes/intro.scene#default");
         }
     }
+
+    if (main_menu.intro_timer > 0.0f) {
+        main_menu.intro_timer -= fixed_time_step;
+    }
 }
 
 void main_menu_show() {
@@ -115,6 +158,7 @@ void main_menu_show() {
     main_menu.has_game = false;
     main_menu.selected_item = 0;
     main_menu.go_timer = 0.0f;
+    main_menu.intro_timer = INTRO_TIME;
 
     menu_add_callback(main_menu_render, &main_menu, MENU_PRIORITY_OVERLAY);
     main_menu.title = sprite_load("rom:/images/menu/game_title.sprite");

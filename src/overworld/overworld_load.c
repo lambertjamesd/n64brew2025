@@ -424,7 +424,7 @@ void overworld_check_tile_spawns(struct overworld* overworld, struct overworld_a
         int dx = (int)curr->x - x;
         int dy = (int)curr->y - y;
 
-        debugf("%d\n", curr->spawn_id_offset + tile->first_spawn_id);
+        // debugf("%d\n", curr->spawn_id_offset + tile->first_spawn_id);
 
         if (dx * dx + dy * dy > int_rad_sqrd) {
             ++curr; 
