@@ -19,6 +19,7 @@ struct repair_part_pickup {
     float beep_timer;
     bool is_active;
     bool has_tracker;
+    bool is_particle;
 };
 
 typedef struct repair_part_pickup repair_part_pickup_t;

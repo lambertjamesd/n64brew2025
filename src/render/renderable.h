@@ -20,6 +20,8 @@ struct renderable {
             TPXParticleS8 particle_data;
             render_batch_particles_t particles;
             struct material* material;
+            uint8_t frame_max_x;
+            uint8_t frame_step;
         } point_render;
     };
     enum transform_type type;

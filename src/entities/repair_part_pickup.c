@@ -12,7 +12,13 @@
 #include "../math/mathf.h"
 
 struct repair_part_type_def {
-    const char* mesh_name;
+    union {
+        const char* mesh_name;
+        const char* particle_material;
+    };
+    float particle_radius;
+    uint8_t particle_frame_max_x;
+    uint8_t particle_frame_step;
     dynamic_object_type_t collider;
 };
 
@@ -115,9 +121,12 @@ static repair_part_type_def_t types[REPAIR_PART_COUNT] = {
         }
     },
     [REPAIR_PART_MONEY] = {
-        .mesh_name = "rom:/meshes/parts/nut.tmesh",
+        .particle_material = "rom:/materials/parts/nut_particle.mat",
+        .particle_radius = 0.1f,
+        .particle_frame_max_x = 255,
+        .particle_frame_step = 32,
         .collider = {
-            BOX_COLLIDER(0.1f, 0.04f, 0.1f),
+            BOX_COLLIDER(0.1f, 0.1f, 0.1f),
             .center = {0.0f, 0.0f, 0.0f},
             .friction = 0.5,
             .max_stable_slope = 0.219131191f,
@@ -181,8 +190,15 @@ void repair_part_pickup_init(repair_part_pickup_t* part, struct repair_part_pick
 
     repair_part_type_def_t* def = &types[definition->part_type];
 
+    part->is_particle = def->particle_radius > 0.0f;
 
-    renderable_single_axis_init(&part->renderable, &part->transform, def->mesh_name);
+    if (part->is_particle) {
+        renderable_init_point(&part->renderable, &part->transform.position, def->particle_radius, def->particle_material);
+        part->renderable.point_render.frame_max_x = def->particle_frame_max_x;
+        part->renderable.point_render.frame_step = def->particle_frame_step;
+    } else {
+        renderable_single_axis_init(&part->renderable, &part->transform, def->mesh_name);
+    } 
     render_scene_add_renderable(&part->renderable, 1.0f);
 
     dynamic_object_init(entity_id, &part->collider, &def->collider, COLLISION_LAYER_INTERACT_ONLY, &part->transform.position, &part->transform.rotation);
@@ -200,7 +216,11 @@ void repair_part_pickup_destroy(repair_part_pickup_t* part) {
         return;
     }
     render_scene_remove(&part->renderable);
-    renderable_destroy(&part->renderable);
+    if (part->is_particle) {
+        renderable_destroy_point(&part->renderable);
+    } else {
+        renderable_destroy(&part->renderable);
+    }
     collision_scene_remove(&part->collider);
     interactable_destroy(&part->interactable);
 

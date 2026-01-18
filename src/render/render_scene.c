@@ -102,9 +102,23 @@ void render_scene_render_point(void* data, struct render_batch* batch) {
     }
 
     mat4x4 mtx;
-    matrixFromPosition(mtx, renderable->transform.transform);
+    vector3_t scaled;
+    vector3Scale(renderable->transform.transform, &scaled, WORLD_SCALE);
+    matrixFromPosition(mtx, &scaled);
     render_batch_relative_mtx(batch, mtx);
     t3d_mat4_to_fixed_3x4(mtxfp, (T3DMat4*)mtx);
+    
+    if (renderable->point_render.frame_max_x) {
+        int next = renderable->point_render.particle_data.colorA[3] + renderable->point_render.frame_step;
+
+        if (next >= renderable->point_render.frame_max_x) {
+            next = 0;
+        }
+
+        renderable->point_render.particle_data.colorA[3] = next;
+        renderable->point_render.particle_data.colorB[3] = next;
+        data_cache_hit_writeback_invalidate(&renderable->point_render.particle_data, sizeof(TPXParticleS8));
+    }
 
     render_batch_add_particles(batch, renderable->point_render.material, &renderable->point_render.particles, mtxfp);
 }
