@@ -44,15 +44,15 @@ void render_scene_render_renderable(void* data, struct render_batch* batch) {
 
     struct render_batch_element* element = render_batch_add_tmesh(
         batch, 
-        renderable->mesh, 
+        renderable->mesh_render.mesh, 
         mtxfp, 
-        &renderable->armature, 
-        renderable->attachments,
+        &renderable->mesh_render.armature, 
+        renderable->mesh_render.attachments,
         renderable->attrs
     );
 
-    if (element && renderable->force_material) {
-        element->material = renderable->force_material;
+    if (element && renderable->mesh_render.force_material) {
+        element->material = renderable->mesh_render.force_material;
     }
 }
 
@@ -76,17 +76,44 @@ void render_scene_render_renderable_single_axis(void* data, struct render_batch*
 
     struct render_batch_element* element = render_batch_add_tmesh(
         batch, 
-        renderable->mesh, 
+        renderable->mesh_render.mesh, 
         mtxfp, 
-        &renderable->armature, 
-        renderable->attachments,
+        &renderable->mesh_render.armature, 
+        renderable->mesh_render.attachments,
         renderable->attrs
     );
 
-    if (element && renderable->force_material) {
-        element->material = renderable->force_material;
+    if (element && renderable->mesh_render.force_material) {
+        element->material = renderable->mesh_render.force_material;
     }
 }
+
+void render_scene_render_point(void* data, struct render_batch* batch) {
+    struct renderable* renderable = (struct renderable*)data;
+
+    if (renderable->hide) {
+        return;
+    }
+
+    T3DMat4FP* mtxfp = render_batch_get_transformfp(batch);
+
+    if (!mtxfp) {
+        return;
+    }
+
+    mat4x4 mtx;
+    matrixFromPosition(mtx, renderable->transform.transform);
+    render_batch_relative_mtx(batch, mtx);
+    t3d_mat4_to_fixed_3x4(mtxfp, (T3DMat4*)mtx);
+
+    render_batch_add_particles(batch, renderable->point_render.material, &renderable->point_render.particles, mtxfp);
+}
+
+static render_scene_callback render_callback[] = {
+    [TRANSFORM_TYPE_BASIC] = render_scene_render_renderable,
+    [TRANSFORM_TYPE_SINGLE_AXIS] = render_scene_render_renderable_single_axis,
+    [TRANSFORM_TYPE_POSITION] = render_scene_render_point,
+};
 
 // removed with render_scene_remove()
 void render_scene_add_renderable(struct renderable* renderable, float radius) {
@@ -94,7 +121,7 @@ void render_scene_add_renderable(struct renderable* renderable, float radius) {
     render_scene_add(
         transform_mixed_get_position(&renderable->transform), 
         radius, 
-        renderable->type == TRANSFORM_TYPE_BASIC ? render_scene_render_renderable : render_scene_render_renderable_single_axis, 
+        render_callback[renderable->type], 
         renderable
     );
 }

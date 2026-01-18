@@ -520,12 +520,14 @@ void player_init(struct player* player, struct player_definition* definition, st
         .scale = 1.0f,
     };
 
+    armature_t* armature = renderable_get_armature(&player->renderable);
+
     cutscene_actor_init(
         &player->cutscene_actor,
         &player_actor_def,
         ENTITY_ID_PLAYER,
         &transform,
-        &player->renderable.armature,
+        armature,
         "rom:/meshes/characters/scrapper_kid.anim"
     );
 

@@ -35,7 +35,9 @@ void door_common_destroy() {
 void door_update(void* data) {
     door_t* door = (door_t*)data;
 
-    animator_update(&door->animator, &door->renderable.armature, fixed_time_step);
+    armature_t* armature = renderable_get_armature(&door->renderable);
+
+    animator_update(&door->animator, armature, fixed_time_step);
 
     bool is_open = expression_get_bool(door->is_open);
 
@@ -57,7 +59,7 @@ void door_init(door_t* door, struct door_definition* definition, entity_id entit
     renderable_single_axis_init(&door->renderable, &door->transform, type_def->mesh_name);
     render_scene_add_renderable(&door->renderable, 3.0f);
 
-    animator_init(&door->animator, door->renderable.mesh->armature.bone_count);
+    animator_init(&door->animator, door->renderable.mesh_render.mesh->armature.bone_count);
     door->animation_set = animation_cache_load(type_def->animations_name);
     door->animations.open = animation_set_find_clip(door->animation_set, "open");
     door->animations.close = animation_set_find_clip(door->animation_set, "close");

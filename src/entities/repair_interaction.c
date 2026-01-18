@@ -88,7 +88,8 @@ void repair_interact(struct interactable* interactable, entity_id from) {
 
 void repair_interaction_update(void *data) {
     repair_interaction_t* repair = (repair_interaction_t*)data;
-    animator_update(&repair->animator, &repair->renderable.armature, scaled_time_step);
+    armature_t* armature = renderable_get_armature(&repair->renderable);
+    animator_update(&repair->animator, armature, scaled_time_step);
 }
 
 void repair_interaction_init(repair_interaction_t* repair, struct repair_interaction_definition* definition, entity_id entity_id) {
@@ -101,7 +102,8 @@ void repair_interaction_init(repair_interaction_t* repair, struct repair_interac
     renderable_single_axis_init(&repair->renderable, &repair->transform, repair->is_repaired ? def->repaired_mesh_name : def->mesh_name);
 
     if (repair->is_repaired && def->repaired_mesh_anim) {
-        animator_init(&repair->animator, repair->renderable.armature.bone_count);
+        armature_t* armature = renderable_get_armature(&repair->renderable);
+        animator_init(&repair->animator, armature->bone_count);
         repair->animations = animation_cache_load(def->repaired_mesh_anim);
         animator_run_clip(&repair->animator, animation_set_find_clip(repair->animations, "idle"), 0.0f, true);
         update_add(repair, repair_interaction_update, UPDATE_PRIORITY_EFFECTS, UPDATE_LAYER_WORLD);

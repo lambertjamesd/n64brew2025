@@ -85,12 +85,14 @@ void npc_init(struct npc* npc, struct npc_definition* definiton, entity_id id) {
 
     update_add(npc, npc_update, 0, UPDATE_LAYER_WORLD | UPDATE_LAYER_CUTSCENE);
 
+    armature_t* armature = renderable_get_armature(&npc->renderable);
+
     cutscene_actor_init(
         &npc->cutscene_actor, 
         &information->actor,
         id,
         &npc->cutscene_actor.transform, 
-        &npc->renderable.armature, 
+        armature, 
         information->animations
     );
 

@@ -244,7 +244,8 @@ void motorcycle_update(void* data) {
         return;
     }
 
-    animator_update(&motorcycle->animator, &motorcycle->renderable.armature, scaled_time_step);
+    armature_t* armature = renderable_get_armature(&motorcycle->renderable);
+    animator_update(&motorcycle->animator, armature, scaled_time_step);
 
     float current_speed = sqrtf(vector3MagSqrd(&motorcycle->collider.velocity));
 
@@ -349,7 +350,9 @@ void motorcycle_init(motorcycle_t* motorcycle, struct motorcycle_definition* def
     transformSaInit(&motorcycle->transform, &definition->position, &definition->rotation, 1.0f);
     render_scene_init_add_renderable(&motorcycle->renderable, &motorcycle->transform, assets.mesh, 2.0f);
     dynamic_object_init(entity_id, &motorcycle->collider, &collider_type, COLLISION_LAYER_TANGIBLE, &motorcycle->transform.position, &motorcycle->transform.rotation);
-    animator_init(&motorcycle->animator, motorcycle->renderable.armature.bone_count);
+    
+    armature_t* armature = renderable_get_armature(&motorcycle->renderable);
+    animator_init(&motorcycle->animator, armature->bone_count);
     motorcycle->animations = animation_cache_load("rom:/meshes/vehicles/bike.anim");
     vehicle_init(&motorcycle->vehicle, &motorcycle->transform, &vehicle_def, entity_id);
     collision_scene_add(&motorcycle->collider);
