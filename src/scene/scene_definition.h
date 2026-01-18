@@ -88,6 +88,8 @@ enum inventory_item_type {
 
     ITEM_RIDING_MOTORCYCLE,
 
+    ITEM_NUT,
+
     ITEM_TYPE_COUNT,
 };
 

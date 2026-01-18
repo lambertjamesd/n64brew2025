@@ -33,6 +33,8 @@ mapping = {
     "has_given_tablet": 'ITEM_GIVEN_TABLET',
 
     "is_riding_motorcycle": "ITEM_RIDING_MOTORCYCLE",
+
+    "nut_count": "ITEM_NUT",
 }
 
 data_type_mapping = {

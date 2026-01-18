@@ -31,4 +31,10 @@ global has_given_tablet: bool;
 global scrapbot_location: i8;
 global samson_location: i8;
 
+global nut_count: i16;
+
 global is_riding_motorcycle: bool;
+
+global garage_nut_0: bool;
+global garage_nut_1: bool;
+global garage_nut_2: bool;

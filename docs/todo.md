@@ -19,6 +19,7 @@
 * force boosting while directly touching boost pads
 * increase object draw distance
 * add home base icon to map
+* indoor locations should show up on map
 
 After new map
 * have boost highways be more direct

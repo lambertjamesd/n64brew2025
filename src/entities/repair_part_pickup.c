@@ -114,6 +114,15 @@ static repair_part_type_def_t types[REPAIR_PART_COUNT] = {
             .max_stable_slope = 0.219131191f,
         }
     },
+    [REPAIR_PART_MONEY] = {
+        .mesh_name = "rom:/meshes/parts/nut.tmesh",
+        .collider = {
+            BOX_COLLIDER(0.1f, 0.04f, 0.1f),
+            .center = {0.0f, 0.0f, 0.0f},
+            .friction = 0.5,
+            .max_stable_slope = 0.219131191f,
+        }
+    },
 };
 
 static struct repair_part_pickup_assets assets;
@@ -130,6 +139,10 @@ void repair_part_interact(struct interactable* interactable, entity_id from) {
     repair_part_pickup_t* part = (repair_part_pickup_t*)interactable->data;
     expression_set_bool(part->has_part, true);
     entity_despawn(interactable->id);
+
+    if (part->count != VARIABLE_DISCONNECTED) {
+        expression_set_integer(part->count, expression_get_integer(part->count) + 1);
+    }
 }
 
 #define CLOSE_BEEP_INTERVAL     0.2f
@@ -164,6 +177,7 @@ void repair_part_pickup_init(repair_part_pickup_t* part, struct repair_part_pick
     part->has_part = definition->has_part;
     part->has_tracker = definition->has_tracker;
     part->beep_timer = FAR_BEEP_INTERVAL;
+    part->count = definition->count;
 
     repair_part_type_def_t* def = &types[definition->part_type];
 

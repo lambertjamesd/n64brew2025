@@ -91,6 +91,12 @@
             "type": "repair_part_pickup"
         },
         {
+            "name": "parts_nut",
+            "description": "",
+            "mesh": "meshes/parts/nut.blend#nut",
+            "type": "repair_part_pickup"
+        },
+        {
             "name": "parts_tablet",
             "description": "",
             "mesh": "meshes/parts/tablet.blend#tablet",

@@ -13,4 +13,6 @@ struct global_location {
 bool inventory_has_item(enum inventory_item_type item);
 void inventory_set_has_item(enum inventory_item_type item, bool value);
 
+int inventory_get_count(enum inventory_item_type item);
+
 #endif

@@ -14,6 +14,7 @@ struct repair_part_pickup {
     dynamic_object_t collider;
     interactable_t interactable;
     boolean_variable has_part;
+    integer_variable count;
     enum repair_part_type part_type;
     float beep_timer;
     bool is_active;

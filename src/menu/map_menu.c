@@ -39,6 +39,7 @@ enum menu_icon_type {
     MENU_ICON_MAP,
     MENU_ICON_NOTE,
     MENU_ICON_IMAGE,
+    MENU_ICON_NUT,
 
     MENU_ICON_TYPE_COUNT,
 };
@@ -71,9 +72,22 @@ struct menu_item {
     enum inventory_item_type hide_override;
     const char* name;
     union menu_item_data data;
+    bool show_count;
 };
 
 static struct menu_item menu_items[] = {
+    {
+        .type = MENU_ITEM_PART,
+        .icon = MENU_ICON_NUT,
+        .inventory_item = ITEM_NUT,
+        .name = "Nuts",
+        .data = {
+            .part = {
+                .description = "These have become somthing like currency since the impact",
+            },
+        },
+        .show_count = true,
+    },
     {
         .type = MENU_ITEM_MAP,
         .icon = MENU_ICON_MAP,
@@ -336,6 +350,7 @@ static const char* icon_files[MENU_ICON_TYPE_COUNT] = {
     [MENU_ICON_MAP] = "rom:/images/maps/dot_matrix_map_icon.sprite",
     [MENU_ICON_NOTE] = "rom:/images/maps/note.sprite",
     [MENU_ICON_IMAGE] = "rom:/images/maps/image_icon.sprite",
+    [MENU_ICON_NUT] = "rom:/images/maps/nut.sprite",
 };
 
 static vector2_t player_cursor_points[3] = {
@@ -522,7 +537,7 @@ void map_render_details(struct menu_item* item) {
 }
 
 bool map_should_show_item(struct menu_item* item) {
-    return inventory_has_item(item->inventory_item) && !inventory_has_item(item->hide_override);
+    return item->show_count || (inventory_has_item(item->inventory_item) && !inventory_has_item(item->hide_override));
 }
 
 #define FADE_IN_RATIO   0.3f
@@ -618,6 +633,25 @@ void map_render_items(float lerp_amount) {
         }
 
         rdpq_sprite_blit(assets.icons[item->icon], x + MENU_X, y + MAP_Y, NULL);
+
+        if (item->show_count) {
+            char count[8];
+            int len = sprintf(count, "%d", inventory_get_count(item->inventory_item));
+            
+            rdpq_text_printn(&(rdpq_textparms_t){
+                    // .line_spacing = -3,
+                    .align = ALIGN_RIGHT,
+                    .valign = VALIGN_BOTTOM,
+                    .width = 32,
+                    .height = 32,
+                    .wrap = WRAP_NONE,
+                }, 
+                FONT_DIALOG, 
+                x + MENU_X, y + MAP_Y, 
+                count,
+                len
+            );
+        }
 
         x += ICON_SIZE;
 
