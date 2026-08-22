@@ -20,6 +20,11 @@ static float last_save_time = 0.0f;
 
 #define SRAM_ADDRESS    0x08000000
 
+#define PI_BSD_DOM2_LAT ((volatile uint32_t*)0xA4600024)
+#define PI_BSD_DOM2_PWD ((volatile uint32_t*)0xA4600028)
+#define PI_BSD_DOM2_PGS ((volatile uint32_t*)0xA460002C)
+#define PI_BSD_DOM2_RLS ((volatile uint32_t*)0xA4600030)
+
 struct savefile_header {
     uint64_t header;
     uint16_t globals_size;
@@ -51,7 +56,25 @@ void savefile_unload() {
     current_savefile = NULL;
 }
 
+static void savefile_sram_init() {
+    static bool sram_inited = false;
+
+    if (sram_inited) {
+        return;
+    }
+
+    disable_interrupts();
+    *PI_BSD_DOM2_LAT = 0x05;
+    *PI_BSD_DOM2_PWD = 0x0C;
+    *PI_BSD_DOM2_PGS = 0x0D;
+    *PI_BSD_DOM2_RLS = 0x02;
+    enable_interrupts();
+
+    sram_inited = true;
+}
+
 void savefile_check_for_data() {
+    savefile_sram_init();
     savefile_unload();
 
     data_cache_hit_writeback_invalidate(&savefile, sizeof(struct savefile_header));
@@ -94,6 +117,8 @@ bool savefile_save() {
     if (!savefile_has_save()) {
         return false;
     }
+
+    savefile_sram_init();
 
     data_cache_hit_writeback_invalidate(&savefile, sizeof(struct savefile_header));
     dma_write_raw_async(&savefile, SRAM_ADDRESS, sizeof(struct savefile_header));
