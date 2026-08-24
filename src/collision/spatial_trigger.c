@@ -51,6 +51,8 @@ void spatial_trigger_type_recalc_bb(struct spatial_trigger_type* type, struct Tr
     vector3Add(&result->max, &offset, &result->max);
 }
 
+#define WEDGE_ORIGIN_CYLINDER_RADIUS    0.4
+
 bool spatial_trigger_does_contain_point(struct spatial_trigger* trigger, struct Vector3* point) {
     if (!box3DContainsPoint(&trigger->bounding_box, point)) {
         return false;
@@ -83,6 +85,12 @@ bool spatial_trigger_does_contain_point(struct spatial_trigger* trigger, struct 
         case SPATIAL_TRIGGER_WEDGE: {
             if (fabsf(relative_pos.y) > data->wedge.half_height) {
                 return false;
+            }
+
+            // allows player to pickup objects near feet
+            if (relative_pos.x * relative_pos.x + relative_pos.z * relative_pos.z < 
+                WEDGE_ORIGIN_CYLINDER_RADIUS * WEDGE_ORIGIN_CYLINDER_RADIUS) {
+                return true;
             }
             
             relative_pos.y = 0.0f;
