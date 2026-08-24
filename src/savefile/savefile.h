@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 
+void savefile_init();
+
 void savefile_check_for_data();
 void savefile_new();
 bool savefile_has_save();

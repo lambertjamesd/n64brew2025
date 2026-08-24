@@ -56,6 +56,7 @@ void setup() {
     debug_init_isviewer();
 #endif
     // rdpq_debug_start();
+    savefile_init();
     savefile_check_for_data();
     init_engine();
     interactable_reset();
