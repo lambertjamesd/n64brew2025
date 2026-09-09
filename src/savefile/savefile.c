@@ -58,7 +58,9 @@ void savefile_unload() {
 void savefile_check_for_data() {
     savefile_unload();
 
-    sram_read(&savefile, 0, sizeof(struct savefile_header));
+    data_cache_hit_writeback_invalidate(&savefile, sizeof(struct savefile_header));
+    dma_read_async(&savefile, SRAM_ADDRESS, sizeof(struct savefile_header));
+    dma_wait();
 
     if (savefile.header != HEADER_NAME) {
         savefile_new();
@@ -78,10 +80,14 @@ void savefile_check_for_data() {
     }
 
     current_savefile = malloc(ALIGN_BLOCK(size));
-    sram_read(&savefile, ALIGN_BLOCK(sizeof(struct savefile_header)), ALIGN_BLOCK(size));
+    data_cache_hit_writeback_invalidate(current_savefile, ALIGN_BLOCK(size));
+    dma_read_async(current_savefile, SRAM_ADDRESS + ALIGN_BLOCK(sizeof(struct savefile_header)), ALIGN_BLOCK(size));
+    dma_wait();
 
     uint8_t* map_revealed = map_get_revealed();
-    sram_read(map_revealed, ALIGN_BLOCK(sizeof(struct savefile_header)) + ALIGN_BLOCK(size), MAP_BLOCK_SIZE);
+    data_cache_hit_writeback_invalidate(map_revealed, MAP_BLOCK_SIZE);
+    dma_read_async(map_revealed, SRAM_ADDRESS + ALIGN_BLOCK(sizeof(struct savefile_header)) + ALIGN_BLOCK(size), MAP_BLOCK_SIZE);
+    dma_wait();
 }
 
 bool savefile_save() {
@@ -93,11 +99,19 @@ bool savefile_save() {
         return false;
     }
 
-    sram_write(&savefile, 0, sizeof(struct savefile_header));    
-    sram_write(&savefile, ALIGN_BLOCK(sizeof(struct savefile_header)), ALIGN_BLOCK(savefile.globals_size));
+    data_cache_hit_writeback_invalidate(&savefile, sizeof(struct savefile_header));
+    dma_write_raw_async(&savefile, SRAM_ADDRESS, sizeof(struct savefile_header));
+    dma_wait();
+
+    
+    data_cache_hit_writeback_invalidate(current_savefile, ALIGN_BLOCK(savefile.globals_size));
+    dma_write_raw_async(current_savefile, SRAM_ADDRESS + ALIGN_BLOCK(sizeof(struct savefile_header)), ALIGN_BLOCK(savefile.globals_size));
+    dma_wait();
     
     uint8_t* map_revealed = map_get_revealed();
-    sram_write(&savefile, ALIGN_BLOCK(sizeof(struct savefile_header)) + ALIGN_BLOCK(savefile.globals_size), MAP_BLOCK_SIZE);
+    data_cache_hit_writeback_invalidate(map_revealed, MAP_BLOCK_SIZE);
+    dma_write_raw_async(map_revealed, SRAM_ADDRESS + ALIGN_BLOCK(sizeof(struct savefile_header)) + ALIGN_BLOCK(savefile.globals_size), MAP_BLOCK_SIZE);
+    dma_wait();
 
     last_save_time = game_time;
 
